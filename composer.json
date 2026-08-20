@@ -1,0 +1,17 @@
+{
+    "name": "redsea/ai-engine",
+    "description": "RED SEA DIGITAL AI Engine Enterprise Suite",
+    "type": "wordpress-plugin",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Amr Ahmed",
+            "email": "contact@redseadigital.pro"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "RedSea\\": "src/"
+        }
+    }
+}

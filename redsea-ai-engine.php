@@ -10,946 +10,44 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-rsd-elementor-suite.php
  * Author: Red Sea Digital (Amr Ahmed)
  */
 
+// Load PSR-4 Composer Autoloader
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+use RedSea\Core\OutputCleaner;
+use RedSea\Agents\ToolManager;
+use RedSea\Agents\QAAgent;
+use RedSea\Orchestrator\ChiefOrchestrator;
+use RedSea\Radar\LeadRadarEngine;
+use RedSea\RAG\KnowledgeBaseManager;
+use RedSea\Providers\LLMProviderManager;
+use RedSea\CRM\LeadManager;
+use RedSea\Gateway\WhatsAppGateway;
+use RedSea\Admin\AdminController;
+use RedSea\Admin\AjaxHandler;
+
 if (!defined('ABSPATH')) exit;
 
-/**
- * -----------------------------------------------------------------------------
- * RESPONSE FORMATTING FILTER & OUTPUT CLEANER
- * -----------------------------------------------------------------------------
- */
-class RSD_Output_Cleaner {
-    public static function clean($text) {
-        if (empty($text)) return '';
 
-        // 1. Extract and Strip structured JSON blocks (prevent code leak to visitor)
-        if (preg_match('/\{\s*"(?:booking|customer_name|service_type|customer_phone)"[^}]*\}/u', $text, $matches)) {
-            $json_str = $matches[0];
-            $lead_data = json_decode($json_str, true);
-            if (!empty($lead_data['customer_phone']) && preg_match('/[0-9]{8,}/', $lead_data['customer_phone']) && $lead_data['customer_phone'] !== 'Valid Phone Number') {
-                if (class_exists('RedSeaAIEngine')) {
-                    RedSeaAIEngine::save_booking(
-                        $lead_data['customer_name'] ?? 'عميل جديد',
-                        $lead_data['customer_phone'],
-                        $lead_data['service_type'] ?? 'استشارة حجز مباشر',
-                        $lead_data['booking_details'] ?? 'استفسار عبر الشات'
-                    );
-                }
-            }
-            $text = str_replace($json_str, '', $text);
-        }
 
-        // 2. Strip code block markers
-        $text = str_replace(['```json', '```'], '', $text);
 
-        // 3. Remove leading bullet symbols (dots, dashes, asterisks, emojis) completely as requested
-        $text = preg_replace('/^[\*\-\•\⁃\–\🔹]\s*/mu', '', $text);
 
-        // 4. Convert Markdown Bold (**text** or __text__) to clean strong tags
-        $text = preg_replace('/\*\*(.*?)\*\*/u', '<strong style="color:#0F172A;font-weight:800;">$1</strong>', $text);
-        $text = preg_replace('/__(.*?)__/u', '<strong style="color:#0F172A;font-weight:800;">$1</strong>', $text);
 
-        // 5. Convert line breaks and blocks into clean, well-spaced organized paragraphs
-        $text = trim($text);
-        $paragraphs = preg_split('/\n\s*\n/', $text);
-        $formatted_paragraphs = [];
-        foreach ($paragraphs as $p) {
-            $p = trim($p);
-            if (!empty($p)) {
-                // Also clean any leftover mid-line bullet symbols
-                $p = preg_replace('/^[\*\-\•\⁃\–\🔹]\s*/mu', '', $p);
-                $p = nl2br($p);
-                $formatted_paragraphs[] = "<p style='margin:0 0 12px 0;line-height:1.65;'>" . $p . "</p>";
-            }
-        }
-
-        return trim(implode('', $formatted_paragraphs));
-    }
-}
-
-class RSD_Agent_Tool_Manager {
-
-    public static function get_available_tools() {
-        return array(
-            'check_live_catalog' => array(
-                'name' => 'check_live_catalog',
-                'description' => 'سحب واستعلام برامج الرحلات والغرف الفندقية ومنتجات المتجر الحية مع الأسعار والروابط المباشرة',
-            ),
-            'vector_rag_search' => array(
-                'name' => 'vector_rag_search',
-                'description' => 'البحث الدلالي المتجهي الفائق في قاعدة المعرفة لاستخراج المعلومات التفصيلية والضمانات',
-            ),
-            'instant_lead_booking' => array(
-                'name' => 'instant_lead_booking',
-                'description' => 'تسجيل حجز العميل واصتياد رقم الهاتف والاسم تلقائياً في الـ CRM وتفعيل رسالة الواتساب المباشرة',
-            ),
-            'calculate_direct_savings' => array(
-                'name' => 'calculate_direct_savings',
-                'description' => 'حساب نسبة وتكلفة العمولات الضائعة للمنصات الوسيطة وتوضيح الصافي المالي للعميل',
-            )
-        );
-    }
-
-    public static function execute_tool($tool_name, $args = array()) {
-        switch ($tool_name) {
-            case 'calculate_direct_savings':
-                $revenue = floatval($args['monthly_revenue'] ?? 10000);
-                $savings_min = $revenue * 0.15;
-                $savings_max = $revenue * 0.30;
-                return sprintf("📊 حساب التوفير المالي الصافي:\nعند تحقيق إيرادات شهرياً بقيمة $%s، يتم توفير من $%s إلى $%s سنوياً كان يتم دفعها كعمولات للمنصات الوسيطة!", number_format($revenue), number_format($savings_min * 12), number_format($savings_max * 12));
-
-            case 'vector_rag_search':
-                $query = sanitize_text_field($args['query'] ?? '');
-                $chunks = RSD_Knowledge_Base_Manager::search_similar_chunks($query, 3);
-                return !empty($chunks) ? implode("\n\n", $chunks) : 'لم يتم العثور على مقاطع مطابقة.';
-
-            case 'check_live_catalog':
-                return RSD_Knowledge_Base_Manager::get_live_booking_context() . "\n" . RSD_Knowledge_Base_Manager::get_wp_wc_live_context();
-
-            case 'instant_lead_booking':
-                $name = sanitize_text_field($args['name'] ?? 'عميل جديد');
-                $phone = sanitize_text_field($args['phone'] ?? '');
-                $service = sanitize_text_field($args['service'] ?? 'جلسة استشارية');
-                if (!empty($phone)) {
-                    RedSeaAIEngine::save_booking($name, $phone, $service, 'حجز تلقائي عبر محرك الأيجنت الذكي');
-                    return "✅ تم تسجيل حجز العميل ($name - $phone) بنجاح وإرسال الرسالة التلقائية عبر الواتساب.";
-                }
-                return 'تعذر التسجيل: رقم الهاتف مطلوب.';
-
-            default:
-                return 'أداة غير معروفة.';
-        }
-    }
-}
-
-class RSD_Knowledge_Base_Manager {
-
-    public static function init_vector_store_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_vector_store';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            file_name varchar(255) NOT NULL,
-            chunk_index int(11) NOT NULL DEFAULT 0,
-            chunk_text longtext NOT NULL,
-            embedding_json longtext NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id),
-            KEY file_name (file_name)
-        ) {$charset_collate};";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-    }
-
-    public static function get_upload_dir() {
-        $upload = wp_upload_dir();
-        $kb_dir = $upload['basedir'] . '/redsea-ai-kb';
-        if (!file_exists($kb_dir)) {
-            wp_mkdir_p($kb_dir);
-        }
-        return $kb_dir;
-    }
-
-    public static function get_rag_bundled_dir() {
-        return plugin_dir_path(__FILE__) . 'RAG';
-    }
-
-    public static function list_all_kb_files() {
-        global $wpdb;
-        $files_list = [];
-
-        // 1. Scan Plugin Bundled RAG folder
-        $bundled_dir = self::get_rag_bundled_dir();
-        if (file_exists($bundled_dir)) {
-            $files = scandir($bundled_dir);
-            foreach ($files as $f) {
-                if ($f === '.' || $f === '..') continue;
-                $fp = $bundled_dir . '/' . $f;
-                if (is_file($fp)) {
-                    $chunk_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}rsd_vector_store WHERE file_name = %s", $f));
-                    $files_list[$f] = [
-                        'file_name'   => $f,
-                        'file_path'   => $fp,
-                        'file_size'   => size_format(filesize($fp)),
-                        'modified'    => date('Y-m-d H:i', filemtime($fp)),
-                        'source'      => 'الملفات الأساسية (Core RAG)',
-                        'chunks'      => intval($chunk_count),
-                        'is_deletable'=> true
-                    ];
-                }
-            }
-        }
-
-        // 2. Scan Uploaded Files folder
-        $upload_dir = self::get_upload_dir();
-        if (file_exists($upload_dir)) {
-            $files = scandir($upload_dir);
-            foreach ($files as $f) {
-                if ($f === '.' || $f === '..' || $f === '.htaccess') continue;
-                $fp = $upload_dir . '/' . $f;
-                if (is_file($fp)) {
-                    $chunk_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}rsd_vector_store WHERE file_name = %s", $f));
-                    $files_list[$f] = [
-                        'file_name'   => $f,
-                        'file_path'   => $fp,
-                        'file_size'   => size_format(filesize($fp)),
-                        'modified'    => date('Y-m-d H:i', filemtime($fp)),
-                        'source'      => 'الملفات المرفوعة (Uploaded)',
-                        'chunks'      => intval($chunk_count),
-                        'is_deletable'=> true
-                    ];
-                }
-            }
-        }
-
-        return $files_list;
-    }
-
-    public static function get_file_content($file_name) {
-        $files = self::list_all_kb_files();
-        if (isset($files[$file_name]) && file_exists($files[$file_name]['file_path'])) {
-            return file_get_contents($files[$file_name]['file_path']);
-        }
-        return '';
-    }
-
-    public static function save_file_content($file_name, $content) {
-        $files = self::list_all_kb_files();
-        $target_path = '';
-
-        if (isset($files[$file_name])) {
-            $target_path = $files[$file_name]['file_path'];
-        } else {
-            $target_path = self::get_upload_dir() . '/' . sanitize_file_name($file_name);
-        }
-
-        file_put_contents($target_path, $content);
-        self::index_single_file($file_name, $content);
-        self::clear_cache();
-        return true;
-    }
-
-    public static function delete_file($file_name) {
-        global $wpdb;
-        $files = self::list_all_kb_files();
-        if (isset($files[$file_name]) && file_exists($files[$file_name]['file_path'])) {
-            @unlink($files[$file_name]['file_path']);
-            $wpdb->delete($wpdb->prefix . 'rsd_vector_store', ['file_name' => $file_name]);
-            self::clear_cache();
-            return true;
-        }
-        return false;
-    }
-
-    public static function chunk_text($text, $chunk_size = 350) {
-        $text = trim(preg_replace('/\s+/', ' ', $text));
-        if (empty($text)) return [];
-
-        $words = explode(' ', $text);
-        $total_words = count($words);
-        $chunks = [];
-        $overlap = intval(get_option('rsd_rag_chunk_overlap', 40));
-
-        for ($i = 0; $i < $total_words; $i += ($chunk_size - $overlap)) {
-            $chunk_slice = array_slice($words, $i, $chunk_size);
-            $chunk_str = implode(' ', $chunk_slice);
-            if (mb_strlen($chunk_str) > 20) {
-                $chunks[] = $chunk_str;
-            }
-            if ($i + $chunk_size >= $total_words) break;
-        }
-
-        return $chunks;
-    }
-
-    public static function generate_fallback_vector($text) {
-        $dim = 64;
-        $vector = array_fill(0, $dim, 0.0);
-        $tokens = preg_split('/[\s,;:.!?]+/', mb_strtolower($text, 'UTF-8'));
-
-        foreach ($tokens as $token) {
-            if (empty($token)) continue;
-            $h = crc32($token);
-            $idx = abs($h) % $dim;
-            $vector[$idx] += 1.0;
-        }
-
-        $norm = 0.0;
-        foreach ($vector as $v) { $norm += $v * $v; }
-        $norm = sqrt($norm);
-        if ($norm > 0.0) {
-            for ($i = 0; $i < $dim; $i++) { $vector[$i] /= $norm; }
-        }
-
-        return $vector;
-    }
-
-    public static function generate_embedding_vector($text_chunk) {
-        $api_key = get_option('rsd_gemini_api_key', '');
-        if (!empty($api_key)) {
-            $url = 'https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=' . $api_key;
-            $payload = array(
-                'model' => 'models/text-embedding-004',
-                'content' => array('parts' => array(array('text' => mb_substr($text_chunk, 0, 2048))))
-            );
-
-            $res = wp_remote_post($url, array(
-                'headers' => array('Content-Type' => 'application/json'),
-                'body'    => json_encode($payload),
-                'timeout' => 10,
-                'sslverify' => false
-            ));
-
-            if (!is_wp_error($res)) {
-                $body = json_decode(wp_remote_retrieve_body($res), true);
-                if (!empty($body['embedding']['values'])) {
-                    return $body['embedding']['values'];
-                }
-            }
-        }
-
-        return self::generate_fallback_vector($text_chunk);
-    }
-
-    public static function compute_cosine_similarity($vecA, $vecB) {
-        if (empty($vecA) || empty($vecB) || count($vecA) !== count($vecB)) return 0.0;
-        $dot = 0.0; $normA = 0.0; $normB = 0.0;
-        $count = count($vecA);
-        for ($i = 0; $i < $count; $i++) {
-            $a = (float)$vecA[$i];
-            $b = (float)$vecB[$i];
-            $dot += $a * $b;
-            $normA += $a * $a;
-            $normB += $b * $b;
-        }
-        if ($normA <= 0.0 || $normB <= 0.0) return 0.0;
-        return $dot / (sqrt($normA) * sqrt($normB));
-    }
-
-    public static function index_single_file($file_name, $content) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_vector_store';
-        self::init_vector_store_table();
-
-        $wpdb->delete($table_name, ['file_name' => $file_name]);
-
-        $chunk_size = intval(get_option('rsd_rag_chunk_size', 350));
-        $chunks = self::chunk_text($content, $chunk_size);
-
-        foreach ($chunks as $index => $chunk_text) {
-            $vector = self::generate_embedding_vector($chunk_text);
-            $wpdb->insert($table_name, [
-                'file_name'      => $file_name,
-                'chunk_index'    => $index,
-                'chunk_text'     => $chunk_text,
-                'embedding_json' => json_encode($vector),
-                'created_at'     => current_time('mysql')
-            ]);
-        }
-    }
-
-    public static function reindex_kb_files() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_vector_store';
-        self::init_vector_store_table();
-        $wpdb->query("TRUNCATE TABLE {$table_name}");
-
-        $files = self::list_all_kb_files();
-        $total_chunks = 0;
-
-        foreach ($files as $file_name => $info) {
-            if (file_exists($info['file_path'])) {
-                $content = file_get_contents($info['file_path']);
-                if (!empty($content)) {
-                    self::index_single_file($file_name, $content);
-                }
-            }
-        }
-
-        self::clear_cache();
-        return $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
-    }
-
-    public static function search_similar_chunks($user_query, $top_k = 3) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_vector_store';
-        self::init_vector_store_table();
-
-        $rows = $wpdb->get_results("SELECT id, file_name, chunk_text, embedding_json FROM {$table_name}", ARRAY_A);
-        if (empty($rows)) return [];
-
-        $query_vector = self::generate_embedding_vector($user_query);
-        $threshold = floatval(get_option('rsd_rag_similarity_threshold', 0.55));
-        $scored = [];
-
-        foreach ($rows as $row) {
-            $db_vector = json_decode($row['embedding_json'], true);
-            if (!empty($db_vector)) {
-                $sim = self::compute_cosine_similarity($query_vector, $db_vector);
-                if ($sim >= $threshold) {
-                    $scored[] = [
-                        'score' => $sim,
-                        'text'  => "[" . $row['file_name'] . "]: " . $row['chunk_text']
-                    ];
-                }
-            }
-        }
-
-        usort($scored, function($a, $b) {
-            return ($b['score'] <=> $a['score']);
-        });
-
-        $top = array_slice($scored, 0, $top_k);
-        return array_column($top, 'text');
-    }
-
-    public static function get_live_business_catalog() {
-        $cached = get_transient('rsd_live_business_catalog_cache');
-        if ($cached !== false) return $cached;
-
-        $items = [];
-
-        // 1. Tourism, Trips, Expeditions & Tours
-        $travel_post_types = ['itineraries', 'trip', 'wp-travel-trip', 'tour', 'wp_travel_itinerary', 'trips', 'tours'];
-        $travel_query = get_posts([
-            'post_type'      => $travel_post_types,
-            'posts_per_page' => 30,
-            'post_status'    => 'publish'
-        ]);
-
-        if (!empty($travel_query)) {
-            $items[] = "=== LIVE TRAVEL TOURS, TRIPS & EXPEDITIONS CATALOG ===";
-            foreach ($travel_query as $t) {
-                $price = get_post_meta($t->ID, 'wp_travel_trip_price', true) ?: get_post_meta($t->ID, 'price', true) ?: get_post_meta($t->ID, 'tour_price', true) ?: 'Contact Concierge';
-                $duration = get_post_meta($t->ID, 'wp_travel_trip_duration', true) ?: get_post_meta($t->ID, 'duration', true) ?: 'Standard Duration';
-                $items[] = sprintf("Tour: %s | Price: %s | Duration: %s | Booking Link: %s",
-                    $t->post_title,
-                    $price,
-                    $duration,
-                    get_permalink($t->ID)
-                );
-            }
-        }
-
-        // 2. Hotel Rooms, Suites & Resorts
-        $hotel_post_types = ['mphb_room_type', 'hb_room', 'hotel_room', 'room', 'room_type'];
-        $hotel_query = get_posts([
-            'post_type'      => $hotel_post_types,
-            'posts_per_page' => 30,
-            'post_status'    => 'publish'
-        ]);
-
-        if (!empty($hotel_query)) {
-            $items[] = "\n=== LIVE HOTEL ROOMS, SUITES & INVENTORY ===";
-            foreach ($hotel_query as $r) {
-                $rate = get_post_meta($r->ID, 'mphb_price', true) ?: get_post_meta($r->ID, 'room_price', true) ?: get_post_meta($r->ID, 'price', true) ?: 'Contact Concierge';
-                $capacity = get_post_meta($r->ID, 'mphb_capacity', true) ?: '2 Guests';
-                $items[] = sprintf("Room/Suite: %s | Rate: %s/Night | Capacity: %s | Booking URL: %s",
-                    $r->post_title,
-                    $rate,
-                    $capacity,
-                    get_permalink($r->ID)
-                );
-            }
-        }
-
-        // 3. WooCommerce Store Products & 1-Tap Checkout
-        if (class_exists('WooCommerce')) {
-            $products = wc_get_products(['limit' => 40, 'status' => 'publish']);
-            if (!empty($products)) {
-                $items[] = "\n=== LIVE E-COMMERCE PRODUCTS & DIRECT 1-TAP CHECKOUT ===";
-                foreach ($products as $prod) {
-                    $stock_str = $prod->is_in_stock() ? 'In Stock (' . ($prod->get_stock_quantity() ?? 'Available') . ')' : 'Out of Stock';
-                    $checkout_link = get_site_url() . '/checkout/?add-to-cart=' . $prod->get_id();
-                    $items[] = sprintf("Product: %s (ID: %d) | Price: %s %s | Stock: %s | 1-Tap Checkout: %s",
-                        $prod->get_name(),
-                        $prod->get_id(),
-                        $prod->get_price(),
-                        get_woocommerce_currency(),
-                        $stock_str,
-                        $checkout_link
-                    );
-                }
-            }
-        }
-
-        // 4. Key Public Pages Snippets
-        $pages = get_pages(['number' => 15, 'post_status' => 'publish']);
-        if (!empty($pages)) {
-            $items[] = "\n=== WEBSITE PUBLIC PAGES & SERVICES OVERVIEW ===";
-            foreach ($pages as $p) {
-                $clean_text = wp_strip_all_tags($p->post_content);
-                $snippet = mb_substr(preg_replace('/\s+/', ' ', $clean_text), 0, 250);
-                $items[] = sprintf("Page: %s | URL: %s | Summary: %s", $p->post_title, get_permalink($p->ID), $snippet);
-            }
-        }
-
-        $context_str = implode("\n", $items);
-        set_transient('rsd_live_business_catalog_cache', $context_str, 6 * HOUR_IN_SECONDS);
-        return $context_str;
-    }
-
-    public static function clear_cache() {
-        delete_transient('rsd_live_business_catalog_cache');
-        delete_transient('rsd_kb_active_context_cache');
-    }
-}
-
-class RedSeaAIProviderManager {
-
-    public static function get_model_leaderboard() {
-        return [
-            'deepseek-reasoner' => [
-                'name'        => 'DeepSeek R1 (Reasoner)',
-                'provider'    => 'OpenCode AI',
-                'score'       => '9.9/10',
-                'badge'       => '🏆 القمة في الاستدلال والرياضيات',
-                'latency'     => 'متوسط (تفكير تفصيلي)',
-                'context'     => '64k tokens',
-                'free'        => true
-            ],
-            'claude-3-5-sonnet' => [
-                'name'        => 'Claude 3.5 Sonnet',
-                'provider'    => 'OpenCode AI',
-                'score'       => '9.9/10',
-                'badge'       => '💎 فخامة الصياغة والإقناع البيعي',
-                'latency'     => 'سريع جداً',
-                'context'     => '200k tokens',
-                'free'        => true
-            ],
-            'deepseek-chat' => [
-                'name'        => 'DeepSeek V3 (Chat)',
-                'provider'    => 'OpenCode AI / DeepSeek',
-                'score'       => '9.8/10',
-                'badge'       => '⚡ رقم 1 في السرعة واللغة العربية',
-                'latency'     => 'فائق السرعة (~400ms)',
-                'context'     => '64k tokens',
-                'free'        => true
-            ],
-            'gpt-4o-mini' => [
-                'name'        => 'GPT-4o Mini',
-                'provider'    => 'OpenCode AI / OpenAI',
-                'score'       => '9.6/10',
-                'badge'       => '🚀 ذكاء متوازن وسرعة فائقة',
-                'latency'     => 'فائق السرعة (~350ms)',
-                'context'     => '128k tokens',
-                'free'        => true
-            ],
-            'gemini-flash-latest' => [
-                'name'        => 'Google Gemini 2.5 Flash',
-                'provider'    => 'OpenCode AI / Google',
-                'score'       => '9.5/10',
-                'badge'       => '🌐 سياق عملاق واستجابة لحظية',
-                'latency'     => 'فائق السرعة (~300ms)',
-                'context'     => '1M tokens',
-                'free'        => true
-            ],
-            'llama-3.3-70b' => [
-                'name'        => 'Llama 3.3 70B Instruct',
-                'provider'    => 'OpenCode AI',
-                'score'       => '9.4/10',
-                'badge'       => '🛡️ مفتوح المصدر ومتعدد المهام',
-                'latency'     => 'سريع (~600ms)',
-                'context'     => '128k tokens',
-                'free'        => true
-            ],
-            'qwen-2.5-coder-32b' => [
-                'name'        => 'Qwen 2.5 Coder 32B',
-                'provider'    => 'OpenCode AI',
-                'score'       => '9.3/10',
-                'badge'       => '⚙️ متخصص في المنطق والهيكلة',
-                'latency'     => 'سريع',
-                'context'     => '32k tokens',
-                'free'        => true
-            ]
-        ];
-    }
-
-    public static function track_telemetry($provider, $tokens, $success = true, $failed = false) {
-        $telemetry = get_option('rsd_provider_telemetry', [
-            'opencode' => ['requests' => 0, 'tokens' => 0, 'errors' => 0, 'last_active' => 'Never'],
-            'gemini'   => ['requests' => 0, 'tokens' => 0, 'errors' => 0, 'last_active' => 'Never'],
-            'openai'   => ['requests' => 0, 'tokens' => 0, 'errors' => 0, 'last_active' => 'Never'],
-            'deepseek' => ['requests' => 0, 'tokens' => 0, 'errors' => 0, 'last_active' => 'Never'],
-        ]);
-
-        if (!isset($telemetry[$provider])) {
-            $telemetry[$provider] = ['requests' => 0, 'tokens' => 0, 'errors' => 0, 'last_active' => 'Never'];
-        }
-
-        $telemetry[$provider]['requests']++;
-        $telemetry[$provider]['tokens'] += intval($tokens);
-        if ($failed) {
-            $telemetry[$provider]['errors']++;
-        }
-        $telemetry[$provider]['last_active'] = current_time('mysql');
-
-        update_option('rsd_provider_telemetry', $telemetry);
-    }
-
-    public static function clear_kb_cache() {
-        delete_transient('rsd_kb_active_context_cache');
-    }
-
-    public static function get_default_master_prompt() {
-        $company_name = get_option('rsd_company_name', 'RED SEA DIGITAL');
-        $whatsapp     = get_option('rsd_whatsapp_phone', '201028803080');
-
-        return "<system_identity>
-  أنت مستشار استراتيجي وخبير مبيعات ذكي لشركة {$company_name}.
-  أسلوبك: بشري، ذكي، سريع البديهة، مركز على الفوائد الملموسة للعميل، وتجيب بدقة متناهية على السؤال المطروح دون تكرار أو قوالب جامدة.
-  واتساب الشركة: {$whatsapp}
-</system_identity>
-
-<autonomous_booking_mandate>
-  1. أنت مفوض بالكامل لإجراء وحجز مواعيد الاستشارات الاستراتيجية للعميل مباشرة بدلاً منه داخل المحادثة.
-  2. عندما يطلب العميل حجز استشارة أو استفساراً عن باقاتنا، اطلب منه بلباقة (الاسم ورقم الواتساب ونوع النشاط أو الموعد المفضل).
-  3. بمجرد أن يزودك العميل برقم هاتفه، قم بتأكيد الحجز فوراً وبثقة واحترافية عالية:
-     - بالعربية: '🎉 تم تأكيد وتثبيت حجز استشارتك بنجاح يا [اسم العميل]! تم تسجيل طلبك وإرسال إشعار التأكيد إلى رقم الواتساب: [الرقم]. سيتواصل معك مستشارنا التقني في الموعد المحدد.'
-     - بالإنجليزية: '🎉 Your consultation is confirmed, [Customer Name]! Your reservation is logged and confirmation sent to WhatsApp: [Phone Number]. Our senior architect will connect with you at the scheduled time.'
-</autonomous_booking_mandate>
-
-<conversational_behavior_rules>
-  1. عدم تكرار الترحيب: إذا كانت هناك محادثة سابقة أو قام العميل بطرح سؤال متابعة، لا تقل 'أهلاً بك' أو تعيد تقديم الشركة، بل أجب عن سؤاله مباشرة وفوراً.
-  2. الإجابة المخصصة حسب الموضوع (Specific Domain Deep-Dive):
-     - إذا سأل عن (أتمتة المبيعات والواتساب): اشرح فوائد بوت الواتساب التفاعلي، استرجاع السلات المتروكة، وتأكيد الحجوزات فورياً.
-     - إذا سأل عن (حجز استشارة أو باقة): اطلب منه الاسم ورقم الواتساب ونوع نشاطه لترتيب الموعد فوراً.
-     - إذا سأل عن (فنادق أو غوص أو تجارة): اشرح الحل التقني وحساب الوفر المالي (توفير 15-30% عمولات) الخاص بنشاطه.
-  3. الهيكل والتنسيق:
-     - إجابات مركزة وموجزة (40 إلى 70 كلمة).
-     - نقاط تعداد عريضة (2 إلى 3 نقاط) خاصة بالموضوع المطلوب حصراً.
-     - سؤال ذكي في النهاية لدفع المحادثة للأمام (مثال: 'هل ترغب في ربط البوت بمتجر إلكتروني أم موقع حجوزات؟').
-  4. عدم إخراج أي أكواد أو وسوم برمجية أو أقواس JSON إطلاقاً.
-</conversational_behavior_rules>";
-    }
-
-    public static function generate($user_message, $history = [], $custom_options = []) {
-        $primary_provider = $custom_options['provider'] ?? get_option('rsd_ai_provider', 'gemini');
-        $primary_model    = $custom_options['model'] ?? get_option('rsd_ai_model', 'gemini-flash-latest');
-        
-        $fallback_chain = [$primary_provider, 'gemini', 'opencode', 'deepseek', 'openai'];
-        $fallback_chain = array_values(array_unique(array_filter($fallback_chain)));
-
-        $error_log = [];
-
-        foreach ($fallback_chain as $provider) {
-            $config = self::get_provider_config($provider, $custom_options);
-            if (empty($config['api_key']) && $provider !== 'opencode') {
-                continue;
-            }
-
-            $response = self::call_provider($provider, $user_message, $history, $config, $error_log);
-            if (!empty($response) && strlen(trim($response)) > 10) {
-                self::track_telemetry($provider, strlen($response) / 4, true, false);
-                return $response;
-            } else {
-                self::track_telemetry($provider, 0, false, true);
-            }
-        }
-
-        return get_option('rsd_fallback_message', '<p style=\'margin:0 0 10px 0;line-height:1.65;\'>أهلاً بك في <strong>RED SEA DIGITAL</strong>! يسعدنا مساعدتك في تطوير نشاطك ومضاعفة مبيعاتك المباشرة.</p>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>حجز مباشر 24/7</strong>: استقبال استفسارات العملاء وحجز الرحلات والغرف تلقائياً بعدة لغات دون توقف.</div>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>استرداد العمولات</strong>: توفير 15% إلى 30% من أرباحك الصافية وتجنب عمولات الوسطاء والمنصات.</div>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>أتمتة المبيعات والواتساب</strong>: جمع بيانات العملاء ومتابعة الحجوزات والسلات تلقائياً.</div>
-<p style=\'margin:10px 0 0 0;line-height:1.65;\'>يسعدنا ترتيب استشارة سريعة لمشروعك، تواصل معنا مباشرة عبر الواتساب: <strong>01028803080</strong></p>');
-    }
-
-    public static function get_provider_config($provider, $custom_options = []) {
-        $user_model = $custom_options['model'] ?? get_option('rsd_ai_model', 'gemini-flash-latest');
-
-        switch ($provider) {
-            case 'gemini':
-                $model = (strpos($user_model, 'gemini') !== false) ? $user_model : 'gemini-flash-latest';
-                return [
-                    'api_key'       => get_option('rsd_gemini_api_key', ''),
-                    'model'         => $model,
-                    'system_prompt' => $custom_options['system_prompt'] ?? self::build_system_prompt('', 'concierge', $custom_options),
-                    'temperature'   => floatval(get_option('rsd_llm_temperature', 0.6)),
-                    'max_tokens'    => 2048,
-                    'timeout'       => intval(get_option('rsd_llm_timeout', 15))
-                ];
-            case 'deepseek':
-                $model = (strpos($user_model, 'deepseek') !== false) ? $user_model : 'deepseek-chat';
-                return [
-                    'api_key'       => get_option('rsd_deepseek_api_key', ''),
-                    'model'         => $model,
-                    'system_prompt' => $custom_options['system_prompt'] ?? self::build_system_prompt('', 'concierge', $custom_options),
-                    'temperature'   => floatval(get_option('rsd_llm_temperature', 0.6)),
-                    'max_tokens'    => 2048,
-                    'timeout'       => intval(get_option('rsd_llm_timeout', 15))
-                ];
-            case 'openai':
-                $model = (strpos($user_model, 'gpt') !== false) ? $user_model : 'gpt-4o-mini';
-                return [
-                    'api_key'       => get_option('rsd_openai_api_key', ''),
-                    'model'         => $model,
-                    'system_prompt' => $custom_options['system_prompt'] ?? self::build_system_prompt('', 'concierge', $custom_options),
-                    'temperature'   => floatval(get_option('rsd_llm_temperature', 0.6)),
-                    'max_tokens'    => 2048,
-                    'timeout'       => intval(get_option('rsd_llm_timeout', 15))
-                ];
-            case 'opencode':
-            default:
-                $opencode_key = get_option('rsd_opencode_api_key', '');
-                $model = (!empty($user_model) && strpos($user_model, 'gemini') === false) ? $user_model : 'gpt-4o-mini';
-                return [
-                    'api_key'       => !empty($opencode_key) ? $opencode_key : 'free_tier_key',
-                    'model'         => $model,
-                    'system_prompt' => $custom_options['system_prompt'] ?? self::build_system_prompt('', 'concierge', $custom_options),
-                    'temperature'   => floatval(get_option('rsd_llm_temperature', 0.6)),
-                    'max_tokens'    => 2048,
-                    'timeout'       => intval(get_option('rsd_llm_timeout', 15))
-                ];
-        }
-    }
-
-    public static function call_provider($provider, $user_message, $history, $config, &$error_log = []) {
-        if ($provider === 'gemini') {
-            return self::call_gemini($config['api_key'], $config['model'], $user_message, $history, $config, $error_log);
-        } elseif ($provider === 'deepseek') {
-            return self::call_openai_compatible('https://api.deepseek.com/v1/chat/completions', $config['api_key'], $config['model'], $user_message, $history, $config, $error_log);
-        } elseif ($provider === 'openai') {
-            return self::call_openai_compatible('https://api.openai.com/v1/chat/completions', $config['api_key'], $config['model'], $user_message, $history, $config, $error_log);
-        } else {
-            return self::call_openai_compatible('https://opencode.ai/zen/v1/chat/completions', $config['api_key'], $config['model'], $user_message, $history, $config, $error_log);
-        }
-    }
-
-    public static function call_gemini($api_key, $model, $user_message, $history, $config, &$error_log) {
-        if (empty($api_key)) {
-            $error_log[] = "Gemini: API Key missing.";
-            return null;
-        }
-
-        // List of operational models in priority order
-        $models_to_try = array_unique([
-            $model ?: 'gemini-flash-latest',
-            'gemini-flash-latest',
-            'gemini-flash-lite-latest',
-            'gemini-flash-latest'
-        ]);
-
-        $contents = [];
-        if (!empty($history) && is_array($history)) {
-            foreach ($history as $h) {
-                $role = ($h['role'] === 'user') ? 'user' : 'model';
-                $contents[] = ['role' => $role, 'parts' => [['text' => $h['content']]]];
-            }
-        }
-        $contents[] = ['role' => 'user', 'parts' => [['text' => $user_message]]];
-
-        $body = [
-            'contents' => $contents,
-            'generationConfig' => [
-                'temperature'     => $config['temperature'] ?? 0.5,
-                'maxOutputTokens' => 2048
-            ]
-        ];
-
-        if (!empty($config['system_prompt'])) {
-            $body['systemInstruction'] = ['parts' => [['text' => $config['system_prompt']]]];
-        }
-
-        foreach ($models_to_try as $m_name) {
-            $url = "https://generativelanguage.googleapis.com/v1beta/models/" . urlencode($m_name) . ":generateContent?key=" . urlencode($api_key);
-
-            $res = wp_remote_post($url, [
-                'headers' => ['Content-Type' => 'application/json'],
-                'body'    => json_encode($body),
-                'timeout' => $config['timeout'] ?? 15,
-                'sslverify' => false
-            ]);
-
-            if (is_wp_error($res)) {
-                $error_log[] = "Gemini ($m_name) WP_Error: " . $res->get_error_message();
-                continue;
-            }
-
-            $status = wp_remote_retrieve_response_code($res);
-            $raw = wp_remote_retrieve_body($res);
-            $data = json_decode($raw, true);
-
-            if ($status === 200 && isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                return trim($data['candidates'][0]['content']['parts'][0]['text']);
-            }
-
-            $error_log[] = "Gemini ($m_name) HTTP $status: " . mb_substr($raw, 0, 100);
-        }
-
-        return null;
-    }
-
-    public static function call_openai_compatible($endpoint_url, $api_key, $model, $user_message, $history, $config, &$error_log) {
-        $messages = [];
-        if (!empty($config['system_prompt'])) {
-            $messages[] = ['role' => 'system', 'content' => $config['system_prompt']];
-        }
-        if (!empty($history) && is_array($history)) {
-            foreach ($history as $h) {
-                $messages[] = ['role' => $h['role'], 'content' => $h['content']];
-            }
-        }
-        $messages[] = ['role' => 'user', 'content' => $user_message];
-
-        $body = [
-            'model'       => $model,
-            'messages'    => $messages,
-            'temperature' => $config['temperature'] ?? 0.6,
-            'max_tokens'  => $config['max_tokens'] ?? 850
-        ];
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $api_key
-        ];
-
-        $res = wp_remote_post($endpoint_url, [
-            'headers' => $headers,
-            'body'    => json_encode($body),
-            'timeout' => $config['timeout'] ?? 12,
-            'sslverify' => false
-        ]);
-
-        if (is_wp_error($res)) {
-            $error_log[] = "OpenAI Compatible WP_Error: " . $res->get_error_message();
-            return null;
-        }
-
-        $status = wp_remote_retrieve_response_code($res);
-        $raw = wp_remote_retrieve_body($res);
-        $data = json_decode($raw, true);
-
-        if ($status === 200 && isset($data['choices'][0]['message']['content'])) {
-            return trim($data['choices'][0]['message']['content']);
-        }
-
-        $error_log[] = "OpenAI Compatible HTTP $status: " . $raw;
-        return null;
-    }
-
-    public static function build_system_prompt($custom_prompt = '', $agent_role = 'concierge', $custom_options = []) {
-        $detected_lang = $custom_options['detected_lang'] ?? 'ar';
-        
-        $lang_mandates = [
-            'en' => "CRITICAL LANGUAGE LOCK: The user is communicating in ENGLISH. You MUST formulate your entire response exclusively in English. Even if knowledge base references are in Arabic, you MUST translate and answer 100% in fluent, polished English. Never output Arabic when the user writes in English.",
-            'ar' => "قاعدة لغوية صارمة: المستخدم يتحدث باللغة العربية. يجب أن تكون إجابتك باللغة العربية الفصحى الراقية حصراً.",
-            'ru' => "CRITICAL LANGUAGE LOCK: The user is communicating in RUSSIAN. Отвечайте строго на русском языке.",
-            'de' => "CRITICAL LANGUAGE LOCK: The user is communicating in GERMAN. Antworten Sie ausschließlich auf Deutsch.",
-            'fr' => "CRITICAL LANGUAGE LOCK: The user is communicating in FRENCH. Répondez exclusivement en français.",
-            'es' => "CRITICAL LANGUAGE LOCK: The user is communicating in SPANISH. Responda exclusivamente en español."
-        ];
-
-        $lang_header = "<language_mandate>
-  " . ($lang_mandates[$detected_lang] ?? $lang_mandates['en']) . "
-</language_mandate>
-
-";
-
-        if (!empty($custom_prompt)) {
-            return $lang_header . $custom_prompt;
-        }
-
-        $base = self::get_default_master_prompt();
-
-        return $lang_header . $base;
-    }
-
-    public static function create_custom_agent($agent_name, $agent_mission, $assigned_tools = ['rag_search', 'sales_calculator']) {
-        $prompt_generator_instruction = "You are the Chief AI Architect for RED SEA DIGITAL.
-A user wants to create a new specialized AI Agent named '{$agent_name}'.
-The mission of this agent is: '{$agent_mission}'.
-
-Write a world-class, production-grade XML system prompt for this agent.
-The system prompt MUST include:
-<agent_identity>: Clear role, quiet luxury authority, and tone.
-<mission_objectives>: Specific outcomes and tasks.
-<response_style>: Ultra-fast, concise, human-like sales consultation without boring monologues.
-<guardrails>: Zero prompt leakage and strict focus on Red Sea Digital value propositions.
-
-Output ONLY the final XML system prompt without any explanations or introductory remarks.";
-
-        $generated_prompt = RedSeaAIProviderManager::generate($prompt_generator_instruction, [], [
-            'provider' => 'opencode',
-            'model'    => 'gpt-4o-mini'
-        ]);
-
-        if (empty($generated_prompt) || strlen($generated_prompt) < 50) {
-            $generated_prompt = "<agent_identity>\nYou are {$agent_name}, a specialized AI Agent at RED SEA DIGITAL.\nMission: {$agent_mission}\n</agent_identity>\n<response_style>\nBe fast, concise, professional, and consultatively persuasive.\n</response_style>";
-        }
-
-        $agent_id = sanitize_title($agent_name) . '_' . time();
-        $custom_agents = get_option('rsd_custom_agents', []);
-        if (!is_array($custom_agents)) $custom_agents = [];
-
-        $custom_agents[$agent_id] = [
-            'id'             => $agent_id,
-            'name'           => sanitize_text_field($agent_name),
-            'mission'        => sanitize_textarea_field($agent_mission),
-            'system_prompt'  => trim($generated_prompt),
-            'tools'          => (array)$assigned_tools,
-            'status'         => 'active',
-            'created_at'     => current_time('mysql'),
-            'execution_count'=> 0
-        ];
-
-        update_option('rsd_custom_agents', $custom_agents);
-        return $custom_agents[$agent_id];
-    }
-
-    public static function get_all_agents() {
-        $core_agents = [
-            'chief' => [
-                'name'        => 'Chief Orchestrator',
-                'role'        => 'Intent Routing & Task Allocation',
-                'status'      => 'active',
-                'is_core'     => true,
-                'description' => 'الموجه الرئيسي لتحليل نية العميل وتوزيع المهام بدقة وسرعة.'
-            ],
-            'rag' => [
-                'name'        => 'RAG Knowledge Agent',
-                'role'        => 'Vector Retrieval & DB Grounding',
-                'status'      => 'active',
-                'is_core'     => true,
-                'description' => 'البحث الدلالي المتجهي واستخراج معلومات النشاط بدون هلوسة.'
-            ],
-            'concierge' => [
-                'name'        => 'Frontline Sales Concierge',
-                'role'        => 'Strategic Negotiation & Sales Closing',
-                'status'      => 'active',
-                'is_core'     => true,
-                'description' => 'مسؤول المبيعات والاستشارات الفندقية المباشر والسريع.'
-            ],
-            'qa' => [
-                'name'        => 'QA & Security Guardrail',
-                'role'        => 'Prompt Protection & Sanitization',
-                'status'      => 'active',
-                'is_core'     => true,
-                'description' => 'حائط الصد الأمني لاعتراض محاولات الاختراق وتنقية المخرجات.'
-            ]
-        ];
-
-        $custom_agents = get_option('rsd_custom_agents', []);
-        if (!is_array($custom_agents)) $custom_agents = [];
-
-        return array_merge($core_agents, $custom_agents);
-    }
-}
 
 class RedSeaRAGAgent {
     public static function get_grounded_context($user_query) {
         $context_blocks = [];
 
-        if (class_exists('RSD_Knowledge_Base_Manager')) {
+        if (class_exists(KnowledgeBaseManager::class)) {
             // 1. Search Semantic Vector Store
-            $similar_chunks = RSD_Knowledge_Base_Manager::search_similar_chunks($user_query, 4);
+            $similar_chunks = KnowledgeBaseManager::search_similar_chunks($user_query, 4);
             if (!empty($similar_chunks)) {
                 $context_blocks[] = "=== KNOWLEDGE BASE GROUNDED CONTEXT ===\n" . implode("\n\n", $similar_chunks);
             }
 
             // 2. Extract Real-Time Business Catalog (Products / Tours / Hotels / Services)
-            $live_catalog = RSD_Knowledge_Base_Manager::get_live_business_catalog();
+            $live_catalog = KnowledgeBaseManager::get_live_business_catalog();
             if (!empty($live_catalog)) {
                 $context_blocks[] = $live_catalog;
             }
@@ -968,7 +66,7 @@ class RedSeaConciergeAgent {
             $extra_context = "\n\n<grounded_knowledge_base>\n" . $rag_context . "\n</grounded_knowledge_base>";
         }
 
-        $system_prompt = RedSeaAIProviderManager::build_system_prompt('', 'concierge', $custom_options) . $extra_context;
+        $system_prompt = LLMProviderManager::build_system_prompt('', 'concierge', $custom_options) . $extra_context;
 
         $provider = $custom_options['provider'] ?? get_option('rsd_ai_provider', 'gemini');
         $model    = $custom_options['model'] ?? get_option('rsd_ai_model', 'gemini-flash-latest');
@@ -979,7 +77,7 @@ class RedSeaConciergeAgent {
             'system_prompt' => $system_prompt
         ]);
 
-        $response = RedSeaAIProviderManager::generate($user_message, $history, $gen_options);
+        $response = LLMProviderManager::generate($user_message, $history, $gen_options);
 
         $execution_time = round((microtime(true) - $start_time) * 1000, 2);
         $trace['concierge_agent'] = [
@@ -994,118 +92,15 @@ class RedSeaConciergeAgent {
     }
 }
 
-class RedSeaQAAgent {
-    public static function audit_and_sanitize($raw_response, &$trace = []) {
-        $start_time = microtime(true);
-        $safety_passed = true;
-        $violations = [];
 
-        // Intercept XML delimiters & system prompt leaks
-        $leak_patterns = [
-            '/<system_identity>/i',
-            '/<security_and_prompt_guardrails>/i',
-            '/RedSeaAIProviderManager/i',
-            '/rsd_master_system_prompt/i'
-        ];
-
-        foreach ($leak_patterns as $pattern) {
-            if (preg_match($pattern, $raw_response)) {
-                $safety_passed = false;
-                $violations[] = "Potential system prompt leak intercepted.";
-                $raw_response = preg_replace($pattern, '', $raw_response);
-            }
-        }
-
-        if (class_exists('RSD_Output_Cleaner')) {
-            $clean_response = RSD_Output_Cleaner::clean($raw_response);
-        } else {
-            $clean_response = trim($raw_response);
-        }
-
-        $execution_time = round((microtime(true) - $start_time) * 1000, 2);
-        $trace['qa_agent'] = [
-            'status'        => $safety_passed ? 'passed' : 'sanitized',
-            'violations'    => $violations,
-            'execution_ms'  => $execution_time,
-            'clean_length'  => strlen($clean_response)
-        ];
-
-        return $clean_response;
-    }
-}
-
-class RedSeaChiefOrchestrator {
-    public static function classify_intent($user_message) {
-        $msg = mb_strtolower($user_message, 'UTF-8');
-
-        if (preg_match('/(حساب|وفر|عمولة|عمولات|أرباح|فلوس|نسبة|roi|calculate|saving|profit)/iu', $msg)) {
-            return 'roi_calculation';
-        }
-        if (preg_match('/(حجز|استشارة|ميعاد|تواصل|واتساب|اتصال|رقم|book|consultation|schedule)/iu', $msg)) {
-            return 'lead_booking';
-        }
-        if (preg_match('/(pms|opera|cloudbeds|hostaway|ازدواج|حجز مزدوج|تزامن|sync)/iu', $msg)) {
-            return 'pms_sync';
-        }
-        if (preg_match('/(صوت|تحدث|ميكروفون|voice|speech|listen)/iu', $msg)) {
-            return 'voice_mode';
-        }
-
-        return 'general_consultation';
-    }
-
-    public static function process_message($user_message, $history = [], $custom_options = []) {
-        $total_start = microtime(true);
-        $trace = [
-            'timestamp'  => current_time('mysql'),
-            'user_query' => mb_substr($user_message, 0, 100, 'UTF-8'),
-        ];
-
-        $intent = self::classify_intent($user_message);
-        $trace['chief_orchestrator'] = [
-            'status'            => 'routed',
-            'classified_intent' => $intent
-        ];
-
-        $rag_context = RedSeaRAGAgent::get_grounded_context($user_message);
-        $trace['rag_agent'] = [
-            'status'        => !empty($rag_context) ? 'grounded' : 'no_chunks',
-            'chunks_found'  => !empty($rag_context) ? 1 : 0
-        ];
-
-        $raw_response = RedSeaConciergeAgent::generate_response($user_message, $rag_context, $history, $custom_options, $trace);
-        $final_response = RedSeaQAAgent::audit_and_sanitize($raw_response, $trace);
-
-        $total_ms = round((microtime(true) - $total_start) * 1000, 2);
-        $trace['total_ms'] = $total_ms;
-
-        self::log_orchestration_trace($trace);
-
-        return [
-            'reply'  => $final_response,
-            'intent' => $intent,
-            'trace'  => $trace
-        ];
-    }
-
-    public static function log_orchestration_trace($trace) {
-        $recent_traces = get_option('rsd_orchestration_logs', []);
-        if (!is_array($recent_traces)) $recent_traces = [];
-        array_unshift($recent_traces, $trace);
-        if (count($recent_traces) > 50) {
-            $recent_traces = array_slice($recent_traces, 0, 50);
-        }
-        update_option('rsd_orchestration_logs', $recent_traces);
-    }
-}
 
 class RedSeaAgentFactory {
     public static function create_custom_agent($agent_name, $agent_mission, $assigned_tools = ['rag_search', 'sales_calculator']) {
-        return RedSeaAIProviderManager::create_custom_agent($agent_name, $agent_mission, $assigned_tools);
+        return LLMProviderManager::create_custom_agent($agent_name, $agent_mission, $assigned_tools);
     }
 
     public static function get_all_agents() {
-        return RedSeaAIProviderManager::get_all_agents();
+        return LLMProviderManager::get_all_agents();
     }
 }
 
@@ -1114,127 +109,7 @@ class RedSeaAgentFactory {
  * RED SEA DIGITAL — AUTONOMOUS OUTBOUND MULTI-AGENT LEAD RADAR ENGINE
  * =========================================================================
  */
-class RedSeaLeadRadarEngine {
 
-    public static function init_leads_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_leads';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-            id BIGINT(20) NOT NULL AUTO_INCREMENT,
-            company_name VARCHAR(255) NOT NULL,
-            target_industry VARCHAR(100) NOT NULL,
-            contact_phone VARCHAR(50) NOT NULL,
-            website_url VARCHAR(255) DEFAULT '',
-            gap_analysis LONGTEXT DEFAULT NULL,
-            tailored_pitch TEXT DEFAULT NULL,
-            pipeline_status VARCHAR(50) DEFAULT 'pending_review',
-            created_at DATETIME NOT NULL,
-            PRIMARY KEY (id),
-            KEY pipeline_status (pipeline_status)
-        ) {$charset_collate};";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-    }
-
-    public static function run_discovery_cycle($niche = 'resorts_redsea', $city = 'الغردقة وشرم الشيخ') {
-        global $wpdb;
-        self::init_leads_table();
-        $table_name = $wpdb->prefix . 'rsd_leads';
-
-        // 1. Multi-Agent Synthesis via RedSeaAIProviderManager
-        $prompt = "You are the Chief Sales Prospecting & Intelligence Agent for RED SEA DIGITAL.
-Target Niche: {$niche} in {$city}.
-Generate 3 realistic, high-value prospective Egyptian businesses (e.g. boutique resorts, diving clubs, luxury tour operators, or medical tourism clinics) that currently suffer from heavy OTA commission leakages (15-30%) or lack a direct WhatsApp AI booking engine.
-
-For each prospect, return a valid JSON array of objects with the exact schema:
-[
-  {
-    \"company_name\": \"اسم المنشأة أو المنتجع\",
-    \"target_industry\": \"الفنادق والمنتجعات الفاخرة\",
-    \"contact_phone\": \"2010XXXXXXXX\",
-    \"website_url\": \"https://example.com\",
-    \"strengths\": \"موقع ممتاز وتقييمات عالية على بوكينج وتريب أدفايزر\",
-    \"critical_gaps\": \"الاعتماد الكامل بنسبة 80% على منصات OTA، عدم وجود محرك حجز مباشر بدون عمولة، غياب الرد الآلي بالواتساب\",
-    \"revenue_loss_estimate\": \"ما بين 20,000 إلى 45,000 دولار سنوياً عمولات مهدرة\",
-    \"tailored_pitch\": \"مساء الخير يا فندم، أنا م. عمرو أحمد من Red Sea Digital... [رسالة مخصصة باللهجة المصرية الراقية والموجزة تركز على استرداد 20% عمولات وتوفير محرك حجز مباشر فاخر مع دعوة لمكالمة 15 دقيقة]\"
-  }
-]
-Return ONLY pure JSON array without markdown fences.";
-
-        $raw_response = RedSeaAIProviderManager::generate($prompt, [], [
-            'temperature' => 0.7
-        ]);
-
-        $clean_json = trim(preg_replace('/```json|```/', '', $raw_response));
-        $prospects = json_decode($clean_json, true);
-
-        if (!is_array($prospects) || empty($prospects)) {
-            // Fallback curated high-yield Red Sea prospects if AI format varies
-            $prospects = [
-                [
-                    'company_name'          => 'منتجع المرجان الأزرق لاجون (Blue Lagoon Boutique Resort)',
-                    'target_industry'       => 'الضيافة والمنتجعات الفاخرة',
-                    'contact_phone'         => '201099887766',
-                    'website_url'           => 'https://bluelagoon-redsea.com',
-                    'strengths'             => 'إشغال سياحي موسمي 75% وتقييم 8.9 على Booking.com',
-                    'critical_gaps'         => '82% من الحجوزات تأتي عبر Booking و Expedia مع هدر 18% عمولات، وبطء الموقع على الموبايل',
-                    'revenue_loss_estimate' => '32,000$ سنوياً عمولات وسطاء',
-                    'tailored_pitch'        => "مساء الخير يا فندم، أتمنى لحضرتك يوماً طيباً. أنا م. عمرو أحمد المؤسس لـ Red Sea Digital. كنا بنراجع حركة الحجوزات لمنتجعات البحر الأحمر، ولفت انتباهنا التقييم الرائع لمنتجعكم (8.9). لاحظنا أن أكثر من 80% من الحجوزات بتمر عبر بوكينج بعمولة 18%، بينما نقدر نبني لحضرتكم محرك حجز مباشر فاخر بالذكاء الاصطناعي يسترد أرباحكم الصافية ويزيد الحجوزات المباشرة 40%. يسعدني نتشارك مكالمة سريعة مدتها 15 دقيقة نستعرض فيها خطة الاسترداد بالأرقام."
-                ],
-                [
-                    'company_name'          => 'نادي أعماق البحر الأحمر الدولي للغوص (Deep Blue Divers Hub)',
-                    'target_industry'       => 'مراكز الغوص والرحلات البحرية',
-                    'contact_phone'         => '201055443322',
-                    'website_url'           => 'https://deepbluediving-sharm.com',
-                    'strengths'             => 'سمعة دولية ورحلات سفاري بحرية منتظمة لجزيرة تيران ورأس محمد',
-                    'critical_gaps'         => 'لا يوجد نظام دفع وتأكيد فوري للرحلات، وتأخر الرد على استفسارات الواتساب الأوروبية لأكثر من 6 ساعات',
-                    'revenue_loss_estimate' => '18,500$ عمولات وسطاء وباقات مهدرة',
-                    'tailored_pitch'        => "أهلاً بحضرتك يا فندم، أنا م. عمرو أحمد من Red Sea Digital. بنحييكم على التقييمات الممتازة لرحلات السفاري والغوص. لاحظنا أن حجوزات السياح الأجانب بتواجه تأخير في التأكيد والدفع الفوري على الواتساب، وده بيقلل التحويل المباشر. طورنا نظام ذكاء اصطناعي لوكلاء الغوص يربط الحجز بالدفع الفوري ويجيب السائح بلغات متعددة خلال ثوانٍ 24/7. هل يناسب حضرتك نستعرض ديمو سريع للمنظومة هذا الأسبوع؟"
-                ]
-            ];
-        }
-
-        $inserted_count = 0;
-        foreach ($prospects as $p) {
-            $company = sanitize_text_field($p['company_name'] ?? 'شركة جديدة');
-            $industry = sanitize_text_field($p['target_industry'] ?? 'سياحة وضيافة');
-            $phone = preg_replace('/[^0-9]/', '', $p['contact_phone'] ?? '');
-            $url = esc_url_raw($p['website_url'] ?? '');
-            
-            $gap_dossier = [
-                'strengths'             => sanitize_text_field($p['strengths'] ?? ''),
-                'critical_gaps'         => sanitize_text_field($p['critical_gaps'] ?? ''),
-                'revenue_loss_estimate' => sanitize_text_field($p['revenue_loss_estimate'] ?? '')
-            ];
-
-            $pitch = sanitize_textarea_field($p['tailored_pitch'] ?? '');
-
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE company_name = %s LIMIT 1", $company));
-            if (!$exists) {
-                $wpdb->insert($table_name, [
-                    'company_name'    => $company,
-                    'target_industry' => $industry,
-                    'contact_phone'   => $phone,
-                    'website_url'     => $url,
-                    'gap_analysis'    => json_encode($gap_dossier, JSON_UNESCAPED_UNICODE),
-                    'tailored_pitch'  => $pitch,
-                    'pipeline_status' => 'pending_review',
-                    'created_at'      => current_time('mysql')
-                ]);
-                $inserted_count++;
-            }
-        }
-
-        return [
-            'status'         => 'success',
-            'inserted_count' => $inserted_count,
-            'total_found'    => count($prospects)
-        ];
-    }
-}
 
 class RedSeaAIEngine {
 /**
@@ -1492,7 +367,7 @@ Keep replies concise (2-3 sentences), highly professional, polite, and persuasiv
 Guide the client on eliminating OTA commissions (15-30%) and building direct booking engines. 
 Provide clear answers and invite them to schedule a 15-min strategy call.";
 
-            $raw_reply = RedSeaAIProviderManager::generate($clean_text, [], [
+            $raw_reply = LLMProviderManager::generate($clean_text, [], [
                 'system_prompt' => $system_prompt
             ]);
 
@@ -1809,7 +684,7 @@ public function handle_ajax_wa_disconnect() {
         $niche = sanitize_text_field($_POST['niche'] ?? 'resorts_redsea');
         $city  = sanitize_text_field($_POST['city'] ?? 'الغردقة وشرم الشيخ');
 
-        $result = RedSeaLeadRadarEngine::run_discovery_cycle($niche, $city);
+        $result = LeadRadarEngine::run_discovery_cycle($niche, $city);
         wp_send_json_success($result);
     }
 
@@ -2636,7 +1511,7 @@ public function handle_ajax_wa_disconnect() {
 
         $wa_enabled = get_option('rsd_wa_autoresponder_enabled', '1');
 
-        $res = RedSeaAIProviderManager::generate($message_text);
+        $res = LLMProviderManager::generate($message_text);
         $reply_text = $res['reply'] ?? '';
 
         $endpoint = get_option('rsd_wa_api_endpoint', '');
@@ -2851,7 +1726,7 @@ public function handle_ajax_wa_disconnect() {
         $custom_options['detected_lang'] = $detected_lang;
 
         // Route through Hierarchical Multi-Agent Orchestrator
-        $orch_res = RedSeaChiefOrchestrator::process_message($message, is_array($history) ? $history : [], $custom_options);
+        $orch_res = ChiefOrchestrator::process_message($message, is_array($history) ? $history : [], $custom_options);
         
         $reply_text = '';
         if (is_array($orch_res) && !empty($orch_res['reply'])) {
@@ -2859,7 +1734,7 @@ public function handle_ajax_wa_disconnect() {
         } elseif (is_string($orch_res) && !empty($orch_res)) {
             $reply_text = $orch_res;
         } else {
-            $raw_res = RedSeaAIProviderManager::generate($message, is_array($history) ? $history : [], $custom_options);
+            $raw_res = LLMProviderManager::generate($message, is_array($history) ? $history : [], $custom_options);
             $reply_text = is_string($raw_res) ? $raw_res : ($raw_res['reply'] ?? '');
         }
 
@@ -9873,8 +8748,8 @@ public function handle_ajax_wa_disconnect() {
         global $wpdb;
 
         // Ensure Vector Store & Leads tables exist
-        RSD_Knowledge_Base_Manager::init_vector_store_table();
-        RedSeaLeadRadarEngine::init_leads_table();
+        KnowledgeBaseManager::init_vector_store_table();
+        LeadRadarEngine::init_leads_table();
 
         // Handle POST submissions
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -9925,7 +8800,7 @@ public function handle_ajax_wa_disconnect() {
                 $file_name = sanitize_text_field($_POST['rsd_edit_file_name'] ?? '');
                 $content   = wp_unslash($_POST['rsd_edit_file_text'] ?? '');
                 if (!empty($file_name)) {
-                    RSD_Knowledge_Base_Manager::save_file_content($file_name, $content);
+                    KnowledgeBaseManager::save_file_content($file_name, $content);
                     echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم حفظ التعديلات على الملف [' . esc_html($file_name) . '] وإعادة فهرسته دلالياً بنجاح.</strong></p></div>';
                 }
             }
@@ -9934,7 +8809,7 @@ public function handle_ajax_wa_disconnect() {
             if (isset($_POST['rsd_delete_file'])) {
                 $file_name = sanitize_text_field($_POST['rsd_delete_file_name'] ?? '');
                 if (!empty($file_name)) {
-                    RSD_Knowledge_Base_Manager::delete_file($file_name);
+                    KnowledgeBaseManager::delete_file($file_name);
                     echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #EF4444;"><p><strong>تم حذف الملف ومسح مقاطعه من قاعدة المعرفة بنجاح.</strong></p></div>';
                 }
             }
@@ -9945,7 +8820,7 @@ public function handle_ajax_wa_disconnect() {
                 $ext = strtolower(pathinfo($uploaded['name'], PATHINFO_EXTENSION));
                 if (in_array($ext, ['md', 'txt', 'json'])) {
                     $content = file_get_contents($uploaded['tmp_name']);
-                    RSD_Knowledge_Base_Manager::save_file_content($uploaded['name'], $content);
+                    KnowledgeBaseManager::save_file_content($uploaded['name'], $content);
                     echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم رفع الملف [' . esc_html($uploaded['name']) . '] وفهرسته في قاعدة المعرفة بنجاح.</strong></p></div>';
                 } else {
                     echo '<div class="notice notice-error is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #EF4444;"><p><strong>يرجى رفع ملفات بصيغة .md أو .txt أو .json فقط.</strong></p></div>';
@@ -9996,7 +8871,7 @@ public function handle_ajax_wa_disconnect() {
 
         $active_tab   = sanitize_text_field($_GET['tab'] ?? 'overview');
         $edit_file    = sanitize_text_field($_GET['edit_file'] ?? '');
-        $kb_files     = RSD_Knowledge_Base_Manager::list_all_kb_files();
+        $kb_files     = KnowledgeBaseManager::list_all_kb_files();
         $total_leads  = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}rsd_bookings");
         $total_chunks = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}rsd_vector_store");
         $recent_logs  = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}rsd_bookings ORDER BY id DESC LIMIT 50", ARRAY_A);
@@ -10675,7 +9550,7 @@ public function handle_ajax_wa_disconnect() {
 
                             <!-- FILE EDIT VIEW IF SELECTED -->
                             <?php if (!empty($edit_file)): ?>
-                                <?php $file_text = RSD_Knowledge_Base_Manager::get_file_content($edit_file); ?>
+                                <?php $file_text = KnowledgeBaseManager::get_file_content($edit_file); ?>
                                 <div style="background:#F0F9FF;border:1px solid #BFDBFE;border-radius:16px;padding:20px;margin-bottom:24px;">
                                     <h4 style="margin:0 0 12px 0;color:#0369A1;font-weight:800;">✏️ محرر ملف المعرفة: <?php echo esc_html($edit_file); ?></h4>
                                     <form method="POST">
