@@ -10294,7 +10294,7 @@ public function handle_ajax_wa_disconnect() {
             .rsd-badge-danger  { background: #FEE2E2 !important; color: #B91C1C !important; border: 1px solid #FECACA !important; }
 
             
-            /* Card & Container Setup */
+            /* Card Setup */
             .rsd-crm-card {
                 background: #FFFFFF !important;
                 border: 1px solid #E2E8F0 !important;
@@ -10302,61 +10302,60 @@ public function handle_ajax_wa_disconnect() {
                 padding: 24px !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
-                overflow: hidden !important;
             }
 
             .rsd-crm-table-container {
                 width: 100% !important;
-                overflow: hidden !important;
+                overflow-x: auto !important;
                 margin-top: 16px !important;
             }
 
-            /* Master Table Layout */
+            /* Master Table */
             table.rsd-crm-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: fixed !important;
+                table-layout: auto !important;
                 direction: rtl !important;
             }
 
-            /* Base Cells */
             table.rsd-crm-table th, 
             table.rsd-crm-table td {
-                padding: 12px 10px !important;
+                padding: 10px 8px !important;
                 vertical-align: middle !important;
                 border-bottom: 1px solid #F1F5F9 !important;
-                font-size: 13px !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
+                font-size: 12px !important;
                 white-space: nowrap !important;
+                text-align: right !important;
             }
 
-            /* Column Width Distribution for all 6 columns in RTL order:
-               Col 1: # (ID)
-               Col 2: Customer Name
-               Col 3: Phone
-               Col 4: Service Type
-               Col 5: Message Details
-               Col 6: Date & Time
-            */
-            table.rsd-crm-table th:nth-child(1), table.rsd-crm-table td:nth-child(1) { width: 6% !important; text-align: center !important; }
-            table.rsd-crm-table th:nth-child(2), table.rsd-crm-table td:nth-child(2) { width: 18% !important; text-align: right !important; font-weight: 600 !important; }
-            table.rsd-crm-table th:nth-child(3), table.rsd-crm-table td:nth-child(3) { width: 17% !important; text-align: center !important; }
-            table.rsd-crm-table th:nth-child(4), table.rsd-crm-table td:nth-child(4) { width: 17% !important; text-align: center !important; }
-            table.rsd-crm-table th:nth-child(5), table.rsd-crm-table td:nth-child(5) { width: 25% !important; text-align: right !important; color: #475569 !important; }
-            table.rsd-crm-table th:nth-child(6), table.rsd-crm-table td:nth-child(6) { width: 17% !important; text-align: left !important; color: #94A3B8 !important; font-size: 12px !important; }
+            /* Specific Alignment */
+            table.rsd-crm-table th:first-child, 
+            table.rsd-crm-table td:first-child {
+                text-align: center !important;
+                width: 40px !important;
+            }
 
-            /* Phone Badge Polish */
+            table.rsd-crm-table td.date-col, 
+            table.rsd-crm-table th.date-col {
+                color: #64748B !important;
+                font-size: 11px !important;
+                direction: ltr !important;
+                text-align: left !important;
+            }
+
+            /* Phone Badge Fix */
             .rsd-phone-badge {
                 direction: ltr !important;
-                display: inline-block !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 4px !important;
                 font-family: monospace !important;
                 font-size: 11px !important;
                 background: #DCFCE7 !important;
                 color: #15803D !important;
-                padding: 3px 8px !important;
+                padding: 2px 8px !important;
                 border-radius: 12px !important;
-                line-height: 1.4 !important;
             }
 
             /* 6. TABLES */
@@ -11051,7 +11050,7 @@ public function handle_ajax_wa_disconnect() {
 
                         </div>
 
-                                                                        <!-- LEADS CRM TABLE -->
+                                                                                                <!-- LEADS CRM TABLE -->
                         <div class="rsd-card rsd-crm-card">
                             <div class="rsd-card-header" style="margin-bottom:0;padding-bottom:12px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
@@ -11073,7 +11072,7 @@ public function handle_ajax_wa_disconnect() {
                                             <th>رقم الواتساب</th>
                                             <th>نوع الخدمة</th>
                                             <th>تفاصيل المحادثة</th>
-                                            <th>التاريخ</th>
+                                            <th class="date-col">التاريخ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -11087,7 +11086,7 @@ public function handle_ajax_wa_disconnect() {
                                                 ?>
                                                 <tr>
                                                     <td>#<?php echo esc_html($log['id']); ?></td>
-                                                    <td><?php echo esc_html($c_name); ?></td>
+                                                    <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name); ?></td>
                                                     <td>
                                                         <?php if (!empty($c_phone)): ?>
                                                             <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $c_phone)); ?>" target="_blank" class="rsd-phone-badge">
@@ -11099,7 +11098,7 @@ public function handle_ajax_wa_disconnect() {
                                                     </td>
                                                     <td><span class="rsd-badge rsd-badge-info"><?php echo esc_html($c_service); ?></span></td>
                                                     <td><?php echo esc_html($c_details); ?></td>
-                                                    <td><?php echo esc_html($log['created_at']); ?></td>
+                                                    <td class="date-col"><?php echo esc_html($log['created_at']); ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
