@@ -10293,6 +10293,69 @@ public function handle_ajax_wa_disconnect() {
             .rsd-badge-purple  { background: #F3E8FF !important; color: #7E22CE !important; border: 1px solid #E9D5FF !important; }
             .rsd-badge-danger  { background: #FEE2E2 !important; color: #B91C1C !important; border: 1px solid #FECACA !important; }
 
+            
+            /* 1. Ensure the parent card encloses the table and provides inner breathing room */
+            .rsd-crm-card {
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                border-radius: 16px !important;
+                padding: 24px !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                overflow: hidden !important;
+            }
+
+            /* 2. Responsive wrapper allowing smooth full-width expansion */
+            .rsd-crm-table-container {
+                width: 100% !important;
+                overflow-x: auto !important;
+                margin-top: 16px !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 3. Table styling & column widths */
+            table.rsd-crm-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: auto !important;
+                direction: rtl !important;
+            }
+
+            table.rsd-crm-table th, 
+            table.rsd-crm-table td {
+                padding: 14px 12px !important;
+                vertical-align: middle !important;
+                border-bottom: 1px solid #F1F5F9 !important;
+                white-space: nowrap !important;
+            }
+
+            /* 4. Fix Date Column explicitly */
+            table.rsd-crm-table th:first-child,
+            table.rsd-crm-table td:first-child {
+                min-width: 150px !important;
+                text-align: right !important;
+                padding-right: 18px !important;
+                color: #64748B !important;
+                font-size: 13px !important;
+            }
+
+            /* 5. Fix Phone badge alignment */
+            .rsd-phone-badge {
+                direction: ltr !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                font-family: monospace !important;
+                font-size: 12px !important;
+                background: #DCFCE7 !important;
+                color: #15803D !important;
+                padding: 4px 10px !important;
+                border-radius: 20px !important;
+                text-decoration: none !important;
+            }
+
             /* 6. TABLES */
             .rsd-table {
                 width: 100% !important;
@@ -10986,8 +11049,8 @@ public function handle_ajax_wa_disconnect() {
                         </div>
 
                         <!-- LEADS CRM TABLE -->
-                        <div class="rsd-card">
-                            <div class="rsd-card-header">
+                        <div class="rsd-card rsd-crm-card">
+                            <div class="rsd-card-header" style="margin-bottom:0;padding-bottom:12px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     <h3 class="rsd-card-title">👥 سجل جهات الاتصال والحجوزات المسجلة</h3>
                                     <span class="rsd-badge rsd-badge-success"><?php echo intval($total_leads); ?> عميل مسجل</span>
@@ -10998,46 +11061,48 @@ public function handle_ajax_wa_disconnect() {
                                 </div>
                             </div>
 
-                            <table class="rsd-table" id="rsdCrmTable">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>اسم العميل</th>
-                                        <th>رقم الواتساب</th>
-                                        <th>نوع الخدمة</th>
-                                        <th>تفاصيل المحادثة</th>
-                                        <th>التاريخ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($recent_logs)): ?>
-                                        <?php foreach ($recent_logs as $log): ?>
-                                            <?php
-                                            $c_name = $log['customer_name'] ?? ($log['name'] ?? 'عميل واتساب');
-                                            $c_phone = $log['customer_phone'] ?? ($log['phone'] ?? '');
-                                            $c_service = $log['service_type'] ?? ($log['service'] ?? 'استفسار مباشر');
-                                            $c_details = $log['booking_details'] ?? ($log['details'] ?? '-');
-                                            ?>
-                                            <tr>
-                                                <td>#<?php echo esc_html($log['id']); ?></td>
-                                                <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name); ?></td>
-                                                <td>
-                                                    <?php if (!empty($c_phone)): ?>
-                                                        <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $c_phone)); ?>" target="_blank" class="rsd-badge rsd-badge-success" style="text-decoration:none;direction:ltr;display:inline-block;">
-                                                            💬 +<?php echo esc_html($c_phone); ?>
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="rsd-badge">غير مسجل</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><span class="rsd-badge rsd-badge-info"><?php echo esc_html($c_service); ?></span></td>
-                                                <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;"><?php echo esc_html($c_details); ?></td>
-                                                <td style="color:#94A3B8;font-size:0.82rem;white-space:nowrap;"><?php echo esc_html($log['created_at']); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                            <div class="rsd-crm-table-container">
+                                <table class="rsd-table rsd-crm-table" id="rsdCrmTable">
+                                    <thead>
+                                        <tr>
+                                            <th>التاريخ</th>
+                                            <th>#</th>
+                                            <th>اسم العميل</th>
+                                            <th>رقم الواتساب</th>
+                                            <th>نوع الخدمة</th>
+                                            <th>تفاصيل المحادثة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($recent_logs)): ?>
+                                            <?php foreach ($recent_logs as $log): ?>
+                                                <?php
+                                                $c_name = $log['customer_name'] ?? ($log['name'] ?? 'عميل واتساب');
+                                                $c_phone = $log['customer_phone'] ?? ($log['phone'] ?? '');
+                                                $c_service = $log['service_type'] ?? ($log['service'] ?? 'استفسار مباشر');
+                                                $c_details = $log['booking_details'] ?? ($log['details'] ?? '-');
+                                                ?>
+                                                <tr>
+                                                    <td><?php echo esc_html($log['created_at']); ?></td>
+                                                    <td style="font-weight:700;">#<?php echo esc_html($log['id']); ?></td>
+                                                    <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name); ?></td>
+                                                    <td>
+                                                        <?php if (!empty($c_phone)): ?>
+                                                            <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $c_phone)); ?>" target="_blank" class="rsd-phone-badge">
+                                                                💬 +<?php echo esc_html($c_phone); ?>
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="rsd-badge">غير مسجل</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td><span class="rsd-badge rsd-badge-info"><?php echo esc_html($c_service); ?></span></td>
+                                                    <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;"><?php echo esc_html($c_details); ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <script>
                             function rsdFilterCrmTable() {
