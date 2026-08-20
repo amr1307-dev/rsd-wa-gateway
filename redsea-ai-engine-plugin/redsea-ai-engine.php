@@ -9872,9 +9872,9 @@ public function handle_ajax_wa_disconnect() {
     public function render_crm_page() {
         global $wpdb;
 
-        // Ensure Vector Store table exists
+        // Ensure Vector Store & Leads tables exist
         RSD_Knowledge_Base_Manager::init_vector_store_table();
-        $vec_table = $wpdb->prefix . 'rsd_vector_store';
+        RedSeaLeadRadarEngine::init_leads_table();
 
         // Handle POST submissions
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -9883,8 +9883,7 @@ public function handle_ajax_wa_disconnect() {
 
             $tab = sanitize_text_field($_POST['active_tab'] ?? 'overview');
 
-            // 1. Create Dynamic Custom Agent
-                        // 3. Save WhatsApp & Gateway Settings
+            // 1. WhatsApp & Gateway Settings
             if (isset($_POST['rsd_save_settings']) || isset($_POST['rsd_whatsapp_api_url'])) {
                 if (isset($_POST['rsd_whatsapp_phone'])) {
                     update_option('rsd_whatsapp_phone', sanitize_text_field($_POST['rsd_whatsapp_phone']));
@@ -9898,7 +9897,7 @@ public function handle_ajax_wa_disconnect() {
                 if (isset($_POST['rsd_whatsapp_api_key'])) {
                     update_option('rsd_whatsapp_api_key', sanitize_text_field($_POST['rsd_whatsapp_api_key']));
                 }
-                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم حفظ إعدادات خادم البوابة والواتساب بنجاح! 💾✨</strong></p></div>';
+                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;box-shadow:0 4px 12px rgba(0,0,0,0.03);"><p><strong>تم حفظ إعدادات خادم البوابة والواتساب بنجاح! 💾✨</strong></p></div>';
             }
 
             if (isset($_POST['rsd_create_custom_agent'])) {
@@ -9906,7 +9905,7 @@ public function handle_ajax_wa_disconnect() {
                 $agent_mission = sanitize_textarea_field($_POST['rsd_new_agent_mission'] ?? '');
                 if (!empty($agent_name) && !empty($agent_mission)) {
                     $new_agent = RedSeaAgentFactory::create_custom_agent($agent_name, $agent_mission);
-                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم إنشاء وتجهيز الوكيل الذكي [' . esc_html($agent_name) . '] وصياغة السيستم برومبت الخاص به بنجاح.</strong></p></div>';
+                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم إنشاء وتجهيز الوكيل الذكي [' . esc_html($agent_name) . '] وصياغة السيستم برومبت الخاص به بنجاح.</strong></p></div>';
                 }
             }
 
@@ -9917,7 +9916,7 @@ public function handle_ajax_wa_disconnect() {
                 if (isset($custom_agents[$del_id])) {
                     unset($custom_agents[$del_id]);
                     update_option('rsd_custom_agents', $custom_agents);
-                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم حذف الوكيل بنجاح.</strong></p></div>';
+                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #EF4444;"><p><strong>تم حذف الوكيل بنجاح.</strong></p></div>';
                 }
             }
 
@@ -9927,7 +9926,7 @@ public function handle_ajax_wa_disconnect() {
                 $content   = wp_unslash($_POST['rsd_edit_file_text'] ?? '');
                 if (!empty($file_name)) {
                     RSD_Knowledge_Base_Manager::save_file_content($file_name, $content);
-                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم حفظ التعديلات على الملف [' . esc_html($file_name) . '] وإعادة فهرسته دلالياً بنجاح.</strong></p></div>';
+                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم حفظ التعديلات على الملف [' . esc_html($file_name) . '] وإعادة فهرسته دلالياً بنجاح.</strong></p></div>';
                 }
             }
 
@@ -9936,7 +9935,7 @@ public function handle_ajax_wa_disconnect() {
                 $file_name = sanitize_text_field($_POST['rsd_delete_file_name'] ?? '');
                 if (!empty($file_name)) {
                     RSD_Knowledge_Base_Manager::delete_file($file_name);
-                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم حذف الملف ومسح مقاطعه من قاعدة المعرفة بنجاح.</strong></p></div>';
+                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #EF4444;"><p><strong>تم حذف الملف ومسح مقاطعه من قاعدة المعرفة بنجاح.</strong></p></div>';
                 }
             }
 
@@ -9947,9 +9946,9 @@ public function handle_ajax_wa_disconnect() {
                 if (in_array($ext, ['md', 'txt', 'json'])) {
                     $content = file_get_contents($uploaded['tmp_name']);
                     RSD_Knowledge_Base_Manager::save_file_content($uploaded['name'], $content);
-                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم رفع الملف [' . esc_html($uploaded['name']) . '] وفهرسته في قاعدة المعرفة بنجاح.</strong></p></div>';
+                    echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم رفع الملف [' . esc_html($uploaded['name']) . '] وفهرسته في قاعدة المعرفة بنجاح.</strong></p></div>';
                 } else {
-                    echo '<div class="notice notice-error is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>يرجى رفع ملفات بصيغة .md أو .txt أو .json فقط.</strong></p></div>';
+                    echo '<div class="notice notice-error is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #EF4444;"><p><strong>يرجى رفع ملفات بصيغة .md أو .txt أو .json فقط.</strong></p></div>';
                 }
             }
 
@@ -9991,14 +9990,7 @@ public function handle_ajax_wa_disconnect() {
                     update_option('rsd_whatsapp_phone_number_id', sanitize_text_field($_POST['rsd_whatsapp_phone_number_id'] ?? ''));
                     update_option('rsd_whatsapp_waba_id', sanitize_text_field($_POST['rsd_whatsapp_waba_id'] ?? ''));
                 }
-
-                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم حفظ وتحديث الإعدادات بنجاح.</strong></p></div>';
-            }
-
-            // 7. Reindex KB
-            if (isset($_POST['rsd_reindex_kb'])) {
-                $count = RSD_Knowledge_Base_Manager::reindex_kb_files();
-                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:8px;"><p><strong>تم إعادة الفهرسة وتحديث ' . intval($count) . ' مقطع دلالي في قاعدة المعرفة.</strong></p></div>';
+                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم حفظ الإعدادات بنجاح. ✨</strong></p></div>';
             }
         }
 
@@ -10013,2163 +10005,1258 @@ public function handle_ajax_wa_disconnect() {
         $all_agents   = RedSeaAgentFactory::get_all_agents();
         ?>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
-            .rsd-saas-layout {
-                font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif !important;
-                display: flex !important;
-                gap: 24px !important;
+            /* TASKHUB CLEAN ENTERPRISE THEME SYSTEM TOKENS */
+            .rsd-taskhub-wrap {
+                font-family: 'Cairo', 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif !important;
+                color: #0F172A !important;
+                background: #F8FAFC !important;
                 margin: 20px 20px 20px 0 !important;
                 direction: rtl !important;
-            }
-            .rsd-saas-sidebar {
-                width: 270px !important;
-                flex-shrink: 0 !important;
-                background: #090D16 !important;
-                border: 1px solid rgba(255, 255, 255, 0.12) !important;
-                border-radius: 20px !important;
-                padding: 22px 14px !important;
                 box-sizing: border-box !important;
-                color: #FFFFFF !important;
-                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3) !important;
-            }
-            .rsd-saas-content { flex: 1 !important; min-width: 0 !important; }
-            .rsd-sidebar-header {
-                padding: 0 10px 18px 10px !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-                margin-bottom: 14px !important;
-            }
-            .rsd-sidebar-title {
-                font-size: 1.1rem !important;
-                font-weight: 800 !important;
-                color: #FFFFFF !important;
-                margin: 0 0 4px 0 !important;
-                letter-spacing: 0.04em !important;
-            }
-            .rsd-sidebar-sub { font-size: 0.74rem !important; color: #64748B !important; margin: 0 !important; }
-            .rsd-nav-group-label {
-                font-size: 0.68rem !important;
-                font-weight: 800 !important;
-                color: #475569 !important;
-                text-transform: uppercase !important;
-                letter-spacing: 0.08em !important;
-                padding: 14px 10px 6px 10px !important;
-            }
-            .rsd-sidebar-link {
-                display: block !important;
-                padding: 11px 14px !important;
-                border-radius: 12px !important;
-                color: #94A3B8 !important;
-                text-decoration: none !important;
-                font-size: 0.88rem !important;
-                font-weight: 700 !important;
-                transition: all 0.2s ease !important;
-                margin-bottom: 4px !important;
-            }
-            .rsd-sidebar-link:hover {
-                background: rgba(255, 255, 255, 0.06) !important;
-                color: #FFFFFF !important;
-            }
-            .rsd-sidebar-link.active {
-                background: linear-gradient(135deg, rgba(37, 99, 235, 0.35) 0%, rgba(56, 189, 248, 0.2) 100%) !important;
-                border: 1px solid rgba(56, 189, 248, 0.4) !important;
-                color: #38BDF8 !important;
             }
 
-            /* Cards */
+            .rsd-taskhub-layout {
+                display: flex !important;
+                gap: 24px !important;
+                align-items: flex-start !important;
+            }
+
+            /* CLEAN FLOATING WHITE SIDEBAR (TASKHUB STYLE) */
+            .rsd-taskhub-sidebar {
+                width: 280px !important;
+                flex-shrink: 0 !important;
+                background: #FFFFFF !important;
+                border: 1px solid #E2E8F0 !important;
+                border-radius: 18px !important;
+                padding: 20px 14px !important;
+                box-sizing: border-box !important;
+                box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03), 0 2px 6px -1px rgba(15, 23, 42, 0.02) !important;
+            }
+
+            .rsd-taskhub-content {
+                flex: 1 !important;
+                min-width: 0 !important;
+            }
+
+            .rsd-sidebar-header {
+                padding: 4px 10px 18px 10px !important;
+                border-bottom: 1px solid #F1F5F9 !important;
+                margin-bottom: 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
+
+            .rsd-logo-badge {
+                width: 40px !important;
+                height: 40px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #FFFFFF !important;
+                font-weight: 900 !important;
+                font-size: 1.1rem !important;
+                box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25) !important;
+            }
+
+            .rsd-sidebar-title {
+                font-size: 1.05rem !important;
+                font-weight: 800 !important;
+                color: #0F172A !important;
+                margin: 0 !important;
+                line-height: 1.2 !important;
+            }
+
+            .rsd-sidebar-sub {
+                font-size: 0.76rem !important;
+                color: #64748B !important;
+                margin: 2px 0 0 0 !important;
+                font-weight: 600 !important;
+            }
+
+            .rsd-nav-group-label {
+                font-size: 0.7rem !important;
+                font-weight: 800 !important;
+                color: #94A3B8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.06em !important;
+                padding: 14px 10px 6px 10px !important;
+            }
+
+            /* TASKHUB CLEAN NAVIGATION LINK */
+            .rsd-sidebar-link {
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                padding: 10px 14px !important;
+                border-radius: 12px !important;
+                color: #475569 !important;
+                text-decoration: none !important;
+                font-size: 0.88rem !important;
+                font-weight: 600 !important;
+                transition: all 0.18s ease-in-out !important;
+                margin-bottom: 4px !important;
+                border: 1px solid transparent !important;
+            }
+
+            .rsd-sidebar-link:hover {
+                background: #F8FAFC !important;
+                color: #0F172A !important;
+            }
+
+            .rsd-sidebar-link.active {
+                background: #EFF6FF !important;
+                color: #2563EB !important;
+                border-color: #BFDBFE !important;
+                font-weight: 800 !important;
+                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08) !important;
+            }
+
+            .rsd-sidebar-link .rsd-nav-icon {
+                font-size: 1.05rem !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            /* TASKHUB CLEAN WHITE CARDS */
             .rsd-card {
                 background: #FFFFFF !important;
                 border: 1px solid #E2E8F0 !important;
                 border-radius: 18px !important;
                 padding: 24px !important;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+                box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.02) !important;
                 margin-bottom: 24px !important;
             }
+
             .rsd-card-header {
                 display: flex !important;
                 justify-content: space-between !important;
                 align-items: center !important;
                 margin-bottom: 20px !important;
                 border-bottom: 1px solid #F1F5F9 !important;
-                padding-bottom: 14px !important;
+                padding-bottom: 16px !important;
             }
+
             .rsd-card-title {
-                font-size: 1.15rem !important;
+                font-size: 1.12rem !important;
                 font-weight: 800 !important;
                 color: #0F172A !important;
                 margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
             }
 
-            /* Forms */
-            .rsd-form-group { margin-bottom: 20px !important; }
-            .rsd-label { display: block !important; font-weight: 700 !important; font-size: 0.9rem !important; margin-bottom: 8px !important; color: #0F172A !important; }
-            .rsd-input, .rsd-select, .rsd-textarea {
-                width: 100% !important;
-                padding: 11px 16px !important;
-                border: 1.5px solid #CBD5E1 !important;
-                border-radius: 12px !important;
-                font-family: inherit !important;
-                font-size: 0.92rem !important;
-                box-sizing: border-box !important;
-                transition: border-color 0.2s ease !important;
-            }
-            .rsd-input:focus, .rsd-select:focus, .rsd-textarea:focus {
-                border-color: #2563EB !important;
-                outline: none !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-            }
-            .rsd-btn {
-                background: #2563EB !important;
-                color: #FFFFFF !important;
-                border: none !important;
-                padding: 11px 22px !important;
-                border-radius: 12px !important;
-                font-weight: 800 !important;
-                cursor: pointer !important;
-                font-family: inherit !important;
-                font-size: 0.9rem !important;
-                transition: all 0.2s ease !important;
-            }
-            .rsd-btn:hover { background: #1D4ED8 !important; }
-            .rsd-btn-dark { background: #0F172A !important; }
-            .rsd-btn-dark:hover { background: #1E293B !important; }
-            .rsd-btn-sm { padding: 6px 14px !important; font-size: 0.8rem !important; border-radius: 8px !important; }
-
-            /* Telemetry Grid */
+            /* TASKHUB KPI STRIP */
             .rsd-telemetry-grid {
                 display: grid !important;
                 grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
                 gap: 16px !important;
                 margin-bottom: 24px !important;
             }
+
             .rsd-telemetry-card {
-                background: #F8FAFC !important;
+                background: #FFFFFF !important;
                 border: 1px solid #E2E8F0 !important;
                 border-radius: 16px !important;
-                padding: 18px !important;
+                padding: 20px !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+                transition: transform 0.15s ease, box-shadow 0.15s ease !important;
             }
-            .rsd-telemetry-title { font-size: 0.8rem !important; font-weight: 700 !important; color: #64748B !important; }
-            .rsd-telemetry-val { font-size: 1.5rem !important; font-weight: 800 !important; color: #0F172A !important; margin: 6px 0 !important; }
-            .rsd-telemetry-sub { font-size: 0.74rem !important; color: #10B981 !important; font-weight: 700 !important; }
 
-            /* Tables */
-            .rsd-table { width: 100% !important; border-collapse: collapse !important; }
-            .rsd-table th, .rsd-table td {
-                padding: 12px 14px !important;
-                text-align: right !important;
-                border-bottom: 1px solid #F1F5F9 !important;
-                font-size: 0.88rem !important;
+            .rsd-telemetry-card:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.06) !important;
             }
-            .rsd-table th { background: #F8FAFC !important; font-weight: 800 !important; color: #475569 !important; }
+
+            .rsd-telemetry-title {
+                font-size: 0.82rem !important;
+                font-weight: 700 !important;
+                color: #64748B !important;
+                margin-bottom: 6px !important;
+            }
+
+            .rsd-telemetry-val {
+                font-size: 1.7rem !important;
+                font-weight: 900 !important;
+                color: #0F172A !important;
+                letter-spacing: -0.02em !important;
+                line-height: 1.2 !important;
+            }
+
+            .rsd-telemetry-sub {
+                font-size: 0.78rem !important;
+                color: #94A3B8 !important;
+                margin-top: 4px !important;
+                font-weight: 600 !important;
+            }
+
+            /* TASKHUB CLEAN FORM ELEMENTS */
+            .rsd-form-group { margin-bottom: 20px !important; }
+            .rsd-label {
+                display: block !important;
+                font-weight: 700 !important;
+                font-size: 0.88rem !important;
+                margin-bottom: 8px !important;
+                color: #1E293B !important;
+            }
+
+            .rsd-input, .rsd-select, .rsd-textarea {
+                width: 100% !important;
+                padding: 10px 16px !important;
+                border: 1.5px solid #E2E8F0 !important;
+                border-radius: 12px !important;
+                font-family: inherit !important;
+                font-size: 0.9rem !important;
+                color: #0F172A !important;
+                background: #FFFFFF !important;
+                box-sizing: border-box !important;
+                transition: all 0.18s ease-in-out !important;
+            }
+
+            .rsd-input:focus, .rsd-select:focus, .rsd-textarea:focus {
+                border-color: #2563EB !important;
+                background: #FFFFFF !important;
+                outline: none !important;
+                box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12) !important;
+            }
+
+            /* TASKHUB BUTTONS */
+            .rsd-btn {
+                background: #2563EB !important;
+                color: #FFFFFF !important;
+                border: none !important;
+                padding: 10px 20px !important;
+                border-radius: 10px !important;
+                font-weight: 700 !important;
+                cursor: pointer !important;
+                font-family: inherit !important;
+                font-size: 0.88rem !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                transition: all 0.18s ease !important;
+                box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2) !important;
+            }
+
+            .rsd-btn:hover {
+                background: #1D4ED8 !important;
+                transform: translateY(-1px) !important;
+                box-shadow: 0 4px 10px rgba(37, 99, 235, 0.28) !important;
+            }
+
+            .rsd-btn-secondary {
+                background: #F1F5F9 !important;
+                color: #334155 !important;
+                border: 1px solid #CBD5E1 !important;
+                box-shadow: none !important;
+            }
+
+            .rsd-btn-secondary:hover {
+                background: #E2E8F0 !important;
+                color: #0F172A !important;
+                transform: translateY(-1px) !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
+            }
+
+            .rsd-btn-dark {
+                background: #0F172A !important;
+                color: #FFFFFF !important;
+                box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15) !important;
+            }
+
+            .rsd-btn-dark:hover {
+                background: #1E293B !important;
+                color: #FFFFFF !important;
+            }
+
+            .rsd-btn-danger {
+                background: #FEF2F2 !important;
+                color: #DC2626 !important;
+                border: 1px solid #FECACA !important;
+                box-shadow: none !important;
+            }
+
+            .rsd-btn-danger:hover {
+                background: #FEE2E2 !important;
+                color: #B91C1C !important;
+            }
+
+            /* TASKHUB CLEAN STATUS BADGES */
             .rsd-badge {
-                display: inline-block !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 5px !important;
                 padding: 4px 10px !important;
                 border-radius: 9999px !important;
-                font-size: 0.74rem !important;
-                font-weight: 800 !important;
+                font-size: 0.78rem !important;
+                font-weight: 700 !important;
             }
-            .rsd-badge-success { background: #DCFCE7 !important; color: #166534 !important; }
-            .rsd-badge-blue { background: #DBEAFE !important; color: #1E40AF !important; }
 
-            /* Models Grid */
-            .rsd-models-grid {
-                display: grid !important;
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
-                gap: 16px !important;
-                margin-bottom: 24px !important;
+            .rsd-badge-success { background: #DCFCE7 !important; color: #15803D !important; border: 1px solid #BBF7D0 !important; }
+            .rsd-badge-warning { background: #FEF3C7 !important; color: #B45309 !important; border: 1px solid #FDE68A !important; }
+            .rsd-badge-info    { background: #EFF6FF !important; color: #1D4ED8 !important; border: 1px solid #BFDBFE !important; }
+            .rsd-badge-purple  { background: #F3E8FF !important; color: #7E22CE !important; border: 1px solid #E9D5FF !important; }
+            .rsd-badge-danger  { background: #FEE2E2 !important; color: #B91C1C !important; border: 1px solid #FECACA !important; }
+
+            /* TASKHUB REFINED TABLES */
+            .rsd-table {
+                width: 100% !important;
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                font-size: 0.88rem !important;
             }
-            .rsd-model-card {
+
+            .rsd-table th {
                 background: #F8FAFC !important;
-                border: 1.5px solid #E2E8F0 !important;
-                border-radius: 16px !important;
-                padding: 18px !important;
-                transition: all 0.25s ease !important;
+                color: #475569 !important;
+                font-weight: 700 !important;
+                text-align: right !important;
+                padding: 12px 16px !important;
+                border-bottom: 1.5px solid #E2E8F0 !important;
             }
-            .rsd-model-card:hover { border-color: #2563EB !important; }
-            .rsd-model-card.selected { background: #EFF6FF !important; border-color: #2563EB !important; }
+
+            .rsd-table td {
+                padding: 14px 16px !important;
+                border-bottom: 1px solid #F1F5F9 !important;
+                color: #334155 !important;
+                vertical-align: middle !important;
+            }
+
+            .rsd-table tr:hover td {
+                background: #F8FAFC !important;
+            }
         </style>
 
-        <div class="rsd-saas-layout">
-            
-            <!-- LEFT COMPACT SAAS SIDEBAR WITHOUT ICONS -->
-            <div class="rsd-saas-sidebar">
-                <div class="rsd-sidebar-header">
-                    <h3 class="rsd-sidebar-title">RED SEA AI</h3>
-                    <p class="rsd-sidebar-sub">منصة إدارة الوكلاء الذكية</p>
+        <div class="rsd-taskhub-wrap">
+            <div class="rsd-taskhub-layout">
+
+                <!-- 1. TASKHUB CLEAN FLOATING SIDEBAR -->
+                <div class="rsd-taskhub-sidebar">
+                    <div class="rsd-sidebar-header">
+                        <div class="rsd-logo-badge">✦</div>
+                        <div>
+                            <h3 class="rsd-sidebar-title">RED SEA DIGITAL</h3>
+                            <p class="rsd-sidebar-sub">AI Engine • Enterprise v4.5</p>
+                        </div>
+                    </div>
+
+                    <div class="rsd-nav-group-label">المحرك والأوركسترا</div>
+                    <a href="?page=redsea-ai-engine&tab=overview" class="rsd-sidebar-link <?php echo $active_tab === 'overview' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">📊</span>
+                        <span>نظرة عامة وتليمتري</span>
+                    </a>
+                    <a href="?page=redsea-ai-engine&tab=agents" class="rsd-sidebar-link <?php echo $active_tab === 'agents' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">🤖</span>
+                        <span>منشئ الوكلاء وإدارتها</span>
+                    </a>
+
+                    <div class="rsd-nav-group-label">المعرفة والنشاط</div>
+                    <a href="?page=redsea-ai-engine&tab=company" class="rsd-sidebar-link <?php echo $active_tab === 'company' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">🏛️</span>
+                        <span>هوية المنشأة ومعلومات النشاط</span>
+                    </a>
+                    <a href="?page=redsea-ai-engine&tab=rag" class="rsd-sidebar-link <?php echo $active_tab === 'rag' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">📚</span>
+                        <span>قاعدة المعرفة وإدارة الملفات</span>
+                    </a>
+                    <a href="?page=redsea-ai-engine&tab=concierge" class="rsd-sidebar-link <?php echo $active_tab === 'concierge' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">⚡</span>
+                        <span>وكيل المبيعات وسرعة الرد</span>
+                    </a>
+
+                    <div class="rsd-nav-group-label">القنوات والنماذج</div>
+                    <a href="?page=redsea-ai-engine&tab=models" class="rsd-sidebar-link <?php echo $active_tab === 'models' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">🧠</span>
+                        <span>مركز النماذج والتقييمات</span>
+                    </a>
+                    <a href="?page=redsea-ai-engine&tab=voice" class="rsd-sidebar-link <?php echo $active_tab === 'voice' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">🎙️</span>
+                        <span>استوديو الصوت التوليدي</span>
+                    </a>
+
+                    <div class="rsd-nav-group-label">التنقيب والمبيعات</div>
+                    <a href="?page=redsea-ai-engine&tab=radar" class="rsd-sidebar-link <?php echo $active_tab === 'radar' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">🎯</span>
+                        <span>رادار العملاء وصائد الصفقات</span>
+                    </a>
+                    <a href="?page=redsea-ai-engine&tab=crm" class="rsd-sidebar-link <?php echo $active_tab === 'crm' ? 'active' : ''; ?>">
+                        <span class="rsd-nav-icon">💬</span>
+                        <span>الواتساب وسجل العملاء</span>
+                    </a>
                 </div>
 
-                <div class="rsd-nav-group-label">المحرك والأوركسترا</div>
-                <a href="?page=redsea-ai-engine&tab=overview" class="rsd-sidebar-link <?php echo $active_tab === 'overview' ? 'active' : ''; ?>">
-                    نظرة عامة وتليمتري
-                </a>
-                <a href="?page=redsea-ai-engine&tab=agents" class="rsd-sidebar-link <?php echo $active_tab === 'agents' ? 'active' : ''; ?>">
-                    منشئ الوكلاء وإدارتها
-                </a>
+                <!-- 2. TASKHUB CONTENT MAIN CONTAINER -->
+                <div class="rsd-taskhub-content">
 
-                <div class="rsd-nav-group-label">المعرفة والنشاط</div>
-                <a href="?page=redsea-ai-engine&tab=company" class="rsd-sidebar-link <?php echo $active_tab === 'company' ? 'active' : ''; ?>">
-                    هوية المنشأة ومعلومات النشاط
-                </a>
-                <a href="?page=redsea-ai-engine&tab=rag" class="rsd-sidebar-link <?php echo $active_tab === 'rag' ? 'active' : ''; ?>">
-                    قاعدة المعرفة وإدارة الملفات
-                </a>
-                <a href="?page=redsea-ai-engine&tab=concierge" class="rsd-sidebar-link <?php echo $active_tab === 'concierge' ? 'active' : ''; ?>">
-                    وكيل المبيعات وسرعة الرد
-                </a>
-
-                <div class="rsd-nav-group-label">القنوات والنماذج</div>
-                <a href="?page=redsea-ai-engine&tab=models" class="rsd-sidebar-link <?php echo $active_tab === 'models' ? 'active' : ''; ?>">
-                    مركز النماذج والتقييمات
-                </a>
-                <a href="?page=redsea-ai-engine&tab=voice" class="rsd-sidebar-link <?php echo $active_tab === 'voice' ? 'active' : ''; ?>">
-                    استوديو الصوت التوليدي
-                </a>
-                                <a href="?page=redsea-ai-engine&tab=radar" class="rsd-sidebar-link <?php echo $active_tab === 'radar' ? 'active' : ''; ?>">
-                    🎯 رادار العملاء وصائد الصفقات
-                </a>
-                <a href="?page=redsea-ai-engine&tab=crm" class="rsd-sidebar-link <?php echo $active_tab === 'crm' ? 'active' : ''; ?>"> class="rsd-sidebar-link <?php echo $active_tab === 'crm' ? 'active' : ''; ?>">
-                    الواتساب وسجل العملاء
-                </a>
-            </div>
-
-            <!-- MAIN CONTENT AREA -->
-            <div class="rsd-saas-content">
-
-                <!-- TAB 1: OVERVIEW -->
-                <?php if ($active_tab === 'overview'): ?>
-                    
-                    <div class="rsd-telemetry-grid">
-                        <div class="rsd-telemetry-card">
-                            <div class="rsd-telemetry-title">إجمالي العملاء والحجوزات</div>
-                            <div class="rsd-telemetry-val"><?php echo number_format($total_leads); ?></div>
-                            <div class="rsd-telemetry-sub">مسجل بالـ CRM</div>
-                        </div>
-                        <div class="rsd-telemetry-card">
-                            <div class="rsd-telemetry-title">المقاطع المتجهية المفهرسة</div>
-                            <div class="rsd-telemetry-val"><?php echo number_format($total_chunks); ?></div>
-                            <div class="rsd-telemetry-sub">جاهزة للاستعلام الدلالي</div>
-                        </div>
-                        <div class="rsd-telemetry-card">
-                            <div class="rsd-telemetry-title">ملفات قاعدة المعرفة النشطة</div>
-                            <div class="rsd-telemetry-val"><?php echo count($kb_files); ?> ملفات</div>
-                            <div class="rsd-telemetry-sub">محدثة ومتاحة للوكلاء</div>
-                        </div>
-                        <div class="rsd-telemetry-card">
-                            <div class="rsd-telemetry-title">محرك الفشل التلقائي</div>
-                            <div class="rsd-telemetry-val">نشط</div>
-                            <div class="rsd-telemetry-sub">OpenCode ➔ Gemini ➔ DeepSeek</div>
-                        </div>
-                    </div>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">سجل العمليات والردود اللحظية</h3>
-                            <span class="rsd-badge rsd-badge-blue">Live Stream</span>
-                        </div>
-                        <table class="rsd-table">
-                            <thead>
-                                <tr>
-                                    <th>التاريخ والوقت</th>
-                                    <th>استفسار العميل</th>
-                                    <th>النية المصنفة</th>
-                                    <th>حالة RAG</th>
-                                    <th>الأمان (QA)</th>
-                                    <th>الزمن الكلي</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($traces)): ?>
-                                    <?php foreach (array_slice($traces, 0, 15) as $tr): ?>
-                                        <tr>
-                                            <td style="color:#71717A;"><?php echo esc_html($tr['timestamp'] ?? '-'); ?></td>
-                                            <td style="font-weight:700;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?php echo esc_html($tr['user_query'] ?? '-'); ?></td>
-                                            <td><span class="rsd-badge rsd-badge-blue"><?php echo esc_html($tr['chief_orchestrator']['classified_intent'] ?? 'general'); ?></span></td>
-                                            <td><span class="rsd-badge rsd-badge-success"><?php echo ($tr['rag_agent']['chunks_found'] ?? 0) > 0 ? 'موثق من RAG' : 'عام'; ?></span></td>
-                                            <td><span class="rsd-badge rsd-badge-success">آمن</span></td>
-                                            <td style="font-weight:800;color:#2563EB;"><?php echo esc_html($tr['total_ms'] ?? 0); ?> ms</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="6" style="text-align:center;color:#71717A;padding:30px;">لا توجد عمليات مسجلة بعد.</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                <!-- TAB 2: AGENT STUDIO -->
-                <?php elseif ($active_tab === 'agents'): ?>
-
-                    <div class="rsd-card" style="border-top:4px solid #2563EB;">
-                        <div class="rsd-card-header">
-                            <div>
-                                <h3 class="rsd-card-title">إنشاء وتجهيز وكيل ذكي جديد</h3>
-                                <p style="font-size:0.85rem;color:#64748B;margin:4px 0 0 0;">اكتب اسم الوكيل ومهمته وسيقوم الوكيل الرئيسي بصياغة السيستم برومبت وتجهيز المهارات له آلياً.</p>
-                            </div>
-                        </div>
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="agents">
-
-                            <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;">
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">اسم الوكيل</label>
-                                    <input type="text" name="rsd_new_agent_name" class="rsd-input" placeholder="مثال: وكيل حجوزات الغرف الفاخرة" required>
-                                </div>
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">وصف المهمة والهدف</label>
-                                    <input type="text" name="rsd_new_agent_mission" class="rsd-input" placeholder="مثال: إقناع العملاء بالترقية للأجنحة الملكية وتقديم عروض رحلات اليخوت" required>
-                                </div>
-                            </div>
-
-                            <button type="submit" name="rsd_create_custom_agent" class="rsd-btn">
-                                <span>صياغة وتجهيز الوكيل آلياً</span>
-                            </button>
+                    <!-- TAB 1: OVERVIEW & TELEMETRY -->
+                    <?php if ($active_tab === 'overview'): ?>
                         
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">قائمة الوكلاء النشطين بالمنظومة</h3>
-                            <span class="rsd-badge rsd-badge-success"><?php echo count($all_agents); ?> وكيل</span>
+                        <div class="rsd-telemetry-grid">
+                            <div class="rsd-telemetry-card">
+                                <div class="rsd-telemetry-title">إجمالي العملاء والحجوزات</div>
+                                <div class="rsd-telemetry-val"><?php echo number_format($total_leads); ?></div>
+                                <div class="rsd-telemetry-sub">مسجل بالـ CRM</div>
+                            </div>
+                            <div class="rsd-telemetry-card">
+                                <div class="rsd-telemetry-title">المقاطع المتجهية المفهرسة</div>
+                                <div class="rsd-telemetry-val"><?php echo number_format($total_chunks); ?></div>
+                                <div class="rsd-telemetry-sub">جاهزة للاستعلام الدلالي</div>
+                            </div>
+                            <div class="rsd-telemetry-card">
+                                <div class="rsd-telemetry-title">ملفات قاعدة المعرفة النشطة</div>
+                                <div class="rsd-telemetry-val"><?php echo count($kb_files); ?></div>
+                                <div class="rsd-telemetry-sub">محدثة ومتاحة للوكلاء</div>
+                            </div>
+                            <div class="rsd-telemetry-card">
+                                <div class="rsd-telemetry-title">سلسلة الفشل التلقائي</div>
+                                <div class="rsd-telemetry-val" style="color:#16A34A;font-size:1.25rem;">نشط 100%</div>
+                                <div class="rsd-telemetry-sub">OpenCode ➔ Gemini ➔ DeepSeek</div>
+                            </div>
                         </div>
 
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;">
-                            <?php foreach ($all_agents as $id => $ag): ?>
-                                <div style="background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:14px;padding:18px;">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                                        <h4 style="margin:0;font-size:1.05rem;font-weight:800;color:#0F172A;"><?php echo esc_html($ag['name']); ?></h4>
-                                        <span class="rsd-badge <?php echo !empty($ag['is_core']) ? 'rsd-badge-blue' : 'rsd-badge-success'; ?>">
-                                            <?php echo !empty($ag['is_core']) ? 'أساسي' : 'مخصص'; ?>
-                                        </span>
-                                    </div>
-                                    <p style="font-size:0.84rem;color:#64748B;line-height:1.5;margin:0 0 14px 0;"><?php echo esc_html($ag['mission'] ?? $ag['description'] ?? ''); ?></p>
-                                    
-                                    <?php if (empty($ag['is_core'])): ?>
-                                        <form method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الوكيل؟');">
-                                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                                            <input type="hidden" name="active_tab" value="agents">
-                                            <input type="hidden" name="rsd_delete_agent_id" value="<?php echo esc_attr($id); ?>">
-                                            <button type="submit" name="rsd_delete_custom_agent" style="background:#FEE2E2;color:#991B1B;border:none;padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.78rem;">حذف الوكيل</button>
-                                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-
-                <!-- TAB 3: COMPANY BRAND DNA -->
-                <?php elseif ($active_tab === 'company'): ?>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">هوية المنشأة ومعلومات النشاط التجاري</h3>
-                        </div>
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="company">
-
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">اسم المنشأة أو النشاط التجاري</label>
-                                    <input type="text" name="rsd_company_name" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_name', 'RED SEA DIGITAL')); ?>">
-                                </div>
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">المقر الرئيسي والفروع</label>
-                                    <input type="text" name="rsd_company_hq" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_hq', 'الغردقة، البحر الأحمر، مصر')); ?>">
-                                </div>
-                            </div>
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">الشعار والرسالة التسويقية</label>
-                                <input type="text" name="rsd_company_slogan" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_slogan', 'منظومة الذكاء الاصطناعي وهندسة الإيرادات المباشرة للفنادق والمتاجر الفاخرة')); ?>">
-                            </div>
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">رابط محرك الحجز المباشر أو المتجر الإلكتروني</label>
-                                <input type="url" name="rsd_booking_url" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_booking_url', 'https://redseadigital.pro/')); ?>">
-                            </div>
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">التعليمات الخاصة الإضافية للوكلاء</label>
-                                <textarea name="rsd_system_prompt" class="rsd-textarea" rows="4"><?php echo esc_textarea(get_option('rsd_system_prompt', '')); ?></textarea>
-                            </div>
-
-                            <button type="submit" name="rsd_save_settings" class="rsd-btn">حفظ هوية المنشأة</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                <!-- TAB 4: RAG KNOWLEDGE BASE & FULL FILE MANAGER -->
-                <?php elseif ($active_tab === 'rag'): ?>
-
-                    <!-- RAG FILE EDITOR (If editing a file) -->
-                    <?php if (!empty($edit_file) && isset($kb_files[$edit_file])): 
-                        $current_content = RSD_Knowledge_Base_Manager::get_file_content($edit_file);
-                    ?>
-                        <div class="rsd-card" style="border-top:4px solid #2563EB;">
+                        <!-- LIVE TRACES STREAM -->
+                        <div class="rsd-card">
                             <div class="rsd-card-header">
-                                <div>
-                                    <h3 class="rsd-card-title">معاينة وتعديل الملف: <?php echo esc_html($edit_file); ?></h3>
-                                    <p style="font-size:0.85rem;color:#64748B;margin:4px 0 0 0;">قم بتعديل المحتوى وسيقوم النظام تلقائياً بتحديث مقاطعه المتجهية في الـ RAG.</p>
+                                <h3 class="rsd-card-title">
+                                    <span>⚡ سجل استدلال الأوركسترا اللحظي (Live Orchestration Traces)</span>
+                                </h3>
+                                <span class="rsd-badge rsd-badge-info">أحدث 50 محادثة</span>
+                            </div>
+
+                            <?php if (empty($traces)): ?>
+                                <p style="color:#64748B;text-align:center;padding:24px 0;">لا توجد سجلات تتبع حالياً. ستظهر العمليات هنا فور محادثة العملاء مع المحرك.</p>
+                            <?php else: ?>
+                                <div style="display:flex;flex-direction:column;gap:12px;">
+                                    <?php foreach (array_slice(array_reverse($traces), 0, 10) as $trace): ?>
+                                        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 16px;">
+                                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                                <div style="display:flex;gap:8px;align-items:center;">
+                                                    <span class="rsd-badge rsd-badge-purple"><?php echo esc_html($trace['intent'] ?? 'عام'); ?></span>
+                                                    <span class="rsd-badge rsd-badge-info"><?php echo esc_html($trace['model'] ?? 'opencode'); ?></span>
+                                                    <strong style="color:#0F172A;font-size:0.88rem;"><?php echo esc_html($trace['sender'] ?? 'زائر'); ?></strong>
+                                                </div>
+                                                <span style="font-size:0.78rem;color:#94A3B8;"><?php echo esc_html($trace['timestamp'] ?? ''); ?></span>
+                                            </div>
+                                            <div style="font-size:0.85rem;color:#334155;line-height:1.5;margin-bottom:6px;">
+                                                <strong>س:</strong> <?php echo esc_html($trace['user_message'] ?? ''); ?>
+                                            </div>
+                                            <div style="font-size:0.85rem;color:#1E293B;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:8px;padding:10px;line-height:1.5;">
+                                                <strong>ج:</strong> <?php echo esc_html($trace['final_reply'] ?? ''); ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
-                                <a href="?page=redsea-ai-engine&tab=rag" class="rsd-btn rsd-btn-dark rsd-btn-sm" style="text-decoration:none;">العودة لقائمة الملفات</a>
+                            <?php endif; ?>
+                        </div>
+
+                    <!-- TAB 2: AGENTS FORGE -->
+                    <?php elseif ($active_tab === 'agents'): ?>
+
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">🤖 مصنع الوكلاء الذكية (Multi-Agent Forge)</h3>
+                            </div>
+
+                            <form method="POST" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:20px;margin-bottom:24px;">
+                                <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                <input type="hidden" name="active_tab" value="agents">
+                                
+                                <h4 style="margin:0 0 14px 0;color:#0F172A;font-size:0.95rem;font-weight:700;">➕ إنشاء وكيل مخصص جديد بالذكاء الاصطناعي</h4>
+                                
+                                <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:14px;align-items:flex-end;">
+                                    <div>
+                                        <label class="rsd-label">اسم الوكيل</label>
+                                        <input type="text" name="rsd_new_agent_name" class="rsd-input" placeholder="مثال: وكيل ترقية الغرف الفاخرة" required>
+                                    </div>
+                                    <div>
+                                        <label class="rsd-label">مهمة الوكيل وأهدافه</label>
+                                        <input type="text" name="rsd_new_agent_mission" class="rsd-input" placeholder="مثال: إقناع العملاء بالترقية للأجنحة الملكية وتقديم عروض رحلات اليخوت" required>
+                                    </div>
+                                    <div>
+                                        <button type="submit" name="rsd_create_custom_agent" class="rsd-btn" style="white-space:nowrap;">
+                                            🚀 إنشاء وتوليد البرومبت
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- AGENTS CARDS GRID -->
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:16px;">
+                                <?php foreach ($all_agents as $a_id => $agent): ?>
+                                    <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+                                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+                                            <div>
+                                                <h4 style="margin:0 0 4px 0;font-size:1rem;font-weight:800;color:#0F172A;"><?php echo esc_html($agent['name']); ?></h4>
+                                                <span class="rsd-badge <?php echo !empty($agent['is_core']) ? 'rsd-badge-purple' : 'rsd-badge-info'; ?>">
+                                                    <?php echo !empty($agent['is_core']) ? 'وكيل نظام أساسي' : 'وكيل مخصص'; ?>
+                                                </span>
+                                            </div>
+                                            <?php if (empty($agent['is_core'])): ?>
+                                                <form method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الوكيل؟');">
+                                                    <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                                    <input type="hidden" name="active_tab" value="agents">
+                                                    <input type="hidden" name="rsd_delete_agent_id" value="<?php echo esc_attr($a_id); ?>">
+                                                    <button type="submit" name="rsd_delete_custom_agent" class="rsd-btn-danger" style="padding:4px 10px;border-radius:8px;cursor:pointer;font-size:0.78rem;">حذف</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p style="font-size:0.84rem;color:#64748B;line-height:1.5;margin:0 0 12px 0;"><?php echo esc_html($agent['mission']); ?></p>
+                                        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:8px 10px;font-size:0.78rem;color:#475569;">
+                                            <strong>الأدوات المفعلة:</strong> <?php echo esc_html(implode(', ', $agent['tools'] ?? ['rag_search'])); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
+                    <!-- TAB 3: BUSINESS IDENTITY -->
+                    <?php elseif ($active_tab === 'company'): ?>
+
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">🏛️ هوية المنشأة ومعلومات النشاط</h3>
                             </div>
 
                             <form method="POST">
                                 <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                                <input type="hidden" name="active_tab" value="rag">
-                                <input type="hidden" name="rsd_edit_file_name" value="<?php echo esc_attr($edit_file); ?>">
+                                <input type="hidden" name="active_tab" value="company">
 
-                                <div class="rsd-form-group">
-                                    <textarea name="rsd_edit_file_text" class="rsd-textarea" rows="16" style="font-family:monospace;font-size:0.9rem;line-height:1.5;"><?php echo esc_textarea($current_content); ?></textarea>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">اسم المنشأة / البراند الرسمي</label>
+                                        <input type="text" name="rsd_company_name" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_name', 'RED SEA DIGITAL')); ?>">
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">الشعار الترويجي (Slogan)</label>
+                                        <input type="text" name="rsd_company_slogan" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_slogan', 'منظومة الحجز المباشر بالذكاء الاصطناعي')); ?>">
+                                    </div>
                                 </div>
 
-                                <button type="submit" name="rsd_save_file_content" class="rsd-btn">حفظ التعديلات وإعادة الفهرسة</button>
-                            
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">المقر الرئيسي / المدينة</label>
+                                        <input type="text" name="rsd_company_hq" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_company_hq', 'الغردقة، البحر الأحمر، مصر')); ?>">
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">رابط صفحة الحجز المباشر</label>
+                                        <input type="url" name="rsd_booking_url" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_booking_url', 'https://redseadigital.pro/#booking')); ?>">
+                                    </div>
+                                </div>
 
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
+                                <div class="rsd-form-group">
+                                    <label class="rsd-label">البرومبت الأساسي لشخصية المنشأة (System Persona Context)</label>
+                                    <textarea name="rsd_system_prompt" class="rsd-textarea" rows="5"><?php echo esc_textarea(get_option('rsd_system_prompt', 'أنت المستشار التقني والمبيعات لمنظومة RED SEA DIGITAL...')); ?></textarea>
+                                </div>
 
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
+                                <button type="submit" name="rsd_save_settings" class="rsd-btn">
+                                    💾 حفظ بيانات الهوية
+                                </button>
+                            </form>
                         </div>
-                    <?php endif; ?>
 
-                    <!-- FILE MANAGER & UPLOADER -->
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <div>
-                                <h3 class="rsd-card-title">ملفات قاعدة المعرفة المتاحة للوكلاء (Knowledge Files)</h3>
-                                <p style="font-size:0.85rem;color:#64748B;margin:4px 0 0 0;">يمكنك معاينة أي ملف، تعديله مباشرة، حذفه، أو رفع ملفات جديدة لتغذية الوكلاء بالمعرفة.</p>
+                    <!-- TAB 4: RAG KNOWLEDGE FILES -->
+                    <?php elseif ($active_tab === 'rag'): ?>
+
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">📚 قاعدة المعرفة وإدارة الملفات المتجهية (RAG Vector Store)</h3>
                             </div>
-                            <form method="POST" style="margin:0;">
+
+                            <!-- UPLOAD DROPZONE -->
+                            <form method="POST" enctype="multipart/form-data" style="background:#F8FAFC;border:2px dashed #CBD5E1;border-radius:14px;padding:24px;text-align:center;margin-bottom:24px;">
                                 <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                                <button type="submit" name="rsd_reindex_kb" class="rsd-btn rsd-btn-dark">إعادة الفهرسة الشاملة</button>
-                            
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
+                                <input type="hidden" name="active_tab" value="rag">
+                                <span style="font-size:2rem;display:block;margin-bottom:8px;">📁</span>
+                                <h4 style="margin:0 0 6px 0;font-weight:700;color:#0F172A;">رفع ملف معرفة جديد (.md / .txt / .json)</h4>
+                                <p style="margin:0 0 14px 0;font-size:0.85rem;color:#64748B;">سيتم تقطيع الملف وتوليد المتجهات وفهرسته دلالياً تلقائياً داخل قاعدة البيانات.</p>
+                                <input type="file" name="rsd_upload_new_file" accept=".md,.txt,.json" required style="margin-bottom:12px;">
+                                <br>
+                                <button type="submit" class="rsd-btn">📤 رفع وفهرسة الملف الآن</button>
+                            </form>
 
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
+                            <!-- FILE EDIT VIEW IF SELECTED -->
+                            <?php if (!empty($edit_file)): ?>
+                                <?php $file_text = RSD_Knowledge_Base_Manager::get_file_content($edit_file); ?>
+                                <div style="background:#FFFFFF;border:1px solid #BFDBFE;border-radius:14px;padding:20px;margin-bottom:24px;background:#F0F9FF;">
+                                    <h4 style="margin:0 0 12px 0;color:#0369A1;">✏️ تعديل محتوى الملف: <?php echo esc_html($edit_file); ?></h4>
+                                    <form method="POST">
+                                        <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                        <input type="hidden" name="active_tab" value="rag">
+                                        <input type="hidden" name="rsd_edit_file_name" value="<?php echo esc_attr($edit_file); ?>">
+                                        <textarea name="rsd_edit_file_text" class="rsd-textarea" rows="10" style="background:#FFFFFF;margin-bottom:12px;font-family:monospace;"><?php echo esc_textarea($file_text); ?></textarea>
+                                        <div style="display:flex;gap:10px;">
+                                            <button type="submit" name="rsd_save_file_content" class="rsd-btn">💾 حفظ التعديلات وإعادة الفهرسة</button>
+                                            <a href="?page=redsea-ai-engine&tab=rag" class="rsd-btn rsd-btn-secondary" style="text-decoration:none;">إلغاء</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
 
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                        </div>
-
-                        <!-- Upload Box -->
-                        <form method="POST" enctype="multipart/form-data" style="background:#F8FAFC;border:1.5px dashed #CBD5E1;border-radius:14px;padding:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="rag">
-                            <div style="display:flex;align-items:center;gap:12px;">
-                                <label style="font-weight:700;font-size:0.9rem;color:#0F172A;">رفع ملف معرفة جديد (.md, .txt, .json):</label>
-                                <input type="file" name="rsd_upload_new_file" accept=".md,.txt,.json" required>
-                            </div>
-                            <button type="submit" class="rsd-btn rsd-btn-sm">رفع وفهرسة الملف</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-
-                        <!-- Files Table -->
-                        <table class="rsd-table">
-                            <thead>
-                                <tr>
-                                    <th>اسم الملف</th>
-                                    <th>المصدر</th>
-                                    <th>الحجم</th>
-                                    <th>المقاطع المفهرسة</th>
-                                    <th>تاريخ التحديث</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($kb_files)): ?>
-                                    <?php foreach ($kb_files as $fname => $finfo): ?>
+                            <!-- FILES TABLE -->
+                            <table class="rsd-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم الملف</th>
+                                        <th>الحجم</th>
+                                        <th>الحالة الفهرسية</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($kb_files as $f): ?>
                                         <tr>
-                                            <td style="font-weight:700;"><?php echo esc_html($fname); ?></td>
-                                            <td><span class="rsd-badge rsd-badge-blue"><?php echo esc_html($finfo['source']); ?></span></td>
-                                            <td><?php echo esc_html($finfo['file_size']); ?></td>
-                                            <td><span class="rsd-badge rsd-badge-success"><?php echo intval($finfo['chunks']); ?> مقطع</span></td>
-                                            <td style="color:#71717A;"><?php echo esc_html($finfo['modified']); ?></td>
+                                            <td style="font-weight:700;color:#0F172A;">📄 <?php echo esc_html($f['name']); ?></td>
+                                            <td><?php echo number_format($f['size'] / 1024, 1); ?> KB</td>
+                                            <td><span class="rsd-badge rsd-badge-success">مفهرس وجاهز</span></td>
                                             <td>
                                                 <div style="display:flex;gap:8px;">
-                                                    <a href="?page=redsea-ai-engine&tab=rag&edit_file=<?php echo urlencode($fname); ?>" class="rsd-btn rsd-btn-sm" style="text-decoration:none;">معاينة وتعديل</a>
-                                                    
-                                                    <form method="POST" style="margin:0;" onsubmit="return confirm('هل أنت متأكد من حذف هذا الملف ومسحه من قاعدة المعرفة؟');">
+                                                    <a href="?page=redsea-ai-engine&tab=rag&edit_file=<?php echo urlencode($f['name']); ?>" class="rsd-btn rsd-btn-secondary" style="padding:5px 12px;font-size:0.78rem;text-decoration:none;">✏️ تعديل</a>
+                                                    <form method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الملف؟');" style="display:inline;">
                                                         <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
                                                         <input type="hidden" name="active_tab" value="rag">
-                                                        <input type="hidden" name="rsd_delete_file_name" value="<?php echo esc_attr($fname); ?>">
-                                                        <button type="submit" name="rsd_delete_file" style="background:#FEE2E2;color:#991B1B;border:none;padding:6px 12px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.8rem;">حذف</button>
-                                                    
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
+                                                        <input type="hidden" name="rsd_delete_file_name" value="<?php echo esc_attr($f['name']); ?>">
+                                                        <button type="submit" name="rsd_delete_file" class="rsd-btn-danger" style="padding:5px 12px;font-size:0.78rem;border-radius:8px;cursor:pointer;">🗑️ حذف</button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="6" style="text-align:center;color:#71717A;padding:30px;">لا توجد ملفات مرفوعة حالياً.</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- RAG TUNING -->
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">إعدادات وضبط معايير الـ RAG</h3>
-                        </div>
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="rag">
-
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">حجم المقطع الدلالي (Chunk Size)</label>
-                                    <input type="number" step="50" min="150" max="1000" name="rsd_rag_chunk_size" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_rag_chunk_size', 350)); ?>">
-                                </div>
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">حجم التداخل بين المقاطع (Overlap)</label>
-                                    <input type="number" step="10" min="20" max="150" name="rsd_rag_chunk_overlap" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_rag_chunk_overlap', 50)); ?>">
-                                </div>
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">حساسية المطابقة الدلالية (Threshold)</label>
-                                    <input type="number" step="0.05" min="0.1" max="0.95" name="rsd_rag_similarity_threshold" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_rag_similarity_threshold', 0.65)); ?>">
-                                </div>
-                            </div>
-
-                            <button type="submit" name="rsd_save_settings" class="rsd-btn">حفظ إعدادات الـ RAG</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                <!-- TAB 5: SALES CONCIERGE & SPEED -->
-                <?php elseif ($active_tab === 'concierge'): ?>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">تخصيص أسلوب المبيعات وسرعة الاستجابة</h3>
-                        </div>
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="concierge">
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">الأسلوب البيعي والاستشاري</label>
-                                <select name="rsd_sales_tone" class="rsd-select">
-                                    <option value="elite_closer" <?php selected(get_option('rsd_sales_tone', 'elite_closer'), 'elite_closer'); ?>>مستشار مبيعات نخبوي (ردود سريعة، أسئلة اكتشاف ذكية، إقناع فوري)</option>
-                                    <option value="quiet_luxury" <?php selected(get_option('rsd_sales_tone'), 'quiet_luxury'); ?>>فخامة هادئة واستشارات تنفيذية راقية</option>
-                                    <option value="fast_direct" <?php selected(get_option('rsd_sales_tone'), 'fast_direct'); ?>>مباشر وسريع جداً وموجز (أقل من 3 أسطر)</option>
-                                </select>
-                            </div>
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">نسبة عمولة بوكينج الافتراضية للحسابات المالية (%)</label>
-                                <input type="number" min="5" max="40" name="rsd_concierge_commission_preset" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_concierge_commission_preset', 20)); ?>">
-                            </div>
-
-                            <div class="rsd-form-group">
-                                <label class="rsd-label">التخزين المؤقت الذكي للإجابات (Response Caching)</label>
-                                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-                                    <input type="checkbox" name="rsd_enable_response_cache" value="1" <?php checked(get_option('rsd_enable_response_cache', '1'), '1'); ?>>
-                                    <span>تفعيل التخزين المؤقت لمدة 15 دقيقة للرد في أقل من 50 مللي ثانية على الأسئلة الشائعة</span>
-                                </label>
-                            </div>
-
-                            <button type="submit" name="rsd_save_settings" class="rsd-btn">حفظ إعدادات المبيعات والسرعة</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                <!-- TAB 6: MODELS HUB & EVALUATION RATINGS -->
-                <?php elseif ($active_tab === 'models'): ?>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <div>
-                                <h3 class="rsd-card-title">مركز النماذج الذكية وتقييمات الأداء</h3>
-                                <p style="font-size:0.85rem;color:#64748B;margin:4px 0 0 0;">اختر النموذج الأنسب لنشاطك عبر مساحة عمل OpenCode ومزودات الذكاء الاصطناعي مع تقييمات الدقة والسرعة.</p>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
 
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="models">
+                    <!-- TAB 5: SALES CONCIERGE -->
+                    <?php elseif ($active_tab === 'concierge'): ?>
 
-                            <div class="rsd-models-grid">
-                                <?php 
-                                $current_model = get_option('rsd_ai_model', 'deepseek-chat');
-                                foreach ($leaderboard as $m_id => $m_info): 
-                                    $is_sel = ($current_model === $m_id);
-                                ?>
-                                    <label class="rsd-model-card <?php echo $is_sel ? 'selected' : ''; ?>" style="cursor:pointer;display:block;">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                                            <input type="radio" name="rsd_ai_model" value="<?php echo esc_attr($m_id); ?>" <?php checked($is_sel); ?> style="margin-left:8px;">
-                                            <span class="rsd-badge rsd-badge-success"><?php echo esc_html($m_info['badge']); ?></span>
-                                            <span style="font-size:1.15rem;font-weight:800;color:#2563EB;">تقييم: <?php echo esc_html($m_info['score']); ?></span>
-                                        </div>
-                                        <h4 style="margin:0 0 4px 0;font-size:1.05rem;font-weight:800;"><?php echo esc_html($m_info['name']); ?></h4>
-                                        <div style="font-size:0.8rem;color:#64748B;display:flex;justify-content:space-between;margin-top:8px;">
-                                            <span>السرعة: <?php echo esc_html($m_info['latency']); ?></span>
-                                            <span>السياق: <?php echo esc_html($m_info['context']); ?></span>
-                                        </div>
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">⚡ إعدادات وكيل المبيعات وسرعة الرد</h3>
+                            </div>
+
+                            <form method="POST">
+                                <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                <input type="hidden" name="active_tab" value="concierge">
+
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">نبرة الحوار المبيعي (Sales Persona Tone)</label>
+                                        <select name="rsd_sales_tone" class="rsd-select">
+                                            <option value="elite_closer" <?php selected(get_option('rsd_sales_tone'), 'elite_closer'); ?>>مستشار مبيعات خبير وهادئ (Quiet Luxury)</option>
+                                            <option value="consultative" <?php selected(get_option('rsd_sales_tone'), 'consultative'); ?>>استشاري أرقام وعائد استثماري (ROI Focused)</option>
+                                            <option value="friendly" <?php selected(get_option('rsd_sales_tone'), 'friendly'); ?>>مضياف وودود (Hospitality Concierge)</option>
+                                        </select>
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">نسبة عمولة الوسطاء الافتراضية للحاسبة (%)</label>
+                                        <input type="number" name="rsd_concierge_commission_preset" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_concierge_commission_preset', '20')); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="rsd-form-group">
+                                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;color:#0F172A;">
+                                        <input type="checkbox" name="rsd_enable_response_cache" value="1" <?php checked(get_option('rsd_enable_response_cache', '1'), '1'); ?> style="width:18px;height:18px;">
+                                        <span>تفعيل التخزين المؤقت الذكي للردود المتكررة لتوفير استهلاك التوكنات وتسريع الاستجابة لأقل من 500ms</span>
                                     </label>
-                                <?php endforeach; ?>
+                                </div>
+
+                                <button type="submit" name="rsd_save_settings" class="rsd-btn">
+                                    💾 حفظ إعدادات الوكيل
+                                </button>
+                            </form>
+                        </div>
+
+                    <!-- TAB 6: MODELS HUB -->
+                    <?php elseif ($active_tab === 'models'): ?>
+
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">🧠 مركز النماذج ومفاتيح الذكاء الاصطناعي</h3>
                             </div>
 
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px;">
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">المزود الأساسي للذكاء الاصطناعي</label>
-                                    <select name="rsd_ai_provider" class="rsd-select">
-                                        <option value="gemini" <?php selected(get_option('rsd_ai_provider', 'gemini'), 'gemini'); ?>>Google Gemini (فائق السرعة والذكاء)</option>
-                                        <option value="opencode" <?php selected(get_option('rsd_ai_provider'), 'opencode'); ?>>OpenCode AI (مجاني وغير محدود)</option>
-                                        <option value="deepseek" <?php selected(get_option('rsd_ai_provider'), 'deepseek'); ?>>DeepSeek Official API</option>
-                                        <option value="openai" <?php selected(get_option('rsd_ai_provider'), 'openai'); ?>>OpenAI Direct</option>
-                                    </select>
-                                </div>
-                                <div class="rsd-form-group">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                                        <label class="rsd-label" style="margin:0;">مفتاح OpenCode Workspace API Key</label>
-                                        <button type="button" onclick="rsdToggleKeyVisibility('rsd_key_opencode', this)" style="background:none;border:none;color:#2563EB;cursor:pointer;font-weight:700;font-size:0.8rem;padding:0;">إظهار</button>
+                            <form method="POST">
+                                <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                <input type="hidden" name="active_tab" value="models">
+
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مزود الذكاء الاصطناعي الأساسي</label>
+                                        <select name="rsd_ai_provider" class="rsd-select">
+                                            <option value="opencode" <?php selected(get_option('rsd_ai_provider'), 'opencode'); ?>>OpenCode Zen (GPT-4o-Mini) - موصى به</option>
+                                            <option value="gemini" <?php selected(get_option('rsd_ai_provider'), 'gemini'); ?>>Google Gemini 2.5 Flash</option>
+                                            <option value="deepseek" <?php selected(get_option('rsd_ai_provider'), 'deepseek'); ?>>DeepSeek V3 / R1</option>
+                                        </select>
                                     </div>
-                                    <input type="password" id="rsd_key_opencode" name="rsd_opencode_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_opencode_api_key', '')); ?>" placeholder="wrk_01KT4G7CQE6YPR9H6H3RQNG2PN" autocomplete="off">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">النموذج النشط</label>
+                                        <input type="text" name="rsd_ai_model" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_ai_model', 'deepseek-chat')); ?>">
+                                    </div>
+                                </div>
+
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مفتاح OpenCode API Key</label>
+                                        <input type="password" name="rsd_opencode_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_opencode_api_key')); ?>" placeholder="••••••••••••••••">
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مفتاح Google Gemini API Key</label>
+                                        <input type="password" name="rsd_gemini_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_gemini_api_key')); ?>" placeholder="••••••••••••••••">
+                                    </div>
+                                </div>
+
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مفتاح DeepSeek API Key</label>
+                                        <input type="password" name="rsd_deepseek_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_deepseek_api_key')); ?>" placeholder="••••••••••••••••">
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مفتاح OpenAI Embeddings API Key</label>
+                                        <input type="password" name="rsd_openai_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_openai_api_key')); ?>" placeholder="••••••••••••••••">
+                                    </div>
+                                </div>
+
+                                <button type="submit" name="rsd_save_settings" class="rsd-btn">
+                                    💾 حفظ مفاتيح النماذج
+                                </button>
+                            </form>
+                        </div>
+
+                    <!-- TAB 7: VOICE STUDIO -->
+                    <?php elseif ($active_tab === 'voice'): ?>
+
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">🎙️ استوديو الصوت التوليدي (Voice AI Studio)</h3>
+                            </div>
+
+                            <form method="POST">
+                                <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                <input type="hidden" name="active_tab" value="voice">
+
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">لغة ونبرة الصوت</label>
+                                        <select name="rsd_voice_lang" class="rsd-select">
+                                            <option value="ar-SA" <?php selected(get_option('rsd_voice_lang'), 'ar-SA'); ?>>العربية (لهجة مصرية/خليجية دافئة)</option>
+                                            <option value="en-US" <?php selected(get_option('rsd_voice_lang'), 'en-US'); ?>>English (US Luxury Accent)</option>
+                                        </select>
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">سرعة القراءة (Rate)</label>
+                                        <input type="text" name="rsd_voice_rate" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_voice_rate', '1.0')); ?>">
+                                    </div>
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">درجة الحدة (Pitch)</label>
+                                        <input type="text" name="rsd_voice_pitch" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_voice_pitch', '1.0')); ?>">
+                                    </div>
+                                </div>
+
+                                <button type="submit" name="rsd_save_settings" class="rsd-btn">
+                                    💾 حفظ إعدادات الصوت
+                                </button>
+                            </form>
+                        </div>
+
+                    <!-- TAB 8: WHATSAPP BRIDGE & CRM -->
+                    <?php elseif ($active_tab === 'crm'): ?>
+
+                        <?php
+                        $wa_phone     = get_option('rsd_whatsapp_phone', '201028803080');
+                        $wa_instance  = get_option('rsd_whatsapp_instance', 'rsd_live');
+                        $wa_api_url   = get_option('rsd_whatsapp_api_url', '');
+                        $wa_api_key   = get_option('rsd_whatsapp_api_key', 'rsd_secret_token_2026');
+                        $ai_active    = (get_option('rsd_whatsapp_ai_enabled', '1') === '1');
+                        $outbound_on  = (get_option('rsd_whatsapp_enabled', '1') === '1');
+                        $webhook_url  = get_rest_url(null, 'rsd/v1/whatsapp-webhook');
+                        ?>
+
+                        <!-- CRM & WA SPLIT LAYOUT -->
+                        <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-bottom:24px;">
+
+                            <!-- GATEWAY STATUS & PAIRING CARD -->
+                            <div class="rsd-card">
+                                <div class="rsd-card-header">
+                                    <h3 class="rsd-card-title">📱 اتصال بوابة الواتساب المباشرة</h3>
+                                    <span id="rsdWaStatusBadge" class="rsd-badge" style="background:#F8FAFC;color:#64748B;border:1px solid #CBD5E1;">
+                                        ⏳ جاري فحص الاتصال...
+                                    </span>
+                                </div>
+
+                                <!-- MODE TOGGLE (QR VS PAIRING CODE) -->
+                                <div style="display:flex;gap:8px;background:#F1F5F9;padding:4px;border-radius:12px;margin-bottom:18px;">
+                                    <button type="button" id="tabBtnCode" onclick="rsdSwitchPairMode('code')" class="rsd-btn" style="flex:1;background:#FFFFFF;color:#0F172A;box-shadow:0 1px 3px rgba(0,0,0,0.05);font-size:0.85rem;">
+                                        🔢 ربط برقم الهاتف (كود 8 أرقام)
+                                    </button>
+                                    <button type="button" id="tabBtnQr" onclick="rsdSwitchPairMode('qr')" class="rsd-btn rsd-btn-secondary" style="flex:1;background:transparent;border:none;font-size:0.85rem;">
+                                        📷 ربط عبر كاميرا الهاتف (QR)
+                                    </button>
+                                </div>
+
+                                <!-- 8-DIGIT PAIRING CODE SECTION -->
+                                <div id="rsdPairModeCode" style="display:block;">
+                                    <p style="font-size:0.85rem;color:#64748B;margin:0 0 12px 0;">أدخل رقم الهاتف لتوليد كود تأكيد مباشر لإدخاله في تطبيق واتساب:</p>
+                                    <div style="display:flex;gap:8px;margin-bottom:12px;">
+                                        <input type="text" id="rsdPairPhoneInput" class="rsd-input" value="<?php echo esc_attr($wa_phone); ?>" placeholder="مثال: 201028803080">
+                                        <button type="button" onclick="rsdRequestPairingCode()" class="rsd-btn" style="white-space:nowrap;">
+                                            ⚡ طلب كود التأكيد
+                                        </button>
+                                    </div>
+
+                                    <div id="rsdPairingCodeDisplay" style="display:none;background:#F0FDF4;border:2px solid #86EFAC;border-radius:14px;padding:16px;text-align:center;margin-top:14px;">
+                                        <div style="font-size:0.82rem;color:#166534;font-weight:700;margin-bottom:6px;">أدخل هذا الكود في هاتفك (الأجهزة المرتبطة ➔ ربط برقم الهاتف):</div>
+                                        <div id="rsdPairingCodeVal" style="font-size:2rem;font-weight:900;letter-spacing:6px;color:#15803D;font-family:monospace;">----</div>
+                                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('rsdPairingCodeVal').innerText);alert('تم نسخ الكود!');" class="rsd-btn rsd-btn-secondary" style="margin-top:10px;padding:4px 12px;font-size:0.78rem;">
+                                            📋 نسخ الكود
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- QR CODE SECTION -->
+                                <div id="rsdPairModeQr" style="display:none;text-align:center;">
+                                    <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px;padding:16px;display:inline-block;margin-bottom:12px;">
+                                        <img id="rsdQrCodeImg" src="" alt="QR Code" style="display:none;width:180px;height:180px;margin:0 auto;">
+                                        <div id="rsdQrPlaceholder" style="color:#64748B;padding:40px 20px;font-size:0.85rem;">اضغط على الزر أدناه لتوليد رمز الـ QR</div>
+                                    </div>
+                                    <br>
+                                    <button type="button" onclick="rsdRefreshQrCode()" class="rsd-btn rsd-btn-secondary">🔄 تحديث كود QR</button>
+                                </div>
+
+                                <!-- ACTION BUTTONS -->
+                                <div style="display:flex;gap:10px;margin-top:20px;border-top:1px solid #F1F5F9;padding-top:16px;">
+                                    <button type="button" onclick="rsdCheckWaStatus()" class="rsd-btn rsd-btn-secondary" style="flex:1;">🔄 فحص الحالة</button>
+                                    <button type="button" onclick="rsdDisconnectWa()" class="rsd-btn-danger" style="flex:1;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.85rem;">🔴 فك الارتباط</button>
                                 </div>
                             </div>
 
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;">
-                                <div class="rsd-form-group">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                                        <label class="rsd-label" style="margin:0;">Google Gemini API Key</label>
-                                        <button type="button" onclick="rsdToggleKeyVisibility('rsd_key_gemini', this)" style="background:none;border:none;color:#2563EB;cursor:pointer;font-weight:700;font-size:0.8rem;padding:0;">إظهار</button>
-                                    </div>
-                                    <input type="password" id="rsd_key_gemini" name="rsd_gemini_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_gemini_api_key', '')); ?>" autocomplete="off">
+                            <!-- WEBHOOK & GATEWAY SETTINGS CARD -->
+                            <div class="rsd-card">
+                                <div class="rsd-card-header">
+                                    <h3 class="rsd-card-title">⚙️ إعدادات البوابة والـ Webhook</h3>
                                 </div>
-                                <div class="rsd-form-group">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                                        <label class="rsd-label" style="margin:0;">DeepSeek API Key</label>
-                                        <button type="button" onclick="rsdToggleKeyVisibility('rsd_key_deepseek', this)" style="background:none;border:none;color:#2563EB;cursor:pointer;font-weight:700;font-size:0.8rem;padding:0;">إظهار</button>
+
+                                <form method="POST">
+                                    <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
+                                    <input type="hidden" name="active_tab" value="crm">
+
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">🔗 رابط الـ Webhook المخصص للاستقبال</label>
+                                        <div style="display:flex;gap:8px;">
+                                            <input type="text" id="rsdWebhookUrlInput" readonly class="rsd-input" value="<?php echo esc_attr($webhook_url); ?>" style="background:#F8FAFC;font-family:monospace;direction:ltr;">
+                                            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('rsdWebhookUrlInput').value);alert('تم نسخ الرابط!');" class="rsd-btn rsd-btn-secondary" style="white-space:nowrap;">📋 نسخ</button>
+                                        </div>
                                     </div>
-                                    <input type="password" id="rsd_key_deepseek" name="rsd_deepseek_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_deepseek_api_key', '')); ?>" autocomplete="off">
-                                </div>
-                                <div class="rsd-form-group">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                                        <label class="rsd-label" style="margin:0;">OpenAI API Key</label>
-                                        <button type="button" onclick="rsdToggleKeyVisibility('rsd_key_openai', this)" style="background:none;border:none;color:#2563EB;cursor:pointer;font-weight:700;font-size:0.8rem;padding:0;">إظهار</button>
+
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                                        <div class="rsd-form-group">
+                                            <label class="rsd-label">رقم الهاتف</label>
+                                            <input type="text" name="rsd_whatsapp_phone" class="rsd-input" value="<?php echo esc_attr($wa_phone); ?>">
+                                        </div>
+                                        <div class="rsd-form-group">
+                                            <label class="rsd-label">اسم الجلسة (Instance)</label>
+                                            <input type="text" name="rsd_whatsapp_instance" class="rsd-input" value="<?php echo esc_attr($wa_instance); ?>">
+                                        </div>
                                     </div>
-                                    <input type="password" id="rsd_key_openai" name="rsd_openai_api_key" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_openai_api_key', '')); ?>" autocomplete="off">
-                                </div>
+
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">رابط خادم البوابة / السوكيت</label>
+                                        <input type="text" name="rsd_whatsapp_api_url" class="rsd-input" value="<?php echo esc_attr($wa_api_url); ?>" placeholder="https://api.your-gateway.com">
+                                    </div>
+
+                                    <div class="rsd-form-group">
+                                        <label class="rsd-label">مفتاح الأمان (API Key)</label>
+                                        <input type="password" name="rsd_whatsapp_api_key" class="rsd-input" value="<?php echo esc_attr($wa_api_key); ?>">
+                                    </div>
+
+                                    <button type="submit" name="rsd_save_settings" class="rsd-btn">💾 حفظ الإعدادات</button>
+                                </form>
                             </div>
 
-<script>
-function rsdToggleKeyVisibility(fieldId, btnEl) {
-    var field = document.getElementById(fieldId);
-    if (!field) return;
-    if (field.type === "password") {
-        field.type = "text";
-        btnEl.innerText = "إخفاء";
-        btnEl.style.color = "#991B1B";
-    } else {
-        field.type = "password";
-        btnEl.innerText = "إظهار";
-        btnEl.style.color = "#2563EB";
-    }
-}
+                        </div>
 
-                    </script>
+                        <!-- LEADS CRM TABLE -->
+                        <div class="rsd-card">
+                            <div class="rsd-card-header">
+                                <h3 class="rsd-card-title">👥 سجل جهات الاتصال والحجوزات المسجلة</h3>
+                                <span class="rsd-badge rsd-badge-success"><?php echo intval($total_leads); ?> عميل مسجل</span>
+                            </div>
 
+                            <table class="rsd-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>اسم العميل</th>
+                                        <th>رقم الواتساب</th>
+                                        <th>نوع الخدمة</th>
+                                        <th>تفاصيل المحادثة</th>
+                                        <th>التاريخ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!empty($recent_logs)): ?>
+                                        <?php foreach ($recent_logs as $log): ?>
+                                            <?php
+                                            $c_name = $log['customer_name'] ?? ($log['name'] ?? 'عميل واتساب');
+                                            $c_phone = $log['customer_phone'] ?? ($log['phone'] ?? '');
+                                            $c_service = $log['service_type'] ?? ($log['service'] ?? 'استفسار مباشر');
+                                            $c_details = $log['booking_details'] ?? ($log['details'] ?? '-');
+                                            ?>
+                                            <tr>
+                                                <td>#<?php echo esc_html($log['id']); ?></td>
+                                                <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name); ?></td>
+                                                <td>
+                                                    <?php if (!empty($c_phone)): ?>
+                                                        <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $c_phone)); ?>" target="_blank" class="rsd-badge rsd-badge-success" style="text-decoration:none;">
+                                                            💬 +<?php echo esc_html($c_phone); ?>
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="rsd-badge">غير مسجل</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><span class="rsd-badge rsd-badge-info"><?php echo esc_html($c_service); ?></span></td>
+                                                <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;"><?php echo esc_html($c_details); ?></td>
+                                                <td style="color:#94A3B8;font-size:0.82rem;"><?php echo esc_html($log['created_at']); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
 
-                            <div style="background:#F1F5F9;border:1px solid #E2E8F0;border-radius:12px;padding:12px 16px;margin:16px 0;display:flex;align-items:center;justify-content:space-between;">
+                    <!-- TAB 9: AUTONOMOUS LEAD RADAR -->
+                    <?php elseif ($active_tab === 'radar'): ?>
+
+                        <?php
+                        $leads_tbl = $wpdb->prefix . 'rsd_leads';
+                        $all_leads = $wpdb->get_results("SELECT * FROM {$leads_tbl} ORDER BY id DESC LIMIT 50", ARRAY_A);
+                        $cnt_total = count($all_leads);
+                        $cnt_pending = 0; $cnt_contacting = 0; $cnt_closed = 0;
+                        foreach ($all_leads as $l) {
+                            if ($l['pipeline_status'] === 'pending_review') $cnt_pending++;
+                            elseif ($l['pipeline_status'] === 'contacting') $cnt_contacting++;
+                            elseif ($l['pipeline_status'] === 'closed') $cnt_closed++;
+                        }
+                        ?>
+
+                        <!-- RADAR CONTROLS -->
+                        <div class="rsd-card">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
                                 <div>
-                                    <strong style="color:#0F172A;font-size:0.9rem;">تفعيل أيقونة الشات في الواجهة الرئيسية للموقع (Front-end Chat Widget)</strong>
-                                    <p style="margin:2px 0 0 0;font-size:0.8rem;color:#64748B;">إظهار الأيقونة العائمة ونافذة المحادثة الفاخرة للزوار في أسفل الصفحة.</p>
+                                    <h3 style="margin:0 0 4px 0;font-size:1.15rem;font-weight:800;color:#0F172A;">
+                                        🎯 رادار العملاء وصائد الصفقات الآلي
+                                    </h3>
+                                    <p style="margin:0;color:#64748B;font-size:0.86rem;">
+                                        منظومة وكلاء ذكاء اصطناعي تقوم بالتنقيب وتحليل فجوة العمولات (OTA Gap) وصياغة رسائل استشارية بهوية م. عمرو أحمد مع بوابة اعتماد بشرية.
+                                    </p>
                                 </div>
-                                <input type="hidden" name="rsd_widget_enabled_submitted" value="1">
-                                <label style="position:relative;display:inline-block;width:44px;height:24px;margin:0;">
-                                    <input type="checkbox" name="rsd_widget_enabled" value="1" <?php checked(get_option('rsd_widget_enabled', '1'), '1'); ?> style="opacity:0;width:0;height:0;">
-                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:<?php echo get_option('rsd_widget_enabled', '1') === '1' ? '#2563EB' : '#CBD5E1'; ?>;transition:.3s;border-radius:24px;" onclick="var cb=this.previousElementSibling;cb.checked=!cb.checked;this.style.backgroundColor=cb.checked?'#2563EB':'#CBD5E1';"></span>
-                                </label>
-                            </div>
-
-                            <button type="submit" name="rsd_save_settings" class="rsd-btn">حفظ النموذج والمزودات</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                <!-- TAB 7: VOICE STUDIO -->
-                <?php elseif ($active_tab === 'voice'): ?>
-
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">استوديو الصوت التوليدي المتقدم</h3>
-                        </div>
-                        <form method="POST">
-                            <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                            <input type="hidden" name="active_tab" value="voice">
-
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">لغة ونبرة الوكيل الصوتي</label>
-                                    <select name="rsd_voice_lang" class="rsd-select">
-                                        <option value="ar-SA" <?php selected(get_option('rsd_voice_lang', 'ar-SA'), 'ar-SA'); ?>>العربية (السعودية / الخليج)</option>
-                                        <option value="ar-EG" <?php selected(get_option('rsd_voice_lang'), 'ar-EG'); ?>>العربية (مصر)</option>
-                                        <option value="en-US" <?php selected(get_option('rsd_voice_lang'), 'en-US'); ?>>English (US Executive)</option>
-                                        <option value="en-GB" <?php selected(get_option('rsd_voice_lang'), 'en-GB'); ?>>English (British Luxury)</option>
+                                <div style="display:flex;gap:10px;align-items:center;">
+                                    <select id="rsdRadarNiche" class="rsd-select" style="min-width:210px;">
+                                        <option value="resorts_redsea">🏨 منتجعات وبوتيك هوتيل البحر الأحمر</option>
+                                        <option value="diving_sharm">🤿 مراكز وسفاري الغوص واليخوت</option>
+                                        <option value="luxury_travel">✈️ شركات السياحة والرحلات الفاخرة</option>
+                                        <option value="medical_clinics">🏥 مراكز السياحة العلاجية والعيادات</option>
                                     </select>
+                                    <button type="button" id="rsdBtnRunRadar" onclick="rsdRunRadarScan()" class="rsd-btn">
+                                        🤖 ابدأ جولة التنقيب الآلي الآن
+                                    </button>
                                 </div>
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">سرعة التحدث (Speech Rate)</label>
-                                    <input type="number" step="0.1" min="0.5" max="2.0" name="rsd_voice_rate" class="rsd-input" value="<?php echo esc_attr(get_option('rsd_voice_rate', '1.0')); ?>">
-                                </div>
                             </div>
 
-                            <button type="submit" name="rsd_save_settings" class="rsd-btn">حفظ إعدادات الصوت</button>
-                        
-<script>
-function rsdRunModelLiveTest() {
-    var btn = document.getElementById('rsdTestModelBtn');
-    var resDiv = document.getElementById('rsdModelTestResult');
-    var provider = document.getElementById('rsd_select_provider').value;
-    var model = document.getElementById('rsd_select_model').value;
-    var endpoint = document.getElementById('rsd_custom_endpoint').value;
-    
-    var apiKey = '';
-    if (provider === 'gemini') { apiKey = document.getElementById('rsd_key_gemini').value; }
-    else if (provider === 'opencode') { apiKey = document.getElementById('rsd_key_opencode').value; }
-    else if (provider === 'deepseek') { apiKey = document.getElementById('rsd_key_deepseek').value; }
-    else if (provider === 'openai') { apiKey = document.getElementById('rsd_key_openai').value; }
-
-    btn.innerText = "جاري الفحص...";
-    btn.disabled = true;
-    resDiv.style.display = "block";
-    resDiv.style.background = "#EFF6FF";
-    resDiv.style.border = "1px solid #BFDBFE";
-    resDiv.style.color = "#1E40AF";
-    resDiv.innerHTML = "⏳ جاري إرسال طلب تجريبي للنموذج (" + (model || provider) + ")...";
-
-    var formData = new FormData();
-    formData.append('action', 'rsd_test_model');
-    formData.append('provider', provider);
-    formData.append('model', model);
-    formData.append('api_key', apiKey);
-    formData.append('endpoint', endpoint);
-
-    fetch(ajaxurl, {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        if (data.success) {
-            resDiv.style.background = "#ECFDF5";
-            resDiv.style.border = "1px solid #A7F3D0";
-            resDiv.style.color = "#065F46";
-            resDiv.innerHTML = "<strong>🟢 الاتصال ناجح وممتاز!</strong><br>" +
-                "• النموذج: " + data.data.model + "<br>" +
-                "• زمن الاستجابة: " + data.data.latency_ms + "ms<br>" +
-                "• الرد التجريبي: " + data.data.reply;
-        } else {
-            resDiv.style.background = "#FEF2F2";
-            resDiv.style.border = "1px solid #FECACA";
-            resDiv.style.color = "#991B1B";
-            var errStr = (data.data.errors && data.data.errors.length) ? data.data.errors.join('<br>') : 'فشل الاتصال أو المفتاح غير صالح';
-            resDiv.innerHTML = "<strong>🔴 فشل الاتصال بالنموذج (" + (data.data.model || provider) + ")</strong><br>" +
-                "• زمن المحاولة: " + data.data.latency_ms + "ms<br>" +
-                "• تفاصيل الخطأ: <br>" + errStr;
-        }
-    })
-    .catch(function(err) {
-        btn.innerText = "اختبار الاتصال الآن ✦";
-        btn.disabled = false;
-        resDiv.style.background = "#FEF2F2";
-        resDiv.style.border = "1px solid #FECACA";
-        resDiv.style.color = "#991B1B";
-        resDiv.innerHTML = "<strong>🔴 خطأ في الاتصال بالخادم.</strong>";
-    });
-}
-
-                    </script>
-
-</form>
-                    </div>
-
-                <!-- TAB 9: AUTONOMOUS OUTBOUND LEAD RADAR & SALES ORCHESTRATOR -->
-                <?php elseif ($active_tab === 'radar'): ?>
-
-                    <?php
-                    RedSeaLeadRadarEngine::init_leads_table();
-                    $leads_tbl = $wpdb->prefix . 'rsd_leads';
-                    $all_leads = $wpdb->get_results("SELECT * FROM {$leads_tbl} ORDER BY id DESC LIMIT 50", ARRAY_A);
-                    
-                    $cnt_total = count($all_leads);
-                    $cnt_pending = 0;
-                    $cnt_contacting = 0;
-                    $cnt_closed = 0;
-                    foreach ($all_leads as $l) {
-                        if ($l['pipeline_status'] === 'pending_review') $cnt_pending++;
-                        elseif ($l['pipeline_status'] === 'contacting') $cnt_contacting++;
-                        elseif ($l['pipeline_status'] === 'closed') $cnt_closed++;
-                    }
-                    ?>
-
-                    <!-- RADAR HEADER & SCANNER CONTROLS -->
-                    <div class="rsd-card" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px;margin-bottom:24px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.03);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
-                            <div>
-                                <h3 style="margin:0 0 6px 0;font-size:1.25rem;font-weight:800;color:#0F172A;">
-                                    🎯 رادار العملاء وصائد الصفقات الآلي (Autonomous Outbound Lead Radar)
-                                </h3>
-                                <p style="margin:0;color:#64748B;font-size:0.9rem;">
-                                    منظومة وكلاء ذكاء اصطناعي تقوم بالبحث والتنقيب، وتحليل فجوة العمولات (OTA Gap)، وصياغة رسائل استشارية مخصصة بهوية م. عمرو أحمد مع بوابة اعتماد بشرية (Human-in-the-Loop).
-                                </p>
-                            </div>
-                            <div style="display:flex;gap:10px;align-items:center;">
-                                <select id="rsdRadarNiche" class="rsd-input" style="padding:10px 14px;border-radius:10px;font-weight:600;min-width:200px;">
-                                    <option value="resorts_redsea">🏨 منتجعات وبوتيك هوتيل البحر الأحمر</option>
-                                    <option value="diving_sharm">🤿 مراكز وسفاري الغوص واليخوت</option>
-                                    <option value="luxury_travel">✈️ شركات السياحة والرحلات الفاخرة</option>
-                                    <option value="medical_clinics">🏥 مراكز السياحة العلاجية والعيادات</option>
-                                </select>
-                                <button type="button" id="rsdBtnRunRadar" onclick="rsdRunRadarScan()" class="rsd-btn" style="background:linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);color:#FFFFFF;padding:11px 22px;border-radius:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
-                                    <span>🤖 ابدأ جولة التنقيب الآلي الآن</span>
-                                </button>
+                            <!-- LIVE CONSOLE -->
+                            <div id="rsdRadarConsole" style="display:none;margin-top:18px;background:#0F172A;border-radius:12px;padding:14px 16px;color:#E2E8F0;font-family:monospace;font-size:0.84rem;line-height:1.6;">
+                                <div style="color:#38BDF8;font-weight:700;margin-bottom:6px;">✦ وحدة الأوركسترا النشطة: جاري استكشاف وتحليل الفرص...</div>
+                                <div id="rsdRadarLogLines"><div>[Scout Agent] 🔍 جاري البحث في أدلة الأعمال ومحركات الخرائط...</div></div>
                             </div>
                         </div>
 
-                        <!-- LIVE AGENT SCANNING STREAM CONSOLE -->
-                        <div id="rsdRadarConsole" style="display:none;margin-top:20px;background:#0F172A;border-radius:14px;padding:16px;color:#E2E8F0;font-family:monospace;font-size:0.88rem;line-height:1.6;border:1px solid #334155;">
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;color:#38BDF8;font-weight:700;">
-                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38BDF8;animation:pulse 1.5s infinite;"></span>
-                                وحدة الأوركسترا النشطة: جاري استكشاف وتحليل الفرص...
+                        <!-- METRICS STRIP -->
+                        <div class="rsd-telemetry-grid">
+                            <div class="rsd-telemetry-card">
+                                <div class="rsd-telemetry-title">إجمالي الفرص المرصودة</div>
+                                <div class="rsd-telemetry-val"><?php echo intval($cnt_total); ?></div>
                             </div>
-                            <div id="rsdRadarLogLines" style="max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;">
-                                <div>[Scout Agent] 🔍 جاري البحث في أدلة الأعمال ومحركات الخرائط لمنشآت البحر الأحمر...</div>
+                            <div class="rsd-telemetry-card" style="border-color:#FEF08A;background:#FEFCE8;">
+                                <div class="rsd-telemetry-title" style="color:#A16207;">⏳ بانتظار الاعتماد البشري</div>
+                                <div class="rsd-telemetry-val" style="color:#CA8A04;"><?php echo intval($cnt_pending); ?></div>
+                            </div>
+                            <div class="rsd-telemetry-card" style="border-color:#BAE6FD;background:#F0F9FF;">
+                                <div class="rsd-telemetry-title" style="color:#0369A1;">💬 تم التواصل عبر الواتساب</div>
+                                <div class="rsd-telemetry-val" style="color:#0284C7;"><?php echo intval($cnt_contacting); ?></div>
+                            </div>
+                            <div class="rsd-telemetry-card" style="border-color:#BBF7D0;background:#F0FDF4;">
+                                <div class="rsd-telemetry-title" style="color:#15803D;">🏆 صفقات ناجحة ومغلقة</div>
+                                <div class="rsd-telemetry-val" style="color:#16A34A;"><?php echo intval($cnt_closed); ?></div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- METRICS OVERVIEW -->
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
-                        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px;padding:18px;text-align:center;">
-                            <div style="font-size:0.85rem;color:#64748B;font-weight:600;margin-bottom:4px;">إجمالي الفرص المرصودة</div>
-                            <div style="font-size:1.6rem;font-weight:900;color:#0F172A;"><?php echo intval($cnt_total); ?></div>
-                        </div>
-                        <div style="background:#FFFFFF;border:1px solid #FEF08A;border-radius:14px;padding:18px;text-align:center;background:#FEFCE8;">
-                            <div style="font-size:0.85rem;color:#A16207;font-weight:700;margin-bottom:4px;">⏳ بانتظار الاعتماد البشري</div>
-                            <div style="font-size:1.6rem;font-weight:900;color:#CA8A04;"><?php echo intval($cnt_pending); ?></div>
-                        </div>
-                        <div style="background:#FFFFFF;border:1px solid #BAE6FD;border-radius:14px;padding:18px;text-align:center;background:#F0F9FF;">
-                            <div style="font-size:0.85rem;color:#0369A1;font-weight:700;margin-bottom:4px;">💬 تم التواصل عبر الواتساب</div>
-                            <div style="font-size:1.6rem;font-weight:900;color:#0284C7;"><?php echo intval($cnt_contacting); ?></div>
-                        </div>
-                        <div style="background:#FFFFFF;border:1px solid #BBF7D0;border-radius:14px;padding:18px;text-align:center;background:#F0FDF4;">
-                            <div style="font-size:0.85rem;color:#15803D;font-weight:700;margin-bottom:4px;">🏆 صفقات ناجحة ومغلقة</div>
-                            <div style="font-size:1.6rem;font-weight:900;color:#16A34A;"><?php echo intval($cnt_closed); ?></div>
-                        </div>
-                    </div>
-
-                    <!-- LEADS PIPELINE GRID -->
-                    <div style="display:flex;flex-direction:column;gap:20px;">
-                        <?php if (empty($all_leads)): ?>
-                            <div style="background:#FFFFFF;border:2px dashed #CBD5E1;border-radius:16px;padding:48px 24px;text-align:center;color:#64748B;">
-                                <span style="font-size:2.5rem;display:block;margin-bottom:12px;">📡</span>
-                                <h4 style="font-size:1.15rem;font-weight:700;color:#1E293B;margin:0 0 6px 0;">لا توجد فرص قيد المتابعة حالياً</h4>
-                                <p style="margin:0 0 16px 0;font-size:0.9rem;">اضغط على زر <strong>"ابدأ جولة التنقيب الآلي الآن"</strong> في الأعلى لتكليف الوكلاء بجلب وتحليل الفرص.</p>
-                                <button type="button" onclick="rsdRunRadarScan()" class="rsd-btn" style="background:#2563EB;color:#FFFFFF;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer;">
-                                    🚀 تشغيل أول جولة استكشاف
-                                </button>
-                            </div>
-                        <?php else: ?>
+                        <!-- LEADS CARDS -->
+                        <div style="display:flex;flex-direction:column;gap:18px;">
                             <?php foreach ($all_leads as $lead): ?>
                                 <?php
                                 $dossier = json_decode($lead['gap_analysis'] ?? '{}', true) ?: [];
                                 $status = $lead['pipeline_status'] ?? 'pending_review';
                                 ?>
-                                <div class="rsd-card" id="leadCard_<?php echo $lead['id']; ?>" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.02);">
-                                    
-                                    <!-- Lead Top Bar -->
-                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                                <div class="rsd-card" id="leadCard_<?php echo $lead['id']; ?>" style="margin-bottom:0;">
+                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
                                         <div>
-                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                                                <h4 style="margin:0;font-size:1.15rem;font-weight:800;color:#0F172A;">
-                                                    <?php echo esc_html($lead['company_name']); ?>
-                                                </h4>
-                                                <span class="rsd-badge" style="background:#EFF6FF;color:#2563EB;font-size:0.75rem;padding:3px 8px;">
-                                                    <?php echo esc_html($lead['target_industry']); ?>
-                                                </span>
+                                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                                <h4 style="margin:0;font-size:1.1rem;font-weight:800;color:#0F172A;"><?php echo esc_html($lead['company_name']); ?></h4>
+                                                <span class="rsd-badge rsd-badge-info"><?php echo esc_html($lead['target_industry']); ?></span>
                                             </div>
-                                            <div style="display:flex;gap:16px;font-size:0.85rem;color:#64748B;">
+                                            <div style="display:flex;gap:16px;font-size:0.82rem;color:#64748B;">
                                                 <?php if (!empty($lead['website_url'])): ?>
-                                                    <a href="<?php echo esc_url($lead['website_url']); ?>" target="_blank" style="color:#2563EB;text-decoration:none;">
-                                                        🌐 <?php echo esc_html($lead['website_url']); ?>
-                                                    </a>
+                                                    <a href="<?php echo esc_url($lead['website_url']); ?>" target="_blank" style="color:#2563EB;text-decoration:none;">🌐 <?php echo esc_html($lead['website_url']); ?></a>
                                                 <?php endif; ?>
                                                 <span>📱 واتساب: <strong>+<?php echo esc_html($lead['contact_phone']); ?></strong></span>
-                                                <span>📅 التاريخ: <?php echo esc_html($lead['created_at']); ?></span>
+                                                <span>📅 <?php echo esc_html($lead['created_at']); ?></span>
                                             </div>
                                         </div>
-
                                         <div>
                                             <?php if ($status === 'pending_review'): ?>
-                                                <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#FEFCE8;color:#CA8A04;border:1px solid #FEF08A;border-radius:9999px;font-weight:700;font-size:0.8rem;">
-                                                    ⏳ بانتظار الاعتماد والموافقة
-                                                </span>
+                                                <span class="rsd-badge rsd-badge-warning">⏳ بانتظار الاعتماد</span>
                                             <?php elseif ($status === 'contacting'): ?>
-                                                <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#F0F9FF;color:#0284C7;border:1px solid #BAE6FD;border-radius:9999px;font-weight:700;font-size:0.8rem;">
-                                                    💬 تم الإرسال وجاري المتابعة
-                                                </span>
+                                                <span class="rsd-badge rsd-badge-info">💬 تم الإرسال وجاري المتابعة</span>
                                             <?php elseif ($status === 'rejected'): ?>
-                                                <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;border-radius:9999px;font-weight:700;font-size:0.8rem;">
-                                                    🗑️ مستبعد
-                                                </span>
+                                                <span class="rsd-badge rsd-badge-danger">🗑️ مستبعد</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
 
-                                    <!-- 2-Column Grid: Dossier Audit vs Amr Ahmed Pitch -->
-                                    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px;margin-bottom:18px;">
-                                        
-                                        <!-- Gap & Audit Dossier -->
-                                        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:16px;">
-                                            <strong style="display:block;font-size:0.9rem;color:#0F172A;margin-bottom:10px;">
-                                                📊 تقرير تدقيق الفجوات والفاقد المالي (Audit Dossier):
-                                            </strong>
-                                            
-                                            <div style="font-size:0.85rem;margin-bottom:8px;line-height:1.5;">
-                                                <span style="color:#059669;font-weight:700;">✦ نقاط القوة:</span>
-                                                <div style="color:#334155;"><?php echo esc_html($dossier['strengths'] ?? 'حضور رقمي نشط'); ?></div>
-                                            </div>
-
-                                            <div style="font-size:0.85rem;margin-bottom:8px;line-height:1.5;">
-                                                <span style="color:#DC2626;font-weight:700;">✦ الفجوات ونقاط التسريب:</span>
-                                                <div style="color:#334155;"><?php echo esc_html($dossier['critical_gaps'] ?? 'غياب محرك الحجز المباشر'); ?></div>
-                                            </div>
-
-                                            <div style="font-size:0.85rem;line-height:1.5;background:#FEF2F2;border:1px solid #FECACA;padding:8px 12px;border-radius:8px;margin-top:10px;">
-                                                <span style="color:#991B1B;font-weight:800;">💸 تقدير الفاقد لعمولات OTA:</span>
-                                                <span style="color:#B91C1C;font-weight:700;"><?php echo esc_html($dossier['revenue_loss_estimate'] ?? '20,000$ سنوياً'); ?></span>
+                                    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:18px;margin-bottom:14px;">
+                                        <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px;">
+                                            <strong style="display:block;font-size:0.85rem;color:#0F172A;margin-bottom:8px;">📊 تقرير تدقيق الفجوات والفاقد المالي:</strong>
+                                            <div style="font-size:0.82rem;margin-bottom:6px;"><span style="color:#059669;font-weight:700;">✦ نقاط القوة:</span> <?php echo esc_html($dossier['strengths'] ?? 'حضور رقمي نشط'); ?></div>
+                                            <div style="font-size:0.82rem;margin-bottom:8px;"><span style="color:#DC2626;font-weight:700;">✦ الفجوات:</span> <?php echo esc_html($dossier['critical_gaps'] ?? 'غياب محرك الحجز المباشر'); ?></div>
+                                            <div style="background:#FEF2F2;border:1px solid #FECACA;padding:6px 10px;border-radius:8px;font-size:0.82rem;color:#991B1B;font-weight:700;">
+                                                💸 تقدير الفاقد لعمولات OTA: <?php echo esc_html($dossier['revenue_loss_estimate'] ?? '20,000$ سنوياً'); ?>
                                             </div>
                                         </div>
 
-                                        <!-- Amr Ahmed Persona Tailored Pitch -->
-                                        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:14px;padding:16px;display:flex;flex-direction:column;">
-                                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                                                <strong style="font-size:0.9rem;color:#166534;">
-                                                    ✉️ رسالة العرض المخصصة (بهوية م. عمرو أحمد):
-                                                </strong>
-                                                <small style="color:#15803D;font-weight:600;">لهجة استشارية دافئة • خالية من السبام</small>
-                                            </div>
-
-                                            <textarea id="pitchText_<?php echo $lead['id']; ?>" class="rsd-input" rows="5" style="flex:1;background:#FFFFFF;border:1px solid #86EFAC;border-radius:8px;font-size:0.88rem;line-height:1.5;padding:10px;color:#1E293B;"><?php echo esc_textarea($lead['tailored_pitch']); ?></textarea>
+                                        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:14px;">
+                                            <strong style="display:block;font-size:0.85rem;color:#166534;margin-bottom:8px;">✉️ رسالة العرض المخصصة (بهوية م. عمرو أحمد):</strong>
+                                            <textarea id="pitchText_<?php echo $lead['id']; ?>" class="rsd-textarea" rows="4" style="background:#FFFFFF;border-color:#86EFAC;font-size:0.85rem;"><?php echo esc_textarea($lead['tailored_pitch']); ?></textarea>
                                         </div>
                                     </div>
 
-                                    <!-- Human-in-the-Loop Action Buttons -->
-                                    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;border-top:1px solid #F1F5F9;padding-top:16px;">
-                                        <button type="button" onclick="rsdSaveLeadPitch(<?php echo $lead['id']; ?>)" class="rsd-btn" style="background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;padding:8px 16px;border-radius:8px;font-weight:600;font-size:0.82rem;cursor:pointer;">
-                                            💾 حفظ التعديل
-                                        </button>
-
-                                        <button type="button" onclick="rsdRejectLead(<?php echo $lead['id']; ?>)" class="rsd-btn" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;padding:8px 16px;border-radius:8px;font-weight:600;font-size:0.82rem;cursor:pointer;">
-                                            🗑️ استبعاد
-                                        </button>
-
+                                    <div style="display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #F1F5F9;padding-top:12px;">
+                                        <button type="button" onclick="rsdSaveLeadPitch(<?php echo $lead['id']; ?>)" class="rsd-btn rsd-btn-secondary" style="padding:6px 14px;font-size:0.8rem;">💾 حفظ التعديل</button>
+                                        <button type="button" onclick="rsdRejectLead(<?php echo $lead['id']; ?>)" class="rsd-btn-danger" style="padding:6px 14px;border-radius:8px;font-size:0.8rem;cursor:pointer;">🗑️ استبعاد</button>
                                         <?php if ($status === 'pending_review'): ?>
-                                            <button type="button" onclick="rsdApproveAndSend(<?php echo $lead['id']; ?>)" class="rsd-btn" style="background:#059669;color:#FFFFFF;padding:9px 20px;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(5,150,105,0.2);">
-                                                <span>🚀 اعتماد وإرسال عبر الواتساب</span>
-                                            </button>
-                                        <?php else: ?>
-                                            <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $lead['contact_phone'])); ?>" target="_blank" class="rsd-btn" style="background:#2563EB;color:#FFFFFF;padding:8px 16px;border-radius:8px;font-weight:700;font-size:0.82rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                                                <span>💬 فتح المحادثة في واتساب</span>
-                                            </a>
+                                            <button type="button" onclick="rsdApproveAndSend(<?php echo $lead['id']; ?>)" class="rsd-btn" style="background:#059669;padding:6px 18px;font-size:0.82rem;">🚀 اعتماد وإرسال عبر الواتساب</button>
                                         <?php endif; ?>
                                     </div>
-
                                 </div>
                             <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-
-                    <!-- RADAR JS LOGIC -->
-                    <script>
-                    function rsdRunRadarScan() {
-                        var btn = document.getElementById('rsdBtnRunRadar');
-                        var consoleBox = document.getElementById('rsdRadarConsole');
-                        var logLines = document.getElementById('rsdRadarLogLines');
-                        var niche = document.getElementById('rsdRadarNiche').value;
-
-                        btn.disabled = true;
-                        btn.innerHTML = '⏳ جاري التنقيب والتحليل...';
-                        consoleBox.style.display = 'block';
-
-                        function addLog(msg) {
-                            var div = document.createElement('div');
-                            div.innerHTML = msg;
-                            logLines.appendChild(div);
-                            logLines.scrollTop = logLines.scrollHeight;
-                        }
-
-                        setTimeout(function() { addLog('[Scout Agent] 🌐 تم فحص 14 موقعاً ومنشأة في البحر الأحمر...'); }, 1200);
-                        setTimeout(function() { addLog('[Analyst Agent] 📊 تم حساب نسب الفاقد لعمولات Booking.com (18-25%)...'); }, 2500);
-                        setTimeout(function() { addLog('[Strategist Agent] ✍️ جاري صياغة رسائل العرض بهوية م. عمرو أحمد...'); }, 3800);
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_radar_run_discovery');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('niche', niche);
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                if (d.success) {
-                                    addLog('<strong style="color:#4ADE80;">✅ اكتملت جولة التنقيب! تم رصد وتدقيق الفرص وحفظها للاعتماد.</strong>');
-                                    setTimeout(function() { window.location.reload(); }, 1500);
-                                } else {
-                                    alert(d.data && d.data.message ? d.data.message : 'حدث خطأ أثناء التنقيب.');
-                                    btn.disabled = false;
-                                    btn.innerHTML = '🤖 ابدأ جولة التنقيب الآلي الآن';
-                                }
-                            })
-                            .catch(function(err) {
-                                alert('خطأ في الاتصال بالخادم.');
-                                btn.disabled = false;
-                                btn.innerHTML = '🤖 ابدأ جولة التنقيب الآلي الآن';
-                            });
-                    }
-
-                    function rsdApproveAndSend(leadId) {
-                        if (!confirm('هل توافق على اعتماد وإرسال رسالة الواتساب المخصصة لهذا العميل فورياً؟')) return;
-
-                        var pitch = document.getElementById('pitchText_' + leadId).value;
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_radar_approve_lead');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('lead_id', leadId);
-                        fd.append('pitch', pitch);
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                if (d.success) {
-                                    alert('🚀 تم اعتماد العرض وإرساله للعميل عبر الواتساب بنجاح!');
-                                    window.location.reload();
-                                } else {
-                                    alert('تعذر الإرسال: ' + (d.data && d.data.message ? d.data.message : ''));
-                                }
-                            });
-                    }
-
-                    function rsdSaveLeadPitch(leadId) {
-                        var pitch = document.getElementById('pitchText_' + leadId).value;
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_radar_edit_pitch');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('lead_id', leadId);
-                        fd.append('pitch', pitch);
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                alert('تم حفظ تعديل نص الرسالة بنجاح.');
-                            });
-                    }
-
-                    function rsdRejectLead(leadId) {
-                        if (!confirm('هل تريد استبعاد هذه الفرصة؟')) return;
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_radar_reject_lead');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('lead_id', leadId);
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                var card = document.getElementById('leadCard_' + leadId);
-                                if (card) card.style.opacity = '0.4';
-                                alert('تم استبعاد الفرصة.');
-                            });
-                    }
-                    </script>
-
-                <!-- TAB 8: WHATSAPP CLOUD API & CRM HUB -->
-                <?php elseif ($active_tab === 'crm'): ?>
-
-                    <?php
-                    $wa_status = get_option('rsd_whatsapp_status', 'connected');
-                    $wa_phone = get_option('rsd_whatsapp_phone', '01028803080');
-                    $wa_ai_enabled = get_option('rsd_whatsapp_ai_enabled', '1');
-                    $wa_outbound_enabled = get_option('rsd_whatsapp_enabled', '1');
-                    $wa_api_url = get_option('rsd_whatsapp_api_url', 'https://open-laws-arrive.loca.lt');
-                    $wa_instance = get_option('rsd_whatsapp_instance', 'rsd_live');
-                    $wa_api_key = get_option('rsd_whatsapp_api_key', 'rsd_secret_token_2026');
-                    $webhook_url = get_rest_url(null, 'rsd/v1/whatsapp-webhook');
-                    $has_gateway = !empty($wa_api_url);
-                    ?>
-
-                    <!-- DIAGNOSTIC WARNING BANNER IF NO GATEWAY CONFIGURED -->
-                    <?php if (!$has_gateway): ?>
-                    <div style="background:#FFFBEB;border:1.5px solid #FCD34D;border-radius:16px;padding:18px 22px;margin-bottom:24px;display:flex;align-items:center;gap:14px;">
-                        <span style="font-size:1.6rem;">⚠️</span>
-                        <div>
-                            <strong style="color:#92400E;font-size:1rem;display:block;margin-bottom:4px;">تنبيه فني: خادم ربط الواتساب (Socket Gateway) غير مدخل</strong>
-                            <p style="color:#B45309;font-size:0.88rem;margin:0;line-height:1.5;">
-                                لتوليد رمز QR مشفر أو كود ربط مكون من 8 خانات متوافق مع خوارزميات واتساب، يرجى إدخال رابط خادم البوابة (مثل <code>Evolution API</code> أو <code>Baileys Bridge</code>) في حقل الإعدادات أدناه، أو تشغيل الـ Webhook المباشر.
-                            </p>
                         </div>
-                    </div>
+
                     <?php endif; ?>
 
-                    <!-- 1. LIVE CONNECTION STATUS & MASTER CONTROLS -->
-                    <div class="rsd-card" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px;margin-bottom:24px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.03);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
-                            <div>
-                                <h3 style="margin:0 0 6px 0;font-size:1.25rem;font-weight:800;color:#0F172A;">
-                                    🟢 بوابة واتساب التفاعلية والرد الآلي الذكي (WhatsApp 2-Way AI Bridge)
-                                </h3>
-                                <p style="margin:0;color:#64748B;font-size:0.9rem;">
-                                    ربط رقم الواتساب مباشرة لتشغيل الوكيل الذكي والرد الآلي 24/7 مع حماية كاملة من الحظر ومحاكاة السلوك البشري.
-                                </p>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:12px;">
-                                <span id="rsdWaStatusBadge" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#F8FAFC;color:#64748B;border:1px solid #CBD5E1;border-radius:9999px;font-weight:700;font-size:0.85rem;">
-                                    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#94A3B8;"></span>
-                                    ⏳ جاري فحص حالة الاتصال الحية...
-                                </span>
-                            </div>
-                        </div>
-
-                        <hr style="border:none;border-top:1px solid #F1F5F9;margin:20px 0;">
-
-                        <!-- MASTER TOGGLES -->
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
-                            <!-- AI Auto-Responder Toggle -->
-                            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;">
-                                <div>
-                                    <strong style="display:block;font-size:0.95rem;color:#1E293B;">🤖 الرد الآلي الذكي بالذكاء الاصطناعي</strong>
-                                    <span style="font-size:0.8rem;color:#64748B;">يقوم الوكيل بالرد الفوري على استفسارات العملاء في الواتساب</span>
-                                </div>
-                                <label style="position:relative;display:inline-block;width:48px;height:26px;">
-                                    <input type="checkbox" id="rsdWaAiToggle" <?php checked($wa_ai_enabled, '1'); ?> onchange="rsdToggleWaAi(this.checked)" style="opacity:0;width:0;height:0;">
-                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:<?php echo $wa_ai_enabled === '1' ? '#2563EB' : '#CBD5E1'; ?>;border-radius:26px;transition:0.3s;" id="rsdWaAiSlider">
-                                        <span style="position:absolute;height:20px;width:20px;left:<?php echo $wa_ai_enabled === '1' ? '24px' : '3px'; ?>;bottom:3px;background:#FFFFFF;border-radius:50%;transition:0.3s;" id="rsdWaAiKnob"></span>
-                                    </span>
-                                </label>
-                            </div>
-
-                            <!-- Outbound Booking Alerts Toggle -->
-                            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;">
-                                <div>
-                                    <strong style="display:block;font-size:0.95rem;color:#1E293B;">🔔 إشعارات الحجوزات الصادرة</strong>
-                                    <span style="font-size:0.8rem;color:#64748B;">إرسال تأكيد فوري لواتساب العميل فور تسجيل بياناته بالموقع</span>
-                                </div>
-                                <label style="position:relative;display:inline-block;width:48px;height:26px;">
-                                    <input type="checkbox" id="rsdWaOutboundToggle" <?php checked($wa_outbound_enabled, '1'); ?> onchange="rsdToggleWaOutbound(this.checked)" style="opacity:0;width:0;height:0;">
-                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:<?php echo $wa_outbound_enabled === '1' ? '#10B981' : '#CBD5E1'; ?>;border-radius:26px;transition:0.3s;" id="rsdWaOutSlider">
-                                        <span style="position:absolute;height:20px;width:20px;left:<?php echo $wa_outbound_enabled === '1' ? '24px' : '3px'; ?>;bottom:3px;background:#FFFFFF;border-radius:50%;transition:0.3s;" id="rsdWaOutKnob"></span>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. DUAL PAIRING INTERFACE (CRYPTOGRAPHIC QR + 8-DIGIT PAIRING CODE) -->
-                    <div style="display:grid;grid-template-columns:360px 1fr;gap:24px;margin-bottom:24px;">
-                        
-                        <!-- Pairing Card with Tabs -->
-                        <div class="rsd-card" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px;text-align:center;">
-                            
-                            <!-- Pairing Mode Selector -->
-                            <div style="display:flex;background:#F1F5F9;border-radius:12px;padding:4px;margin-bottom:18px;">
-                                <button type="button" id="tabBtnQr" onclick="rsdSwitchPairMode('qr')" style="flex:1;padding:8px;border:none;border-radius:8px;background:#FFFFFF;font-weight:700;font-size:0.82rem;color:#0F172A;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
-                                    📷 مسح رمز QR
-                                </button>
-                                <button type="button" id="tabBtnCode" onclick="rsdSwitchPairMode('code')" style="flex:1;padding:8px;border:none;border-radius:8px;background:transparent;font-weight:600;font-size:0.82rem;color:#64748B;cursor:pointer;">
-                                    🔢 كود من 8 أرقام
-                                </button>
-                            </div>
-
-                            <!-- Mode 1: Cryptographic QR Code -->
-                            <div id="rsdPairModeQr">
-                                <h4 style="margin:0 0 8px 0;font-size:1rem;font-weight:700;color:#0F172A;">مسح رمز QR المشفر</h4>
-                                <p style="color:#64748B;font-size:0.8rem;margin-bottom:14px;">
-                                    افتح تطبيق واتساب ➔ الأجهزة المرتبطة ➔ ربط جهاز
-                                </p>
-                                
-                                <div id="rsdQrContainer" style="width:230px;height:230px;margin:0 auto 16px auto;background:#F8FAFC;border:2px dashed #CBD5E1;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;">
-                                    <div id="rsdQrEmptyState" style="padding:16px;color:#94A3B8;font-size:0.85rem;<?php echo $has_gateway ? 'display:none;' : ''; ?>">
-                                        ⚠️ يرجى إدخال رابط الـ Gateway أدناه لتوليد جلسة حية مشفرة.
-                                    </div>
-                                    <img id="rsdQrImage" src="" alt="WhatsApp Dynamic QR" style="max-width:92%;border-radius:8px;<?php echo $has_gateway ? '' : 'display:none;'; ?>">
-                                    <div id="rsdQrLoader" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,0.95);align-items:center;justify-content:center;font-weight:700;color:#2563EB;flex-direction:column;gap:8px;">
-                                        <span>⏳ جاري توليد رمز مشفر...</span>
-                                    </div>
-                                </div>
-
-                                <button type="button" onclick="rsdRefreshQrCode()" class="rsd-btn" style="width:100%;background:#2563EB;color:#FFFFFF;border-radius:10px;padding:10px;font-weight:700;font-size:0.85rem;cursor:pointer;margin-bottom:8px;">
-                                    🔄 توليد / تحديث رمز QR
-                                </button>
-                            </div>
-
-                            <!-- Mode 2: 8-Digit Pairing Code -->
-                            <div id="rsdPairModeCode" style="display:none;">
-                                <h4 style="margin:0 0 8px 0;font-size:1rem;font-weight:700;color:#0F172A;">الربط برقم الهاتف (Pairing Code)</h4>
-                                <p style="color:#64748B;font-size:0.8rem;margin-bottom:14px;">
-                                    بدون مسح الكاميرا — أدخل الكود في هاتفك مباشرة
-                                </p>
-
-                                <div style="margin-bottom:14px;text-align:right;">
-                                    <label style="font-size:0.8rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">رقم الهاتف المسجل في واتساب:</label>
-                                    <input type="text" id="rsdPairPhoneInput" value="<?php echo esc_attr($wa_phone); ?>" class="rsd-input" placeholder="201028803080" style="text-align:center;font-weight:700;font-size:1rem;">
-                                </div>
-
-                                <button type="button" onclick="rsdRequestPairingCode()" class="rsd-btn" style="width:100%;background:#0F172A;color:#FFFFFF;border-radius:10px;padding:10px;font-weight:700;font-size:0.85rem;cursor:pointer;margin-bottom:14px;">
-                                    🔑 طلب كود التأكيد (8-Digit Code)
-                                </button>
-
-                                <div id="rsdPairingCodeDisplay" style="display:none;background:#F0FDF4;border:2px solid #86EFAC;border-radius:12px;padding:14px;margin-bottom:14px;">
-                                    <span style="color:#166534;font-size:0.8rem;font-weight:700;display:block;margin-bottom:6px;">كود الاقتران الخاص بك:</span>
-                                    <div id="rsdPairingCodeValue" style="font-family:monospace;font-size:1.7rem;font-weight:900;letter-spacing:4px;color:#15803D;"></div>
-                                </div>
-                            </div>
-
-                            <div style="display:flex;gap:8px;">
-                                <button type="button" onclick="rsdCheckWaStatus()" class="rsd-btn" style="flex:1;background:#F1F5F9;color:#334155;border:1px solid #CBD5E1;border-radius:10px;padding:8px;font-weight:600;font-size:0.8rem;cursor:pointer;">
-                                    🔌 فحص الاتصال
-                                </button>
-                                <button type="button" onclick="rsdDisconnectWa()" class="rsd-btn" style="flex:1;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;border-radius:10px;padding:8px;font-weight:600;font-size:0.8rem;cursor:pointer;">
-                                    🔴 فك الارتباط
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Webhook & Configuration Card -->
-                        <div class="rsd-card" style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:18px;padding:24px;">
-                            <h4 style="margin:0 0 16px 0;font-size:1.05rem;font-weight:700;color:#0F172A;">⚙️ إعدادات البوابة والـ Webhook المباشر</h4>
-                            
-                            <form method="POST">
-                                <?php wp_nonce_field('rsd_crm_settings_nonce'); ?>
-                                <input type="hidden" name="active_tab" value="crm">
-
-                                <!-- Webhook URL Display -->
-                                <div class="rsd-form-group" style="margin-bottom:18px;">
-                                    <label class="rsd-label" style="font-weight:700;">🔗 رابط الـ Webhook المخصص للاستقبال (2-Way Endpoint)</label>
-                                    <div style="display:flex;gap:8px;">
-                                        <input type="text" id="rsdWebhookUrlInput" readonly class="rsd-input" value="<?php echo esc_attr($webhook_url); ?>" style="background:#F8FAFC;font-family:monospace;direction:ltr;color:#0F172A;font-weight:600;">
-                                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('rsdWebhookUrlInput').value);alert('تم نسخ رابط الـ Webhook بنجاح!');" class="rsd-btn" style="background:#0F172A;color:#FFFFFF;white-space:nowrap;padding:0 16px;border-radius:10px;cursor:pointer;">
-                                            📋 نسخ الرابط
-                                        </button>
-                                    </div>
-                                    <small style="color:#64748B;display:block;margin-top:4px;">
-                                        قم بلصق هذا الرابط في إعدادات Webhook الخاصة ببوابة الواتساب لتوجيه رسائل العملاء إلى الذكاء الاصطناعي مباشرة.
-                                    </small>
-                                </div>
-
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                                    <div class="rsd-form-group">
-                                        <label class="rsd-label">رقم هاتف المبيعات (مع كود الدولة)</label>
-                                        <input type="text" name="rsd_whatsapp_phone" class="rsd-input" value="<?php echo esc_attr($wa_phone); ?>" placeholder="201028803080">
-                                    </div>
-                                    <div class="rsd-form-group">
-                                        <label class="rsd-label">اسم جلسة البوابة (Instance Name)</label>
-                                        <input type="text" name="rsd_whatsapp_instance" class="rsd-input" value="<?php echo esc_attr($wa_instance); ?>" placeholder="rsd_live">
-                                    </div>
-                                </div>
-
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">رابط خادم البوابة / السوكيت (Socket / Gateway API URL)</label>
-                                    <input type="text" name="rsd_whatsapp_api_url" class="rsd-input" value="<?php echo esc_attr($wa_api_url); ?>" placeholder="https://api.your-whatsapp-server.com">
-                                </div>
-
-                                <div class="rsd-form-group">
-                                    <label class="rsd-label">مفتاح الأمان (API Secret Key / Global Token)</label>
-                                    <input type="password" name="rsd_whatsapp_api_key" class="rsd-input" value="<?php echo esc_attr($wa_api_key); ?>" placeholder="••••••••••••••••">
-                                </div>
-
-                                <button type="submit" name="rsd_save_settings" class="rsd-btn" style="background:#2563EB;color:#FFFFFF;padding:12px 28px;border-radius:10px;font-weight:700;cursor:pointer;">
-                                    💾 حفظ الإعدادات
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <script>
-                    function rsdSwitchPairMode(mode) {
-                        var qrSec = document.getElementById('rsdPairModeQr');
-                        var codeSec = document.getElementById('rsdPairModeCode');
-                        var btnQr = document.getElementById('tabBtnQr');
-                        var btnCode = document.getElementById('tabBtnCode');
-
-                        if (mode === 'qr') {
-                            qrSec.style.display = 'block';
-                            codeSec.style.display = 'none';
-                            btnQr.style.background = '#FFFFFF';
-                            btnQr.style.color = '#0F172A';
-                            btnQr.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                            btnCode.style.background = 'transparent';
-                            btnCode.style.color = '#64748B';
-                            btnCode.style.boxShadow = 'none';
-                        } else {
-                            qrSec.style.display = 'none';
-                            codeSec.style.display = 'block';
-                            btnCode.style.background = '#FFFFFF';
-                            btnCode.style.color = '#0F172A';
-                            btnCode.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                            btnQr.style.background = 'transparent';
-                            btnQr.style.color = '#64748B';
-                            btnQr.style.boxShadow = 'none';
-                        }
-                    }
-
-                    function rsdToggleWaAi(enabled) {
-                        var slider = document.getElementById('rsdWaAiSlider');
-                        var knob = document.getElementById('rsdWaAiKnob');
-                        slider.style.background = enabled ? '#2563EB' : '#CBD5E1';
-                        knob.style.left = enabled ? '24px' : '3px';
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_toggle_ai');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('enabled', enabled ? '1' : '0');
-                        fetch(ajaxurl, { method: 'POST', body: fd });
-                    }
-
-                    function rsdToggleWaOutbound(enabled) {
-                        var slider = document.getElementById('rsdWaOutSlider');
-                        var knob = document.getElementById('rsdWaOutKnob');
-                        slider.style.background = enabled ? '#10B981' : '#CBD5E1';
-                        knob.style.left = enabled ? '24px' : '3px';
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_toggle_outbound');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('enabled', enabled ? '1' : '0');
-                        fetch(ajaxurl, { method: 'POST', body: fd });
-                    }
-
-                    function rsdRefreshQrCode() {
-                        var loader = document.getElementById('rsdQrLoader');
-                        var qrImg = document.getElementById('rsdQrImage');
-                        var emptyState = document.getElementById('rsdQrEmptyState');
-                        loader.style.display = 'flex';
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_get_qr');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                loader.style.display = 'none';
-                                if (d.success && d.data.qrcode_url) {
-                                    qrImg.src = d.data.qrcode_url;
-                                    qrImg.style.display = 'block';
-                                    if (emptyState) emptyState.style.display = 'none';
-                                } else {
-                                    alert(d.data && d.data.message ? d.data.message : 'تعذر توليد رمز QR مشفر.');
-                                }
-                            })
-                            .catch(function() {
-                                loader.style.display = 'none';
-                                alert('خطأ في الاتصال بالخادم.');
-                            });
-                    }
-
-                    function rsdRequestPairingCode() {
-                        var phone = document.getElementById('rsdPairPhoneInput').value;
-                        if (!phone) { alert('يرجى إدخال رقم الهاتف.'); return; }
-
-                        var disp = document.getElementById('rsdPairingCodeDisplay');
-                        var val = document.getElementById('rsdPairingCodeValue');
-                        val.innerText = '⏳ جاري الطلب...';
-                        disp.style.display = 'block';
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_get_pairing_code');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-                        fd.append('phone', phone);
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                if (d.success && d.data.pairing_code) {
-                                    val.innerText = d.data.pairing_code;
-                                } else {
-                                    disp.style.display = 'none';
-                                    alert(d.data && d.data.message ? d.data.message : 'تعذر استلام كود الربط.');
-                                }
-                            })
-                            .catch(function() {
-                                disp.style.display = 'none';
-                                alert('خطأ في الاتصال بالخادم.');
-                            });
-                    }
-
-                    function rsdCheckWaStatus() {
-                        var badge = document.getElementById('rsdWaStatusBadge');
-                        badge.innerHTML = '⏳ جاري فحص الاتصال...';
-
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_check_status');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function(r) { return r.json(); })
-                            .then(function(d) {
-                                if (d.success && (d.data.state === 'open' || d.data.state === 'connected')) {
-                                    badge.style.background = '#ECFDF5';
-                                    badge.style.color = '#059669';
-                                    badge.style.borderColor = '#A7F3D0';
-                                    badge.innerHTML = '🟢 متصل ومقترن بنجاح: +' + d.data.phone;
-                                } else {
-                                    badge.style.background = '#FEF2F2';
-                                    badge.style.color = '#DC2626';
-                                    badge.style.borderColor = '#FECACA';
-                                    badge.innerHTML = '🔴 غير متصل - يرجى مسح رمز الـ QR أو الربط بالكود';
-                                }
-                            });
-                    }
-
-                    
-                    // Dynamic Live Status Check on Load
-                    if (typeof window !== 'undefined') {
-                        window.addEventListener('load', function() {
-                            if (typeof rsdCheckWaStatus === 'function') {
-                                rsdCheckWaStatus();
-                            }
-                        });
-                    }
-
-                    function rsdDisconnectWa() {
-                        if (!confirm('هل أنت متأكد من رغبتك في فك الارتباط وتسجيل الخروج من جلسة الواتساب؟')) return;
-                        var fd = new FormData();
-                        fd.append('action', 'rsd_wa_disconnect');
-                        fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
-
-                        fetch(ajaxurl, { method: 'POST', body: fd })
-                            .then(function() {
-                                rsdCheckWaStatus();
-                                alert('تم قطع الاتصال بنجاح.');
-                            });
-                    }
-                    
-                    </script>
-
-                    <!-- LEADS TABLE -->
-                    <div class="rsd-card">
-                        <div class="rsd-card-header">
-                            <h3 class="rsd-card-title">سجل العملاء والحجوزات المسجلة بالـ CRM</h3>
-                            <span class="rsd-badge rsd-badge-success"><?php echo intval($total_leads); ?> عميل مسجل</span>
-                        </div>
-                        <table class="rsd-table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>اسم العميل</th>
-                                    <th>رقم الواتساب</th>
-                                    <th>الخدمة / المشروع</th>
-                                    <th>تفاصيل المحادثة</th>
-                                    <th>التاريخ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($recent_logs)): ?>
-                                    <?php foreach ($recent_logs as $log): ?>
-                                        <?php
-                                        $c_name = $log['customer_name'] ?? ($log['name'] ?? 'عميل واتساب');
-                                        $c_phone = $log['customer_phone'] ?? ($log['phone'] ?? '');
-                                        $c_service = $log['service_type'] ?? ($log['service'] ?? 'استفسار حجز مباشر');
-                                        $c_details = $log['booking_details'] ?? ($log['details'] ?? '-');
-                                        ?>
-                                        <tr>
-                                            <td>#<?php echo esc_html($log['id']); ?></td>
-                                            <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name ?: 'زائر الموقع'); ?></td>
-                                            <td>
-                                                <?php if (!empty($c_phone)): ?>
-                                                    <a href="https://wa.me/<?php echo esc_attr(preg_replace('/[^0-9]/', '', $c_phone)); ?>" target="_blank" class="rsd-badge rsd-badge-success" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                                                        💬 +<?php echo esc_html($c_phone); ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <span class="rsd-badge">غير مسجل</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><span class="rsd-badge" style="background:#EFF6FF;color:#2563EB;"><?php echo esc_html($c_service); ?></span></td>
-                                            <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;"><?php echo esc_html($c_details); ?></td>
-                                            <td style="color:#94A3B8;font-size:0.85rem;"><?php echo esc_html($log['created_at']); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="6" style="text-align:center;color:#71717A;padding:30px;">لا توجد سجلات بعد.</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                <?php endif; ?>
-
+                </div>
             </div>
-
         </div>
+
+        <!-- SCRIPTS FOR RADAR & CRM INTERACTION -->
+        <script>
+        function rsdSwitchPairMode(mode) {
+            var qrSec = document.getElementById('rsdPairModeQr');
+            var codeSec = document.getElementById('rsdPairModeCode');
+            var btnQr = document.getElementById('tabBtnQr');
+            var btnCode = document.getElementById('tabBtnCode');
+
+            if (mode === 'qr') {
+                qrSec.style.display = 'block';
+                codeSec.style.display = 'none';
+                btnQr.style.background = '#FFFFFF';
+                btnQr.style.color = '#0F172A';
+                btnQr.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+                btnCode.style.background = 'transparent';
+                btnCode.style.color = '#64748B';
+                btnCode.style.boxShadow = 'none';
+            } else {
+                qrSec.style.display = 'none';
+                codeSec.style.display = 'block';
+                btnCode.style.background = '#FFFFFF';
+                btnCode.style.color = '#0F172A';
+                btnCode.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+                btnQr.style.background = 'transparent';
+                btnQr.style.color = '#64748B';
+                btnQr.style.boxShadow = 'none';
+            }
+        }
+
+        function rsdRefreshQrCode() {
+            var img = document.getElementById('rsdQrCodeImg');
+            var ph = document.getElementById('rsdQrPlaceholder');
+            ph.innerText = '⏳ جاري استدعاء رمز QR...';
+
+            var fd = new FormData();
+            fd.append('action', 'rsd_wa_get_qr');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.success && d.data.qrcode_url) {
+                        img.src = d.data.qrcode_url;
+                        img.style.display = 'block';
+                        ph.style.display = 'none';
+                    } else {
+                        ph.innerText = (d.data && d.data.message) ? d.data.message : 'تعذر تحميل رمز QR';
+                    }
+                });
+        }
+
+        function rsdRequestPairingCode() {
+            var phone = document.getElementById('rsdPairPhoneInput').value;
+            var disp = document.getElementById('rsdPairingCodeDisplay');
+            var val = document.getElementById('rsdPairingCodeVal');
+
+            disp.style.display = 'block';
+            val.innerText = '⏳ جاري التوليد...';
+
+            var fd = new FormData();
+            fd.append('action', 'rsd_wa_get_pairing_code');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+            fd.append('phone', phone);
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.success && d.data.pairing_code) {
+                        val.innerText = d.data.pairing_code;
+                    } else {
+                        disp.style.display = 'none';
+                        alert(d.data && d.data.message ? d.data.message : 'تعذر استلام كود الربط.');
+                    }
+                });
+        }
+
+        function rsdCheckWaStatus() {
+            var badge = document.getElementById('rsdWaStatusBadge');
+            if (!badge) return;
+            badge.innerHTML = '⏳ جاري الفحص...';
+
+            var fd = new FormData();
+            fd.append('action', 'rsd_wa_check_status');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.success && (d.data.state === 'open' || d.data.state === 'connected')) {
+                        badge.className = 'rsd-badge rsd-badge-success';
+                        badge.innerHTML = '🟢 متصل: +' + d.data.phone;
+                    } else {
+                        badge.className = 'rsd-badge rsd-badge-danger';
+                        badge.innerHTML = '🔴 غير متصل';
+                    }
+                });
+        }
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('load', function() {
+                if (typeof rsdCheckWaStatus === 'function') rsdCheckWaStatus();
+            });
+        }
+
+        function rsdDisconnectWa() {
+            if (!confirm('هل أنت متأكد من رغبتك في فك الارتباط وتسجيل الخروج؟')) return;
+            var fd = new FormData();
+            fd.append('action', 'rsd_wa_disconnect');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function() {
+                    rsdCheckWaStatus();
+                    alert('تم قطع الاتصال بنجاح.');
+                });
+        }
+
+        function rsdRunRadarScan() {
+            var btn = document.getElementById('rsdBtnRunRadar');
+            var consoleBox = document.getElementById('rsdRadarConsole');
+            var logLines = document.getElementById('rsdRadarLogLines');
+            var niche = document.getElementById('rsdRadarNiche').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ جاري التنقيب والتحليل...';
+            consoleBox.style.display = 'block';
+
+            var fd = new FormData();
+            fd.append('action', 'rsd_radar_run_discovery');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+            fd.append('niche', niche);
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.success) {
+                        alert('✅ اكتملت جولة التنقيب بنجاح! تم رصد وتدقيق الفرص.');
+                        window.location.reload();
+                    } else {
+                        alert('حدث خطأ أثناء التنقيب: ' + (d.data && d.data.message ? d.data.message : ''));
+                        btn.disabled = false;
+                        btn.innerHTML = '🤖 ابدأ جولة التنقيب الآلي الآن';
+                    }
+                });
+        }
+
+        function rsdApproveAndSend(leadId) {
+            if (!confirm('هل توافق على اعتماد وإرسال رسالة الواتساب المخصصة لهذا العميل؟')) return;
+            var pitch = document.getElementById('pitchText_' + leadId).value;
+            var fd = new FormData();
+            fd.append('action', 'rsd_radar_approve_lead');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+            fd.append('lead_id', leadId);
+            fd.append('pitch', pitch);
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    if (d.success) {
+                        alert('🚀 تم اعتماد العرض وإرساله للعميل بنجاح!');
+                        window.location.reload();
+                    } else {
+                        alert('تعذر الإرسال: ' + (d.data && d.data.message ? d.data.message : ''));
+                    }
+                });
+        }
+
+        function rsdSaveLeadPitch(leadId) {
+            var pitch = document.getElementById('pitchText_' + leadId).value;
+            var fd = new FormData();
+            fd.append('action', 'rsd_radar_edit_pitch');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+            fd.append('lead_id', leadId);
+            fd.append('pitch', pitch);
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function() { alert('تم حفظ تعديل نص الرسالة بنجاح.'); });
+        }
+
+        function rsdRejectLead(leadId) {
+            if (!confirm('هل تريد استبعاد هذه الفرصة؟')) return;
+            var fd = new FormData();
+            fd.append('action', 'rsd_radar_reject_lead');
+            fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+            fd.append('lead_id', leadId);
+
+            fetch(ajaxurl, { method: 'POST', body: fd })
+                .then(function() {
+                    var card = document.getElementById('leadCard_' + leadId);
+                    if (card) card.style.opacity = '0.35';
+                    alert('تم استبعاد الفرصة.');
+                });
+        }
+        </script>
         <?php
     }
 }
 
+// Initialize Plugin
 new RedSeaAIEngine();
