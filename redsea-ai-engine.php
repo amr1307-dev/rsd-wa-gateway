@@ -10294,66 +10294,68 @@ public function handle_ajax_wa_disconnect() {
             .rsd-badge-danger  { background: #FEE2E2 !important; color: #B91C1C !important; border: 1px solid #FECACA !important; }
 
             
-            /* 1. Ensure the parent card encloses the table and provides inner breathing room */
+            /* Card Container */
             .rsd-crm-card {
                 background: #FFFFFF !important;
                 border: 1px solid #E2E8F0 !important;
                 border-radius: 16px !important;
-                padding: 24px !important;
+                padding: 20px 24px !important;
                 box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
-                overflow: hidden !important;
+                overflow: visible !important;
             }
 
-            /* 2. Responsive wrapper allowing smooth full-width expansion */
+            /* Inner Table Wrapper - No forced scrollbar */
             .rsd-crm-table-container {
                 width: 100% !important;
-                overflow-x: auto !important;
-                margin-top: 16px !important;
+                overflow-x: hidden !important;
+                margin-top: 12px !important;
                 box-sizing: border-box !important;
             }
 
-            /* 3. Table styling & column widths */
+            /* Responsive Table */
             table.rsd-crm-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important;
+                table-layout: table-fixed !important; /* Forces columns to fit exactly within 100% */
                 direction: rtl !important;
             }
 
+            /* Column Proportions */
             table.rsd-crm-table th, 
             table.rsd-crm-table td {
-                padding: 14px 12px !important;
+                padding: 12px 8px !important;
                 vertical-align: middle !important;
                 border-bottom: 1px solid #F1F5F9 !important;
+                font-size: 13px !important;
+                text-align: center !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
                 white-space: nowrap !important;
             }
 
-            /* 4. Fix Date Column explicitly */
-            table.rsd-crm-table th:first-child,
-            table.rsd-crm-table td:first-child {
-                min-width: 150px !important;
-                text-align: right !important;
-                padding-right: 18px !important;
-                color: #64748B !important;
-                font-size: 13px !important;
-            }
+            /* Specific Column Width Distribution */
+            table.rsd-crm-table th:nth-child(1), table.rsd-crm-table td:nth-child(1) { width: 6%; }  /* # ID */
+            table.rsd-crm-table th:nth-child(2), table.rsd-crm-table td:nth-child(2) { width: 18%; text-align: right !important; } /* Customer Name */
+            table.rsd-crm-table th:nth-child(3), table.rsd-crm-table td:nth-child(3) { width: 18%; } /* Phone Badge */
+            table.rsd-crm-table th:nth-child(4), table.rsd-crm-table td:nth-child(4) { width: 18%; } /* Service */
+            table.rsd-crm-table th:nth-child(5), table.rsd-crm-table td:nth-child(5) { width: 22%; text-align: right !important; } /* Message Preview */
+            table.rsd-crm-table th:nth-child(6), table.rsd-crm-table td:nth-child(6) { width: 18%; color: #64748B; font-size: 12px; } /* Date */
 
-            /* 5. Fix Phone badge alignment */
+            /* Badge Styling */
             .rsd-phone-badge {
                 direction: ltr !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                gap: 6px !important;
+                gap: 4px !important;
                 font-family: monospace !important;
-                font-size: 12px !important;
+                font-size: 11px !important;
                 background: #DCFCE7 !important;
                 color: #15803D !important;
-                padding: 4px 10px !important;
-                border-radius: 20px !important;
-                text-decoration: none !important;
+                padding: 3px 8px !important;
+                border-radius: 12px !important;
             }
 
             /* 6. TABLES */
@@ -11048,7 +11050,7 @@ public function handle_ajax_wa_disconnect() {
 
                         </div>
 
-                        <!-- LEADS CRM TABLE -->
+                                                <!-- LEADS CRM TABLE -->
                         <div class="rsd-card rsd-crm-card">
                             <div class="rsd-card-header" style="margin-bottom:0;padding-bottom:12px;">
                                 <div style="display:flex;align-items:center;gap:12px;">
@@ -11065,12 +11067,12 @@ public function handle_ajax_wa_disconnect() {
                                 <table class="rsd-table rsd-crm-table" id="rsdCrmTable">
                                     <thead>
                                         <tr>
-                                            <th>التاريخ</th>
                                             <th>#</th>
                                             <th>اسم العميل</th>
                                             <th>رقم الواتساب</th>
                                             <th>نوع الخدمة</th>
                                             <th>تفاصيل المحادثة</th>
+                                            <th>التاريخ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -11083,7 +11085,6 @@ public function handle_ajax_wa_disconnect() {
                                                 $c_details = $log['booking_details'] ?? ($log['details'] ?? '-');
                                                 ?>
                                                 <tr>
-                                                    <td><?php echo esc_html($log['created_at']); ?></td>
                                                     <td style="font-weight:700;">#<?php echo esc_html($log['id']); ?></td>
                                                     <td style="font-weight:700;color:#0F172A;"><?php echo esc_html($c_name); ?></td>
                                                     <td>
@@ -11096,7 +11097,8 @@ public function handle_ajax_wa_disconnect() {
                                                         <?php endif; ?>
                                                     </td>
                                                     <td><span class="rsd-badge rsd-badge-info"><?php echo esc_html($c_service); ?></span></td>
-                                                    <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#475569;"><?php echo esc_html($c_details); ?></td>
+                                                    <td style="color:#475569;"><?php echo esc_html($c_details); ?></td>
+                                                    <td style="color:#94A3B8;font-size:12px;"><?php echo esc_html($log['created_at']); ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
