@@ -10294,68 +10294,65 @@ public function handle_ajax_wa_disconnect() {
             .rsd-badge-danger  { background: #FEE2E2 !important; color: #B91C1C !important; border: 1px solid #FECACA !important; }
 
             
-            /* Card Setup */
+            /* Card Container */
             .rsd-crm-card {
                 background: #FFFFFF !important;
                 border: 1px solid #E2E8F0 !important;
                 border-radius: 16px !important;
-                padding: 24px !important;
+                padding: 20px 24px !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
             }
 
+            /* Table Wrapper */
             .rsd-crm-table-container {
                 width: 100% !important;
-                overflow-x: auto !important;
+                overflow-x: hidden !important; /* Strictly disable horizontal scrollbar */
                 margin-top: 16px !important;
             }
 
-            /* Master Table */
+            /* Responsive Table Structure */
             table.rsd-crm-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important;
+                table-layout: fixed !important; /* Enforces strict percentage column boundaries */
                 direction: rtl !important;
             }
 
             table.rsd-crm-table th, 
             table.rsd-crm-table td {
-                padding: 10px 8px !important;
+                padding: 10px 6px !important;
                 vertical-align: middle !important;
                 border-bottom: 1px solid #F1F5F9 !important;
                 font-size: 12px !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
                 white-space: nowrap !important;
-                text-align: right !important;
             }
 
-            /* Specific Alignment */
-            table.rsd-crm-table th:first-child, 
-            table.rsd-crm-table td:first-child {
-                text-align: center !important;
-                width: 40px !important;
-            }
+            /* Exact 6-Column Percentage Distribution */
+            table.rsd-crm-table th:nth-child(1), table.rsd-crm-table td:nth-child(1) { width: 5% !important; text-align: center !important; } /* # ID */
+            table.rsd-crm-table th:nth-child(2), table.rsd-crm-table td:nth-child(2) { width: 18% !important; text-align: right !important; font-weight: 600 !important; } /* Client Name */
+            table.rsd-crm-table th:nth-child(3), table.rsd-crm-table td:nth-child(3) { width: 17% !important; text-align: center !important; } /* Phone Badge */
+            table.rsd-crm-table th:nth-child(4), table.rsd-crm-table td:nth-child(4) { width: 18% !important; text-align: center !important; } /* Service Type */
+            table.rsd-crm-table th:nth-child(5), table.rsd-crm-table td:nth-child(5) { width: 26% !important; text-align: right !important; color: #475569 !important; } /* Message */
+            table.rsd-crm-table th:nth-child(6), table.rsd-crm-table td:nth-child(6) { width: 16% !important; text-align: left !important; color: #94A3B8 !important; font-size: 11px !important; direction: ltr !important; } /* Date */
 
-            table.rsd-crm-table td.date-col, 
-            table.rsd-crm-table th.date-col {
-                color: #64748B !important;
-                font-size: 11px !important;
-                direction: ltr !important;
-                text-align: left !important;
-            }
-
-            /* Phone Badge Fix */
+            /* Badge Styling */
             .rsd-phone-badge {
                 direction: ltr !important;
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                gap: 4px !important;
+                display: inline-block !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
                 font-family: monospace !important;
-                font-size: 11px !important;
+                font-size: 10.5px !important;
                 background: #DCFCE7 !important;
                 color: #15803D !important;
-                padding: 2px 8px !important;
+                padding: 3px 8px !important;
                 border-radius: 12px !important;
+                box-sizing: border-box !important;
             }
 
             /* 6. TABLES */
