@@ -1,0 +1,17 @@
+{
+  "name": "rsd-wa-gateway",
+  "version": "1.0.0",
+  "description": "Zero-Config WhatsApp Multi-Device Socket Gateway for RED SEA DIGITAL AI Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pino": "^9.1.2",
+    "qrcode": "^1.5.3"
+  }
+}

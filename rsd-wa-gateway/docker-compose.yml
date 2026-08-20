@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  rsd-wa-gateway:
+    build: .
+    container_name: rsd-wa-gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - API_KEY=rsd_secret_token_2026
+      - WEBHOOK_URL=https://redseadigital.pro/wp-json/rsd/v1/whatsapp-webhook
+    volumes:
+      - ./sessions:/app/sessions
