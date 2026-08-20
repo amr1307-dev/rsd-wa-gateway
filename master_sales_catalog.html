@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>وثيقة خطة المبيعات وتفصيل الخدمات والأسعار — Red Sea Digital</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+    @page {
+        size: A4 portrait;
+        margin: 14mm 14mm 16mm 14mm;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        background-color: #fcfbf9;
+        color: #1e293b;
+        font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+        font-size: 9.5pt;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        direction: rtl;
+        text-align: right;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Header Banner */
+    .header-banner {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        padding: 22px 26px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border-bottom: 4px solid #c5a059;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        background-color: #c5a059 !important;
+        color: #0f172a !important;
+        border-radius: 4px;
+        font-size: 8.5pt;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .header-banner h1 {
+        margin: 0 0 6px 0;
+        font-size: 17pt;
+        color: #ffffff !important;
+        font-weight: 800;
+        line-height: 1.35;
+    }
+
+    .header-banner p {
+        margin: 0;
+        font-size: 9.5pt;
+        color: #cbd5e1 !important;
+        line-height: 1.5;
+    }
+
+    h2 {
+        color: #0f172a;
+        font-size: 13pt;
+        font-weight: 800;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 5px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        page-break-after: avoid;
+    }
+
+    h3 {
+        color: #0284c7;
+        font-size: 11pt;
+        font-weight: 700;
+        margin-top: 14px;
+        margin-bottom: 6px;
+        page-break-after: avoid;
+    }
+
+    p {
+        margin-top: 0;
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+
+    .callout-box {
+        background-color: #f1f5f9 !important;
+        border-right: 4px solid #0284c7;
+        padding: 12px 16px;
+        margin: 12px 0;
+        border-radius: 6px;
+        font-size: 9.5pt;
+    }
+
+    .callout-box-gold {
+        background-color: #fffbeb !important;
+        border-right: 4px solid #c5a059;
+        padding: 12px 16px;
+        margin: 12px 0;
+        border-radius: 6px;
+        font-size: 9.5pt;
+    }
+
+    /* Table Styling */
+    table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 9pt;
+        page-break-inside: avoid;
+        background: #ffffff !important;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #cbd5e1;
+    }
+
+    table.data-table th {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        text-align: right;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 9pt;
+        border: 1px solid #0f172a;
+    }
+
+    table.data-table td {
+        padding: 9px 12px;
+        border: 1px solid #e2e8f0;
+        vertical-align: middle;
+        line-height: 1.5;
+    }
+
+    table.data-table tr:nth-child(even) {
+        background-color: #f8fafc !important;
+    }
+
+    .price-tag {
+        font-weight: 800;
+        color: #0284c7;
+        font-size: 10.5pt;
+        text-align: center;
+    }
+
+    .price-tag-gold {
+        font-weight: 800;
+        color: #b45309;
+        font-size: 11pt;
+        text-align: center;
+    }
+
+    ul, ol {
+        margin-top: 0;
+        margin-bottom: 10px;
+        padding-right: 20px;
+    }
+
+    li {
+        margin-bottom: 4px;
+    }
+
+    /* Grid Table Cards */
+    .grid-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 10px;
+        margin: 8px -10px;
+        page-break-inside: avoid;
+    }
+
+    .grid-table td {
+        width: 50%;
+        vertical-align: top;
+        padding: 0;
+        border: none;
+    }
+
+    .card {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 12px 14px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .card .badge {
+        font-size: 7.5pt;
+        padding: 2px 8px;
+        margin-bottom: 6px;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+    }
+
+    .card h4 {
+        margin: 4px 0 6px 0;
+        font-size: 9.5pt;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .card p {
+        font-size: 8.5pt;
+        color: #475569;
+        margin-bottom: 6px;
+        text-align: right;
+    }
+
+    .card small {
+        color: #0284c7;
+        font-weight: 700;
+        font-size: 8.5pt;
+    }
+
+    .code-block {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+        padding: 14px 16px;
+        border-radius: 8px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 8pt;
+        line-height: 1.45;
+        direction: ltr;
+        text-align: left;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 12px 0;
+        border: 1px solid #1e293b;
+        page-break-inside: avoid;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 8pt;
+        color: #94a3b8;
+        padding: 5px 0;
+    }
+</style>
+</head>
+<body>
+
+<div class="header-banner">
+    <div class="badge">دليل المبيعات والهندسة الاستراتيجية v6.0</div>
+    <h1>وثيقة خطة المبيعات وتفصيل الخدمات والأسعار — Red Sea Digital</h1>
+    <p>تحويل الموقع الإلكتروني والـ AI Agent إلى ماكينة مبيعات متكاملة عالية التحويل (High-Converting Direct Sales System)</p>
+</div>
+
+<h2>1. الدراسة الاستراتيجية وتحليل محتوى الموقع الحالي</h2>
+<p>
+بناءً على فحص الموقع الحالي (<code>redseadigital.pro</code>)، ينصب التركيز الحالي على بيع "أنظمة الحجز المباشر والمتاجر الفاخرة". بالرغم من جودة التصميم والهوية البصرية، إلا أن هناك 3 فجوات جوهرية تمنع الموقع من العمل كـ "ماكينة مبيعات كاملة":
+</p>
+<ul>
+    <li><strong>فجوة اللغة والجمهور (Language Barrier):</strong> الموقع مصمم بالكامل باللغة الإنجليزية. عملاء المنطقة العربية (الفنادق، القرى السياحية، الشركات المحلية، ومتاجر التجزئة) يحتاجون واجهة ثنائية اللغة (عربي/إنجليزي) تعاطفية تشرح القيمة بلغة سوقهم وتزيل التخوفات.</li>
+    <li><strong>غياب الشفافية والتفصيل (Package Monopolization):</strong> إجبار العميل على باقة شمولية واحدة ($499) يجعل العميل الذي يحتاج خدمة واحدة فقط (مثل إضافة الذكاء الاصطناعي فقط، أو تسريع الموقع، أو بناء متجر تجزئة) يشعر بالتردد أو يظن أن التكلفة عالية جداً بالنسبة لاحتياجه المباشر.</li>
+    <li><strong>ضعف الرسالة البيعية المباشرة (Direct-Response Copywriting):</strong> العناوين الحالية إخبارية ووصفية ("We Build High-Ticket..."). ماكينات المبيعات تعتمد على العناوين التحويلية القائمة على الأرقام والمشاعر (الربح، توفير العمولات، الأمان، والتفوق التنافسي).</li>
+</ul>
+
+<div class="callout-box">
+    <strong>الرؤية الاستراتيجية الجديدة:</strong> تقديم قائمة خدمات مجزأة (A-la-Carte Modular Services) تتيح للعميل شراء أجزاء من الخدمة حسب حاجته المباشرة، مع تقديم "الباقة الملكية الشاملة" كأعلى قيمة مضافة توفر عليه المال والوقت عند تجميع الخدمات.
+</div>
+
+<h2>2. مصفوفة تفصيل الخدمات والأسعار المنفردة (Modular Services & Pricing)</h2>
+<p>تم تفكيك خدمات وكالة Red Sea Digital إلى 4 ركائز منفصلة + الباقة الملكية الشاملة، بحيث تتيح للعميل حرية الاختيار المطلقة مع بيان الأسعار والقيمة المضافة لكل خدمة:</p>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 25%;">اسم الخدمة المنفردة</th>
+            <th style="width: 45%;">المخرجات المباشرة والقيمة المضافة</th>
+            <th style="width: 15%; text-align:center;">مدة التنفيذ</th>
+            <th style="width: 15%; text-align:center;">السعر المنفرد</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>1. محرك الحجوزات المباشرة (Direct Booking Engine)</strong></td>
+            <td>نظام حجز سياحي/فندقي كامل، تقويم تفاعلي، إلغاء عمولات Booking (15-30%)، ربط بوابات الدفع الإلكتروني والواتساب، كتالوج العروض التفاعلي.</td>
+            <td style="text-align:center;">3 - 5 أيام</td>
+            <td class="price-tag">$249</td>
+        </tr>
+        <tr>
+            <td><strong>2. المتاجر الفاخرة عالية التحويل (Luxury E-Commerce Store)</strong></td>
+            <td>متجر إلكتروني متكامل للتجزئة والمنتجات الجلديّة والفاخرة، إدخال المنتجات، خيارات الألوان والمقاسات، سلة شراء سريعة، ربط شركات الشحن.</td>
+            <td style="text-align:center;">3 - 4 أيام</td>
+            <td class="price-tag">$199</td>
+        </tr>
+        <tr>
+            <td><strong>3. نظام الذكاء الاصطناعي والـ RAG (`Red Sea AI Engine`)</strong></td>
+            <td>تركيب إضافة الـ AI، تدريب الأيجنت على ملفات الشركة (KB)، واجهة Glassmorphism للموبايل متجاوبة مع الكيبورد، تسجيل الحجوزات آلياً في CRM.</td>
+            <td style="text-align:center;">24 - 48 ساعة</td>
+            <td class="price-tag">$149</td>
+        </tr>
+        <tr>
+            <td><strong>4. تحسين السرعة الفائقة وتجربة المستخدم (Speed & Mobile UX)</strong></td>
+            <td>تسريع تحميل الموقع لأقل من ثانية واحدة (Sub-1s Speed)، ضغط الصور إلى WebP، تحسين مؤشرات Core Web Vitals، ضبط واجهات الموبايل.</td>
+            <td style="text-align:center;">24 ساعة</td>
+            <td class="price-tag">$99</td>
+        </tr>
+        <tr style="background-color: #fffbeb !important;">
+            <td><strong style="color: #b45309;">🏆 الباقة الملكية الشاملة (The Royal Package)</strong></td>
+            <td><strong>تضم كافة الخدمات الأربعة أعلاه بالكامل</strong> + صيانة لمدة 30 يوماً + استضافة مجانية لمدة عام + تدريب خاص للإدارة. (توفير $196 عن الشراء المنفصل!).</td>
+            <td style="text-align:center;">5 - 7 أيام</td>
+            <td class="price-tag-gold">$499 <br><small style="color:#64748b; font-weight:normal;">(بدلاً من $695)</small></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="callout-box-gold">
+    <strong>معادلة القيمة البيعية للعميل:</strong> إذا كان العميل يمتلك متجراً أو موقعاً بالفعل، يحتاج فقط لإضافة الذكاء الاصطناعي ($149) أو تحسين السرعة ($99). أصحاب المشاريع الجدد أو الفنادق يفضلون الباقة الملكية ($499) للاستفادة من التوفير الشامل ($196).
+</div>
+
+<h2>3. نصوص ومحتوى الصفحة الرئيسية المحدثة (Direct-Response Website Copy)</h2>
+
+<h3>قسم الهيرو (Hero Section)</h3>
+<ul>
+    <li><strong>العنوان الرئيسي (H1):</strong> "استرد أرباحك الصافية — أنظمة حجز مباشر ومتاجر إلكترونية فاخرة بدون عمولات منصات."</li>
+    <li><strong>العنوان الفرعي:</strong> "نوفر على الفنادق والشركات السياحية والمتاجر 15% إلى 30% من العمولات الضائعة. امتلك نظام حجز وتجارة ذكي يعود بالفائدة على عملك فوراً."</li>
+    <li><strong>أزرار الإجراء المباشر (CTAs):</strong> 
+        <ul>
+            <li><code>[ 💎 احجز الباقة الملكية الشاملة ($499) ]</code></li>
+            <li><code>[ 🛠️ اختر خدمة منفردة تناسب احتياجك ]</code></li>
+        </ul>
+    </li>
+    <li><strong>مؤشرات الثقة (Social Proof Metrics):</strong>
+        <ul>
+            <li><code>-85%</code> عمولات مدفوعة للمجهول</li>
+            <li><code>+3.1x</code> زيادات الحجوزات المباشرة</li>
+            <li><code>100%</code> ملكية كاملة للبنية التحتية</li>
+        </ul>
+    </li>
+</ul>
+
+<h3>قسم تفصيل الخدمات المنفردة (Modular Services Grid)</h3>
+<p>يتم عرض الخدمات في بطاقات تفاعلية أنيقة تمكّن العميل من النقر المباشر لشراء أو طلب الخدمة المحددة:</p>
+
+<table class="grid-table">
+    <tr>
+        <td>
+            <div class="card">
+                <div class="badge">الخدمة 1</div>
+                <h4>محرك الحجوزات المباشرة ($249)</h4>
+                <p>مخصص للفنادق، القرى السياحية، ورحلات اليخوت والسفاري. تقويم حجوزات ذكي وربط مباشر بالواتساب والدفع الإلكتروني.</p>
+                <small>[ طلب محرك الحجوزات فقط ← ]</small>
+            </div>
+        </td>
+        <td>
+            <div class="card">
+                <div class="badge">الخدمة 2</div>
+                <h4>المتاجر الإلكترونية الفاخرة ($199)</h4>
+                <p>مخصص لبراندات التجزئة والمنتجات الجلديّة والفاخرة. تصميم متجر استثنائي سريع التحويل يضاعف المبيعات.</p>
+                <small>[ طلب إنشاء متجر فقط ← ]</small>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="card">
+                <div class="badge">الخدمة 3</div>
+                <h4>نظام الذكاء الاصطناعي والـ RAG ($149)</h4>
+                <p>إضافة المساعد الذكي لموقعك الحالي. يرد على استفسارات العملاء بدقة 100% ويغلق الحجوزات في CRM.</p>
+                <small>[ طلب نظام الـ AI فقط ← ]</small>
+            </div>
+        </td>
+        <td>
+            <div class="card">
+                <div class="badge">الخدمة 4</div>
+                <h4>تسريع وتطوير الأداء ($99)</h4>
+                <p>تحويل سرعة موقعك الحالي لتكون أقل من ثانية واحدة، وضبط توافق الموبايل والكيبورد لشاشات الهواتف.</p>
+                <small>[ طلب تسريع الموقع فقط ← ]</small>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<h2>4. ملف المعرفة المحدث للـ AI Agent (`redsea_modular_kb.md`)</h2>
+<p>يتم رفع هذا الملف في <strong>التبويب 5 (`5. المعرفة`)</strong> بداخل إضافة <code>redsea-ai-engine</code> لتمكين الأيجنت من الإجابة بدقة عن الخدمات المنفردة والأسعار والباقات:</p>
+
+<div class="code-block">
+# RED SEA DIGITAL — OFFICIAL MODULAR KNOWLEDGE BASE & PRICING MATRIX (v6.0)
+
+## COMPANY OVERVIEW
+Red Sea Digital (RSD) is a premier digital engineering agency specializing in Direct Booking Engines, High-Converting Luxury E-Commerce, and Custom AI Agents.
+
+## MODULAR SERVICES & STANDALONE PRICING
+Clients can purchase any single service standalone OR get the all-in-one Royal Package:
+
+1. SERVICE 1: Direct Booking Engine ($249)
+   - Scope: Complete hotel/safari/resort direct reservation system, interactive offer calendar, payment gateway & WhatsApp setup. Zero commissions.
+   - Ideal for: Hotels, tour operators, yacht charter, resorts wanting direct bookings without buying a whole new site.
+
+2. SERVICE 2: High-Converting Luxury E-Commerce Store ($199)
+   - Scope: Custom WooCommerce / Medusa e-commerce setup, catalog import, luxury UI/UX, checkout optimization, shipping integration.
+   - Ideal for: Leather goods, apparel, retail brands (e.g., ASL Leather model).
+
+3. SERVICE 3: Red Sea AI Engine & RAG Setup ($149)
+   - Scope: Installation of redsea-ai-engine plugin, visualViewport mobile keyboard fix, RAG Knowledge Base training, CRM lead capture integration.
+   - Ideal for: Existing websites that need a 24/7 intelligent sales assistant.
+
+4. SERVICE 4: Speed & Mobile UX Optimization ($99)
+   - Scope: Sub-1s page load speed tuning, WebP conversion, Core Web Vitals optimization, mobile layout fix.
+   - Ideal for: Slow existing WordPress sites.
+
+5. THE ROYAL PACKAGE — ALL-IN-ONE SYSTEM ($499)
+   - Scope: INCLUDES ALL 4 SERVICES ABOVE ($695 value) + 30-day dedicated support + 1-year free hosting setup.
+   - Value Prop: Saves $196 compared to purchasing services separately!
+
+## GUARANTEE & POLICY
+- 30-Day Golden Performance Guarantee: If direct booking performance or speed is not measurably improved, full refund provided.
+- Turnkey Delivery: Delivery ranges from 24 hours (speed/AI) to 7 days (Royal Package).
+</div>
+
+</body>
+</html>
