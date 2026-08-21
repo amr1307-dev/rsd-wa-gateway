@@ -5,6 +5,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use RedSea\Providers\LLMProviderManager;
+
 /**
  * LeadRadarEngine - Autonomous Outbound Discovery & Competitor Analysis Engine
  */
@@ -58,7 +60,7 @@ For each prospect, return a valid JSON array of objects with the exact schema:
 ]
 Return ONLY pure JSON array without markdown fences.";
 
-        $raw_response = RedSeaAIProviderManager::generate($prompt, [], [
+        $raw_response = LLMProviderManager::generate($prompt, [], [
             'temperature' => 0.7
         ]);
 

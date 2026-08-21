@@ -8706,7 +8706,7 @@ public function handle_ajax_wa_disconnect() {
                 $agent_name    = sanitize_text_field($_POST['rsd_new_agent_name'] ?? '');
                 $agent_mission = sanitize_textarea_field($_POST['rsd_new_agent_mission'] ?? '');
                 if (!empty($agent_name) && !empty($agent_mission)) {
-                    $new_agent = RedSeaAgentFactory::create_custom_agent($agent_name, $agent_mission);
+                    $new_agent = AgentFactory::create_custom_agent($agent_name, $agent_mission);
                     echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم إنشاء وتجهيز الوكيل الذكي [' . esc_html($agent_name) . '] وصياغة السيستم برومبت الخاص به بنجاح.</strong></p></div>';
                 }
             }
@@ -8803,7 +8803,7 @@ public function handle_ajax_wa_disconnect() {
         $total_chunks = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}rsd_vector_store");
         $recent_logs  = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}rsd_bookings ORDER BY id DESC LIMIT 50", ARRAY_A);
         $traces       = get_option('rsd_orchestration_logs', []);
-        $all_agents   = RedSeaAgentFactory::get_all_agents();
+        $all_agents   = AgentFactory::get_all_agents();
         ?>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');

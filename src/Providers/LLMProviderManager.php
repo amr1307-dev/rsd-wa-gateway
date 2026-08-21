@@ -382,7 +382,7 @@ The system prompt MUST include:
 
 Output ONLY the final XML system prompt without any explanations or introductory remarks.";
 
-        $generated_prompt = RedSeaAIProviderManager::generate($prompt_generator_instruction, [], [
+        $generated_prompt = self::generate($prompt_generator_instruction, [], [
             'provider' => 'opencode',
             'model'    => 'gpt-4o-mini'
         ]);
