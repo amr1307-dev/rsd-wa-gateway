@@ -1022,9 +1022,9 @@ Provide clear answers and invite them to schedule a 15-min strategy call.";
 
             return $content;
         }, 9999);
-        add_action('wp_head', [$this, 'inject_head_chat_script'], 1);
+        // wp_head handled in FrontendManager::init()
         add_action('wp_head', [$this, 'inject_universal_master_header'], 2);
-        add_action('wp_footer', [$this, 'render_universal_master_footer'], 5);
+        // wp_footer master footer handled in FrontendManager::init()
         // Initialize Frontend Layout & Chat Presentation Layer
         FrontendManager::init();
 
