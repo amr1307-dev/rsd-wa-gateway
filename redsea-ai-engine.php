@@ -173,6 +173,9 @@ class RedSeaAIEngine {
      * 2-Way WhatsApp Inbound Webhook Processor with Security & Anti-Ban Hardening
      */
     public function handle_whatsapp_webhook($request) {
+        return \RedSea\Gateway\WhatsAppGateway::handle_inbound_webhook($request);
+    }
+    public function handle_whatsapp_webhook_legacy($request) {
         // 1. GET Challenge & Webhook Verification
         if ($request->get_method() === 'GET') {
             $configured_key = get_option('rsd_whatsapp_api_key', '');
@@ -1356,6 +1359,7 @@ public function handle_ajax_wa_disconnect() {
         add_action('wp_ajax_rsd_wa_check_status', [$this, 'handle_ajax_wa_check_status']);
         add_action('wp_ajax_rsd_wa_disconnect', [$this, 'handle_ajax_wa_disconnect']);
         add_action('wp_ajax_rsd_wa_toggle_ai', [$this, 'handle_ajax_wa_toggle_ai']);
+        add_action('wp_ajax_rsd_wa_toggle_outbound', [$this, 'handle_ajax_wa_toggle_outbound']);
 
 
     }
@@ -2854,8 +2858,26 @@ public function handle_ajax_wa_disconnect() {
 
             $tab = sanitize_text_field($_POST['active_tab'] ?? 'overview');
 
-            // 1. WhatsApp & Gateway Settings
-            if (isset($_POST['rsd_save_settings']) || isset($_POST['rsd_whatsapp_api_url'])) {
+            // 1. WhatsApp Dual-Engine & Gateway Settings
+            if (isset($_POST['rsd_save_settings']) || isset($_POST['rsd_whatsapp_api_url']) || isset($_POST['rsd_meta_phone_id'])) {
+                if (isset($_POST['rsd_whatsapp_gateway_mode'])) {
+                    update_option('rsd_whatsapp_gateway_mode', sanitize_text_field($_POST['rsd_whatsapp_gateway_mode']));
+                }
+                if (isset($_POST['rsd_meta_app_id'])) {
+                    update_option('rsd_meta_app_id', sanitize_text_field($_POST['rsd_meta_app_id']));
+                }
+                if (isset($_POST['rsd_meta_phone_id'])) {
+                    update_option('rsd_meta_phone_id', sanitize_text_field($_POST['rsd_meta_phone_id']));
+                }
+                if (isset($_POST['rsd_meta_waba_id'])) {
+                    update_option('rsd_meta_waba_id', sanitize_text_field($_POST['rsd_meta_waba_id']));
+                }
+                if (isset($_POST['rsd_meta_access_token'])) {
+                    update_option('rsd_meta_access_token', sanitize_text_field($_POST['rsd_meta_access_token']));
+                }
+                if (isset($_POST['rsd_meta_webhook_verify_token'])) {
+                    update_option('rsd_meta_webhook_verify_token', sanitize_text_field($_POST['rsd_meta_webhook_verify_token']));
+                }
                 if (isset($_POST['rsd_whatsapp_phone'])) {
                     update_option('rsd_whatsapp_phone', sanitize_text_field($_POST['rsd_whatsapp_phone']));
                 }
@@ -2868,7 +2890,7 @@ public function handle_ajax_wa_disconnect() {
                 if (isset($_POST['rsd_whatsapp_api_key'])) {
                     update_option('rsd_whatsapp_api_key', sanitize_text_field($_POST['rsd_whatsapp_api_key']));
                 }
-                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم حفظ إعدادات خادم البوابة والواتساب بنجاح! 💾✨</strong></p></div>';
+                echo '<div class="notice notice-success is-dismissible" style="margin:20px 0;border-radius:10px;border-right:4px solid #2563EB;"><p><strong>تم حفظ إعدادات محرك بوابة الواتساب بنجاح! 💾✨</strong></p></div>';
             }
 
             if (isset($_POST['rsd_create_custom_agent'])) {
