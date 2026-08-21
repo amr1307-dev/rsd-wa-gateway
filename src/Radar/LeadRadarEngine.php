@@ -40,7 +40,7 @@ class LeadRadarEngine {
         self::init_leads_table();
         $table_name = $wpdb->prefix . 'rsd_leads';
 
-        // 1. Multi-Agent Synthesis via RedSeaAIProviderManager
+        // 1. Multi-Agent Synthesis via LLMProviderManager
         $prompt = "You are the Chief Sales Prospecting & Intelligence Agent for RED SEA DIGITAL.
 Target Niche: {$niche} in {$city}.
 Generate 3 realistic, high-value prospective Egyptian businesses (e.g. boutique resorts, diving clubs, luxury tour operators, or medical tourism clinics) that currently suffer from heavy OTA commission leakages (15-30%) or lack a direct WhatsApp AI booking engine.
