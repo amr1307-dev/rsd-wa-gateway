@@ -1,17 +1,31 @@
 {
-    "name": "redsea/ai-engine",
-    "description": "RED SEA DIGITAL AI Engine Enterprise Suite",
+    "name": "redseadigital/redsea-ai-engine",
+    "description": "Enterprise Multi-Agent AI Infrastructure & Direct Booking Engine for RED SEA DIGITAL",
     "type": "wordpress-plugin",
-    "license": "proprietary",
+    "license": "Proprietary",
     "authors": [
         {
             "name": "Amr Ahmed",
-            "email": "contact@redseadigital.pro"
+            "email": "concierge@redseadigital.pro",
+            "role": "Founder & Lead Solutions Architect"
         }
     ],
+    "require": {
+        "php": ">=7.4"
+    },
     "autoload": {
         "psr-4": {
             "RedSea\\": "src/"
         }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "support": {
+        "email": "concierge@redseadigital.pro",
+        "docs": "https://redseadigital.pro"
     }
 }
