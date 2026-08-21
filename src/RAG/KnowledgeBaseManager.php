@@ -5,29 +5,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use RedSea\Database\SchemaManager;
+
 /**
  * KnowledgeBaseManager - Vector RAG, Document Storage & Semantic Search Engine
  */
 class KnowledgeBaseManager {
 
     public static function init_vector_store_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_vector_store';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            file_name varchar(255) NOT NULL,
-            chunk_index int(11) NOT NULL DEFAULT 0,
-            chunk_text longtext NOT NULL,
-            embedding_json longtext NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id),
-            KEY file_name (file_name)
-        ) {$charset_collate};";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        SchemaManager::create_tables();
     }
 
     public static function get_upload_dir() {

@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 }
 
 use RedSea\Providers\LLMProviderManager;
+use RedSea\Database\SchemaManager;
 
 /**
  * LeadRadarEngine - Autonomous Outbound Discovery & Competitor Analysis Engine
@@ -13,26 +14,7 @@ use RedSea\Providers\LLMProviderManager;
 class LeadRadarEngine {
 
     public static function init_leads_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'rsd_leads';
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
-            id BIGINT(20) NOT NULL AUTO_INCREMENT,
-            company_name VARCHAR(255) NOT NULL,
-            target_industry VARCHAR(100) NOT NULL,
-            contact_phone VARCHAR(50) NOT NULL,
-            website_url VARCHAR(255) DEFAULT '',
-            gap_analysis LONGTEXT DEFAULT NULL,
-            tailored_pitch TEXT DEFAULT NULL,
-            pipeline_status VARCHAR(50) DEFAULT 'pending_review',
-            created_at DATETIME NOT NULL,
-            PRIMARY KEY (id),
-            KEY pipeline_status (pipeline_status)
-        ) {$charset_collate};";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        SchemaManager::create_tables();
     }
 
     public static function run_discovery_cycle($niche = 'resorts_redsea', $city = 'الغردقة وشرم الشيخ') {
