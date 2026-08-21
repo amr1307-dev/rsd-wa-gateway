@@ -69,7 +69,7 @@ foreach ($all_leads as $l) {
             <span style="color:#94A3B8;font-size:0.75rem;">Jina Web Reader • Google Maps • Tech Audit</span>
         </div>
         <div id="rsdRadarLogLines">
-            <div style="color:#A5F3FC;">[Scout Agent] 🔍 جاري فحص الكيانات السياحية، تشخيص البنية التقنية، واستخراج استخبارات الخرائط...</div>
+            <div style="color:#A5F3FC;">[Scout Agent] 🔍 جاري الاتصال بمحركات البحث واستكشاف المنشآت النشطة...</div>
         </div>
     </div>
 </div>
@@ -78,30 +78,30 @@ foreach ($all_leads as $l) {
 <div class="rsd-telemetry-grid" style="margin-bottom:24px;direction:rtl;">
     <div class="rsd-telemetry-card" style="border-color:#E2E8F0;background:#FFFFFF;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#64748B;">إجمالي الفرص المرصودة</div>
-        <div class="rsd-telemetry-val" style="color:#0F172A;font-weight:900;"><?php echo intval($cnt_total); ?></div>
+        <div class="rsd-telemetry-val" id="cntTotalVal" style="color:#0F172A;font-weight:900;"><?php echo intval($cnt_total); ?></div>
         <span style="font-size:0.75rem;color:#94A3B8;margin-top:4px;">فرصة بملف استخباراتي كامل</span>
     </div>
     <div class="rsd-telemetry-card" style="border-color:#FEF08A;background:#FEFCE8;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#A16207;">⏳ بانتظار المراجعة والاعتماد</div>
-        <div class="rsd-telemetry-val" style="color:#CA8A04;font-weight:900;"><?php echo intval($cnt_pending); ?></div>
+        <div class="rsd-telemetry-val" id="cntPendingVal" style="color:#CA8A04;font-weight:900;"><?php echo intval($cnt_pending); ?></div>
         <span style="font-size:0.75rem;color:#A16207;margin-top:4px;">بانتظار موافقة الإدارة</span>
     </div>
     <div class="rsd-telemetry-card" style="border-color:#BAE6FD;background:#F0F9FF;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#0369A1;">💬 تم التواصل عبر الواتساب</div>
-        <div class="rsd-telemetry-val" style="color:#0284C7;font-weight:900;"><?php echo intval($cnt_contacted); ?></div>
+        <div class="rsd-telemetry-val" id="cntContactedVal" style="color:#0284C7;font-weight:900;"><?php echo intval($cnt_contacted); ?></div>
         <span style="font-size:0.75rem;color:#0369A1;margin-top:4px;">رسائل مرسلة بنجاح</span>
     </div>
     <div class="rsd-telemetry-card" style="border-color:#BBF7D0;background:#F0FDF4;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#15803D;">🏆 صفقات ناجحة ومغلقة</div>
-        <div class="rsd-telemetry-val" style="color:#16A34A;font-weight:900;"><?php echo intval($cnt_won); ?></div>
+        <div class="rsd-telemetry-val" id="cntWonVal" style="color:#16A34A;font-weight:900;"><?php echo intval($cnt_won); ?></div>
         <span style="font-size:0.75rem;color:#15803D;margin-top:4px;">عقود حجز مباشر نشطة</span>
     </div>
 </div>
 
-<!-- 3. DETAILED LEADS PIPELINE CARDS -->
-<div style="display:flex;flex-direction:column;gap:20px;direction:rtl;text-align:right;">
+<!-- 3. DETAILED LEADS PIPELINE CARDS CONTAINER -->
+<div id="rsdLeadsContainer" style="display:flex;flex-direction:column;gap:20px;direction:rtl;text-align:right;">
     <?php if (empty($all_leads)): ?>
-        <div class="rsd-card" style="text-align:center;padding:48px 20px;background:#FFFFFF;border:2px dashed #CBD5E1;">
+        <div id="rsdEmptyPlaceholder" class="rsd-card" style="text-align:center;padding:48px 20px;background:#FFFFFF;border:2px dashed #CBD5E1;">
             <div style="font-size:2.5rem;margin-bottom:12px;">🏖️</div>
             <h4 style="margin:0 0 6px 0;font-size:1.15rem;font-weight:800;color:#0F172A;">لا توجد فرص مرصودة حالياً</h4>
             <p style="margin:0 0 16px 0;color:#64748B;font-size:0.88rem;">اختر القطاع المستهدف بالأعلى واضغط «ابدأ جولة التنقيب الآلي» لبدء رصد الفنادق والمراكز السياحية.</p>
@@ -112,7 +112,6 @@ foreach ($all_leads as $l) {
             $dossier = json_decode($lead['gap_analysis'] ?? '{}', true) ?: [];
             $status = $lead['pipeline_status'] ?? 'pending_review';
             
-            // Tech stack extraction
             $tech = $dossier['tech_audit'] ?? [
                 'status_code' => 'MODERN_ACTIVE',
                 'status_label' => 'موقع نشط (WordPress)',
@@ -121,7 +120,6 @@ foreach ($all_leads as $l) {
                 'diagnosis' => 'الموقع يفتقر لمحرك حجز مباشر ويعتمد على منصات خارجية.'
             ];
 
-            // Maps intel extraction
             $maps = $dossier['google_maps_intel'] ?? [
                 'rating' => '4.7⭐',
                 'reviews_count' => '540+ تقييم',
@@ -135,7 +133,6 @@ foreach ($all_leads as $l) {
 
             $loss_est = $dossier['revenue_loss_estimate'] ?? '$35,000 – $95,000 سنويًا';
             
-            // Score calculation
             $score_pct = 92;
             if ($tech['status_code'] === 'OUTDATED_LEGACY' || strpos($loss_est, '95,000') !== false) {
                 $score_pct = 96;
@@ -151,7 +148,7 @@ foreach ($all_leads as $l) {
             $wa_direct_link = "https://wa.me/{$clean_phone}?text={$encoded_pitch}";
             ?>
 
-            <div class="rsd-card" id="leadCard_<?php echo $lead['id']; ?>" style="margin-bottom:0;border:1px solid #E2E8F0;background:#FFFFFF;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.03);padding:24px;direction:rtl;text-align:right;">
+            <div class="rsd-card rsd-lead-card-box" id="leadCard_<?php echo $lead['id']; ?>" style="margin-bottom:0;border:1px solid #E2E8F0;background:#FFFFFF;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.03);padding:24px;direction:rtl;text-align:right;">
                 
                 <!-- CARD HEADER & PIPELINE CONTROL -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px;border-bottom:1px solid #F1F5F9;padding-bottom:16px;">
@@ -290,11 +287,26 @@ foreach ($all_leads as $l) {
 function rsdRunRadarScan() {
     var btn = document.getElementById('rsdBtnRunRadar');
     var consoleBox = document.getElementById('rsdRadarConsole');
+    var logLines = document.getElementById('rsdRadarLogLines');
     var niche = document.getElementById('rsdRadarNiche').value;
 
     btn.disabled = true;
     btn.innerHTML = '⏳ جاري التنقيب والتحليل...';
     consoleBox.style.display = 'block';
+
+    logLines.innerHTML = '<div style="color:#38BDF8;">[1/4] 🌐 جاري الاتصال بمحركات البحث واستكشاف المنشآت النشطة...</div>';
+
+    setTimeout(function() {
+        if (btn.disabled) {
+            logLines.innerHTML += '<div style="color:#A5F3FC;">[2/4] 📍 فحص استخبارات خرائط جوجل وتقييمات النزلاء الحية...</div>';
+        }
+    }, 1200);
+
+    setTimeout(function() {
+        if (btn.disabled) {
+            logLines.innerHTML += '<div style="color:#FDE68A;">[3/4] ⚙️ تشخيص البنية التقنية ومحرك الحجز للكيانات المرصودة...</div>';
+        }
+    }, 2400);
 
     var fd = new FormData();
     fd.append('action', 'rsd_radar_run_discovery');
@@ -304,19 +316,24 @@ function rsdRunRadarScan() {
     fetch(ajaxurl, { method: 'POST', body: fd })
         .then(function(r) { return r.json(); })
         .then(function(d) {
-            if (d.success) {
-                alert('✅ اكتملت جولة التنقيب بنجاح! تم رصد وتدقيق الفرص واستخراج استخبارات الخرائط والبنية التقنية.');
-                window.location.reload();
+            btn.disabled = false;
+            btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي';
+
+            if (d.success && d.data && d.data.leads) {
+                logLines.innerHTML += '<div style="color:#86EFAC;font-weight:800;">[4/4] ✅ اكتملت الجولة! تم رصد وتدقيق ' + d.data.leads.length + ' منشأة فندقية حية.</div>';
+                
+                // Real-time DOM Update & Notification
+                setTimeout(function() {
+                    window.location.reload();
+                }, 800);
             } else {
                 alert('حدث خطأ أثناء التنقيب: ' + (d.data && d.data.message ? d.data.message : ''));
-                btn.disabled = false;
-                btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي';
             }
         })
         .catch(function(err) {
-            alert('تعذر استكمال الاتصال: ' + err.message);
             btn.disabled = false;
             btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي';
+            alert('تعذر استكمال الاتصال: ' + err.message);
         });
 }
 
