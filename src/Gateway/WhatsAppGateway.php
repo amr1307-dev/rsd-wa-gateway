@@ -9,6 +9,7 @@ use RedSea\Providers\LLMProviderManager;
 use RedSea\CRM\LeadManager;
 use RedSea\Orchestrator\ChiefOrchestrator;
 use WP_REST_Response;
+use RedSea\Security\RateLimiter;
 
 /**
  * WhatsAppGateway - Dual-Engine WhatsApp Gateway (Official Meta Cloud API & Local Socket Bridge)
@@ -245,6 +246,15 @@ class WhatsAppGateway {
 
         if ($from_me || empty($clean_phone) || empty(trim($clean_text))) {
             return new WP_REST_Response(['status' => 'ignored', 'reason' => 'empty or outbound message'], 200);
+        }
+
+        // Rate Limiter Shield for Inbound WhatsApp Messages (20 msg/min per phone)
+        $wa_rate = RateLimiter::check_phone_limit($clean_phone, 20, 60);
+        if (!$wa_rate['allowed']) {
+            return new WP_REST_Response([
+                'status'  => 'rate_limited',
+                'message' => 'Rate limit exceeded for sender'
+            ], 429);
         }
 
         // 3. Anti-Ban Loop Breaker & Cooldown Shield

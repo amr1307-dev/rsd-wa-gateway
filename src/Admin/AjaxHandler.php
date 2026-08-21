@@ -11,6 +11,7 @@ use RedSea\CRM\LeadManager;
 use RedSea\Radar\LeadRadarEngine;
 use RedSea\RAG\KnowledgeBaseManager;
 use RedSea\Providers\LLMProviderManager;
+use RedSea\Security\RateLimiter;
 
 /**
  * AjaxHandler - Central Enterprise AJAX Request Dispatcher & Handlers
@@ -61,6 +62,19 @@ class AjaxHandler {
             echo json_encode([
                 'success' => false,
                 'reply'   => ($lang === 'ar' ? 'أهلاً بك! كيف يمكنني مساعدتك اليوم؟' : 'Hello! How may I assist you today?')
+            ], JSON_UNESCAPED_UNICODE);
+            if (defined('DOING_AJAX') && DOING_AJAX) { wp_die(); }
+            return;
+        }
+
+        // Rate Limiter Shield (15 requests / 60 seconds per IP)
+        $rate_check = RateLimiter::check_ip_limit(15, 60, $lang);
+        if (!$rate_check['allowed']) {
+            status_header(429);
+            echo json_encode([
+                'success' => false,
+                'reply'   => $rate_check['message'],
+                'rate_limited' => true
             ], JSON_UNESCAPED_UNICODE);
             if (defined('DOING_AJAX') && DOING_AJAX) { wp_die(); }
             return;
