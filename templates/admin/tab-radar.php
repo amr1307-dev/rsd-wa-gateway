@@ -7,8 +7,8 @@ global $wpdb;
 
 /**
  * Tab 9: Executive Outbound Lead Radar & Deal Closer Studio
- * Features AI market discovery, Google Maps review analytics, OTA commission leakage audit,
- * interactive pipeline status manager, and 1-click WhatsApp outreach.
+ * Features AI market discovery, Google Maps review analytics, Tech Stack / CMS diagnosis,
+ * OTA commission leakage audit, interactive pipeline status manager, and 1-click WhatsApp outreach.
  */
 
 $leads_tbl = $wpdb->prefix . 'rsd_leads';
@@ -30,20 +30,20 @@ foreach ($all_leads as $l) {
 ?>
 
 <!-- 1. RADAR CONTROLS & DISCOVERY LAUNCHER -->
-<div class="rsd-card" style="margin-bottom:24px;border:2px solid #E2E8F0;background:#FFFFFF;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+<div class="rsd-card" style="margin-bottom:24px;border:2px solid #E2E8F0;background:#FFFFFF;box-shadow:0 4px 12px rgba(0,0,0,0.03);direction:rtl;text-align:right;">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div>
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
                 <span style="font-size:1.4rem;">🎯</span>
                 <h3 style="margin:0;font-size:1.25rem;font-weight:900;color:#0F172A;letter-spacing:-0.3px;">
                     رادار الصفقات والتنقيب الذاتي (Autonomous Lead Radar)
                 </h3>
                 <span class="rsd-badge" style="background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;font-size:0.75rem;padding:3px 10px;">
-                    ⚡ Agent-Reach + Google Maps Intel
+                    ⚡ Agent-Reach • Google Maps • Tech Audit
                 </span>
             </div>
-            <p style="margin:0;color:#64748B;font-size:0.88rem;line-height:1.5;">
-                محرك استخباراتي يفحص مواقع الفنادق وبوتيك هوتيل البحر الأحمر، يحلل تقييمات خرائط جوجل، ويرصد هدر عمولات الـ OTAs (15-30%) لصياغة عروض استشارية فاخرة.
+            <p style="margin:0;color:#64748B;font-size:0.88rem;line-height:1.6;">
+                محرك استخباراتي يفحص مواقع الفنادق والمنشآت السياحية، يكشف التقنية والمحرك المستخدم، يحلل تقييمات خرائط جوجل، ويرصد هدر عمولات الـ OTAs لصياغة عروض استشارية فاخرة.
             </p>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
@@ -54,7 +54,10 @@ foreach ($all_leads as $l) {
                 <option value="hurghada soma bay direct booking">🌊 منتجعات سوما باي وسهل حشيش</option>
             </select>
             <button type="button" id="rsdBtnRunRadar" onclick="rsdRunRadarScan()" class="rsd-btn" style="background:linear-gradient(135deg, #2563EB, #1D4ED8);box-shadow:0 4px 12px rgba(37,99,235,0.25);font-weight:800;padding:10px 20px;">
-                🚀 ابدأ جولة التنقيب الآلي الآن
+                🚀 ابدأ جولة التنقيب الآلي
+            </button>
+            <button type="button" onclick="rsdPurgeAllLeads()" class="rsd-btn rsd-btn-secondary" style="background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;font-weight:700;padding:10px 14px;" title="حذف وتطهير السجلات السابقة">
+                🗑️ تطهير السجلات
             </button>
         </div>
     </div>
@@ -63,32 +66,32 @@ foreach ($all_leads as $l) {
     <div id="rsdRadarConsole" style="display:none;margin-top:18px;background:#0F172A;border-radius:14px;padding:16px 20px;color:#E2E8F0;font-family:'JetBrains Mono',monospace;font-size:0.84rem;line-height:1.6;border:1px solid #1E293B;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #1E293B;padding-bottom:6px;">
             <span style="color:#38BDF8;font-weight:800;">✦ وحدة الأوركسترا النشطة (Active Discovery Agent)</span>
-            <span style="color:#94A3B8;font-size:0.75rem;">Jina Web Reader • Google Maps Places Engine</span>
+            <span style="color:#94A3B8;font-size:0.75rem;">Jina Web Reader • Google Maps • Tech Audit</span>
         </div>
         <div id="rsdRadarLogLines">
-            <div style="color:#A5F3FC;">[Scout Agent] 🔍 جاري فحص الكيانات السياحية المستهدفة واستخراج تقييمات الخرائط...</div>
+            <div style="color:#A5F3FC;">[Scout Agent] 🔍 جاري فحص الكيانات السياحية، تشخيص البنية التقنية، واستخراج استخبارات الخرائط...</div>
         </div>
     </div>
 </div>
 
 <!-- 2. EXECUTIVE METRICS STRIP -->
-<div class="rsd-telemetry-grid" style="margin-bottom:24px;">
-    <div class="rsd-telemetry-card" style="border-color:#E2E8F0;background:#FFFFFF;">
-        <div class="rsd-telemetry-title" style="color:#64748B;">إجمالي الفرص المستكشفة</div>
+<div class="rsd-telemetry-grid" style="margin-bottom:24px;direction:rtl;">
+    <div class="rsd-telemetry-card" style="border-color:#E2E8F0;background:#FFFFFF;text-align:right;">
+        <div class="rsd-telemetry-title" style="color:#64748B;">إجمالي الفرص المرصودة</div>
         <div class="rsd-telemetry-val" style="color:#0F172A;font-weight:900;"><?php echo intval($cnt_total); ?></div>
         <span style="font-size:0.75rem;color:#94A3B8;margin-top:4px;">فرصة بملف استخباراتي كامل</span>
     </div>
-    <div class="rsd-telemetry-card" style="border-color:#FEF08A;background:#FEFCE8;">
+    <div class="rsd-telemetry-card" style="border-color:#FEF08A;background:#FEFCE8;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#A16207;">⏳ بانتظار المراجعة والاعتماد</div>
         <div class="rsd-telemetry-val" style="color:#CA8A04;font-weight:900;"><?php echo intval($cnt_pending); ?></div>
         <span style="font-size:0.75rem;color:#A16207;margin-top:4px;">بانتظار موافقة الإدارة</span>
     </div>
-    <div class="rsd-telemetry-card" style="border-color:#BAE6FD;background:#F0F9FF;">
+    <div class="rsd-telemetry-card" style="border-color:#BAE6FD;background:#F0F9FF;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#0369A1;">💬 تم التواصل عبر الواتساب</div>
         <div class="rsd-telemetry-val" style="color:#0284C7;font-weight:900;"><?php echo intval($cnt_contacted); ?></div>
         <span style="font-size:0.75rem;color:#0369A1;margin-top:4px;">رسائل مرسلة بنجاح</span>
     </div>
-    <div class="rsd-telemetry-card" style="border-color:#BBF7D0;background:#F0FDF4;">
+    <div class="rsd-telemetry-card" style="border-color:#BBF7D0;background:#F0FDF4;text-align:right;">
         <div class="rsd-telemetry-title" style="color:#15803D;">🏆 صفقات ناجحة ومغلقة</div>
         <div class="rsd-telemetry-val" style="color:#16A34A;font-weight:900;"><?php echo intval($cnt_won); ?></div>
         <span style="font-size:0.75rem;color:#15803D;margin-top:4px;">عقود حجز مباشر نشطة</span>
@@ -96,7 +99,7 @@ foreach ($all_leads as $l) {
 </div>
 
 <!-- 3. DETAILED LEADS PIPELINE CARDS -->
-<div style="display:flex;flex-direction:column;gap:20px;">
+<div style="display:flex;flex-direction:column;gap:20px;direction:rtl;text-align:right;">
     <?php if (empty($all_leads)): ?>
         <div class="rsd-card" style="text-align:center;padding:48px 20px;background:#FFFFFF;border:2px dashed #CBD5E1;">
             <div style="font-size:2.5rem;margin-bottom:12px;">🏖️</div>
@@ -108,24 +111,36 @@ foreach ($all_leads as $l) {
             <?php
             $dossier = json_decode($lead['gap_analysis'] ?? '{}', true) ?: [];
             $status = $lead['pipeline_status'] ?? 'pending_review';
+            
+            // Tech stack extraction
+            $tech = $dossier['tech_audit'] ?? [
+                'status_code' => 'MODERN_ACTIVE',
+                'status_label' => 'موقع نشط (WordPress)',
+                'cms' => 'WordPress',
+                'booking_engine' => 'OTA Links Only',
+                'diagnosis' => 'الموقع يفتقر لمحرك حجز مباشر ويعتمد على منصات خارجية.'
+            ];
+
+            // Maps intel extraction
             $maps = $dossier['google_maps_intel'] ?? [
                 'rating' => '4.7⭐',
                 'reviews_count' => '540+ تقييم',
                 'address' => 'البحر الأحمر / شرم الشيخ',
                 'sentiment' => 'ممتاز (Very High Reputation)',
                 'key_pain_points' => [
-                    'تأخر في الرد على حجوزات الواتساب الأوروبية في مواسم الذروة',
-                    'غياب محرك حجز مباشر يدعم الدفع بالعملات الأجنبية'
+                    'تأخر في الرد على استفسارات الواتساب في مواسم الذروة',
+                    'غياب محرك حجز مباشر يدعم العملات الأجنبية'
                 ]
             ];
+
             $loss_est = $dossier['revenue_loss_estimate'] ?? '$35,000 – $95,000 سنويًا';
             
-            // Score calculation heuristic
+            // Score calculation
             $score_pct = 92;
-            if (strpos($loss_est, '95,000') !== false || strpos($loss_est, '120,000') !== false) {
+            if ($tech['status_code'] === 'OUTDATED_LEGACY' || strpos($loss_est, '95,000') !== false) {
                 $score_pct = 96;
-            } elseif (strpos($loss_est, '60,000') !== false) {
-                $score_pct = 88;
+            } elseif ($tech['status_code'] === 'NO_WEBSITE') {
+                $score_pct = 98;
             }
 
             $encoded_pitch = rawurlencode($lead['tailored_pitch'] ?? '');
@@ -136,12 +151,12 @@ foreach ($all_leads as $l) {
             $wa_direct_link = "https://wa.me/{$clean_phone}?text={$encoded_pitch}";
             ?>
 
-            <div class="rsd-card" id="leadCard_<?php echo $lead['id']; ?>" style="margin-bottom:0;border:1px solid #E2E8F0;background:#FFFFFF;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.03);padding:24px;">
+            <div class="rsd-card" id="leadCard_<?php echo $lead['id']; ?>" style="margin-bottom:0;border:1px solid #E2E8F0;background:#FFFFFF;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.03);padding:24px;direction:rtl;text-align:right;">
                 
                 <!-- CARD HEADER & PIPELINE CONTROL -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px;border-bottom:1px solid #F1F5F9;padding-bottom:16px;">
                     <div>
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
                             <h4 style="margin:0;font-size:1.25rem;font-weight:900;color:#0F172A;">
                                 <?php echo esc_html($lead['company_name']); ?>
                             </h4>
@@ -152,10 +167,21 @@ foreach ($all_leads as $l) {
                                 🎯 مؤشر احتمالية الإغلاق: <?php echo $score_pct; ?>%
                             </span>
                         </div>
+                        
+                        <!-- TECH STACK & CMS BADGE STRIP -->
+                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+                            <span class="rsd-badge" style="<?php echo ($tech['status_code'] === 'OUTDATED_LEGACY' || $tech['status_code'] === 'NO_WEBSITE') ? 'background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;' : 'background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;'; ?> font-weight:800;font-size:0.78rem;">
+                                🌐 البنية التقنية: <?php echo esc_html($tech['status_label'] ?? 'موقع نشط'); ?>
+                            </span>
+                            <span class="rsd-badge" style="background:#F8FAFC;color:#475569;border:1px solid #E2E8F0;font-size:0.76rem;">
+                                ⚙️ المحرك: <?php echo esc_html($tech['booking_engine'] ?? 'OTA Only'); ?>
+                            </span>
+                        </div>
+
                         <div style="display:flex;gap:16px;font-size:0.84rem;color:#64748B;align-items:center;flex-wrap:wrap;">
                             <?php if (!empty($lead['website_url'])): ?>
                                 <a href="<?php echo esc_url($lead['website_url']); ?>" target="_blank" style="color:#2563EB;text-decoration:none;font-weight:700;">
-                                    🌐 <?php echo esc_html($lead['website_url']); ?>
+                                    🔗 <?php echo esc_html($lead['website_url']); ?>
                                 </a>
                                 <button type="button" onclick="rsdPreviewSite('<?php echo esc_url($lead['website_url']); ?>')" class="rsd-btn rsd-btn-secondary" style="padding:2px 8px;font-size:0.72rem;background:#F1F5F9;">
                                     👁️ معاينة فورية
@@ -208,21 +234,21 @@ foreach ($all_leads as $l) {
                         </div>
                     </div>
 
-                    <!-- COLUMN 2: OTA GAP AUDIT & ESTIMATED LOSS -->
+                    <!-- COLUMN 2: TECH DIAGNOSIS & OTA GAP AUDIT -->
                     <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:14px;padding:16px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                             <span style="font-weight:800;font-size:0.9rem;color:#92400E;">
-                                ⚠️ تحليل فجوة العمولات (OTA Gap Analysis)
+                                ⚠️ تشخيص الثغرات والفاقد المالي
                             </span>
                             <span class="rsd-badge" style="background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;font-weight:900;font-size:0.8rem;">
                                 💸 فاقد العمولات: <?php echo esc_html($loss_est); ?>
                             </span>
                         </div>
                         <p style="margin:0 0 6px 0;font-size:0.83rem;color:#78350F;line-height:1.5;">
-                            <strong>الثغرة الرئيسية:</strong> <?php echo esc_html($dossier['critical_gaps'] ?? 'اعتماد على منصات الحجز الخارجية مع غياب كونسيرج ذكاء اصطناعي مباشر.'); ?>
+                            <strong>التشخيص الفني:</strong> <?php echo esc_html($tech['diagnosis'] ?? $dossier['critical_gaps'] ?? 'اعتماد على منصات الحجز الخارجية.'); ?>
                         </p>
                         <p style="margin:0;font-size:0.82rem;color:#92400E;line-height:1.5;">
-                            <strong>نقاط القوة:</strong> <?php echo esc_html($dossier['strengths'] ?? 'تقييم ممتاز وطلب سياحي دولي مرتفع.'); ?>
+                            <strong>نقاط القوة:</strong> <?php echo esc_html($dossier['strengths'] ?? 'تقييم ممتاز وطلب سياحي مرتفع.'); ?>
                         </p>
                     </div>
 
@@ -279,18 +305,37 @@ function rsdRunRadarScan() {
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.success) {
-                alert('✅ اكتملت جولة التنقيب بنجاح! تم رصد وتدقيق الفرص واستخراج استخبارات الخرائط.');
+                alert('✅ اكتملت جولة التنقيب بنجاح! تم رصد وتدقيق الفرص واستخراج استخبارات الخرائط والبنية التقنية.');
                 window.location.reload();
             } else {
                 alert('حدث خطأ أثناء التنقيب: ' + (d.data && d.data.message ? d.data.message : ''));
                 btn.disabled = false;
-                btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي الآن';
+                btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي';
             }
         })
         .catch(function(err) {
             alert('تعذر استكمال الاتصال: ' + err.message);
             btn.disabled = false;
-            btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي الآن';
+            btn.innerHTML = '🚀 ابدأ جولة التنقيب الآلي';
+        });
+}
+
+function rsdPurgeAllLeads() {
+    if (!confirm('⚠️ هل أنت متأكد من رغبتك في حذف وتطهير كافة سجلات الفرص السابقة؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    
+    var fd = new FormData();
+    fd.append('action', 'rsd_radar_purge_leads');
+    fd.append('nonce', '<?php echo wp_create_nonce("rsd_admin_nonce"); ?>');
+
+    fetch(ajaxurl, { method: 'POST', body: fd })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.success) {
+                alert('✅ تم تطهير كافة سجلات الرادار بنجاح.');
+                window.location.reload();
+            } else {
+                alert('تعذر التطهير: ' + (d.data && d.data.message ? d.data.message : ''));
+            }
         });
 }
 
@@ -305,7 +350,6 @@ function rsdUpdatePipelineStatus(leadId, newStatus) {
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.success) {
-                // Flash card subtly
                 var card = document.getElementById('leadCard_' + leadId);
                 if (card) {
                     card.style.borderColor = '#10B981';
