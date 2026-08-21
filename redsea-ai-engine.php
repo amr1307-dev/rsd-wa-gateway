@@ -18,6 +18,9 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 use RedSea\Core\OutputCleaner;
 use RedSea\Agents\ToolManager;
 use RedSea\Agents\QAAgent;
+use RedSea\Agents\RAGAgent;
+use RedSea\Agents\ConciergeAgent;
+use RedSea\Agents\AgentFactory;
 use RedSea\Orchestrator\ChiefOrchestrator;
 use RedSea\Radar\LeadRadarEngine;
 use RedSea\RAG\KnowledgeBaseManager;
@@ -33,82 +36,6 @@ if (!defined('ABSPATH')) exit;
 
 
 
-
-
-class RedSeaRAGAgent {
-    public static function get_grounded_context($user_query) {
-        $context_blocks = [];
-
-        if (class_exists(KnowledgeBaseManager::class)) {
-            // 1. Search Semantic Vector Store
-            $similar_chunks = KnowledgeBaseManager::search_similar_chunks($user_query, 4);
-            if (!empty($similar_chunks)) {
-                $context_blocks[] = "=== KNOWLEDGE BASE GROUNDED CONTEXT ===\n" . implode("\n\n", $similar_chunks);
-            }
-
-            // 2. Extract Real-Time Business Catalog (Products / Tours / Hotels / Services)
-            $live_catalog = KnowledgeBaseManager::get_live_business_catalog();
-            if (!empty($live_catalog)) {
-                $context_blocks[] = $live_catalog;
-            }
-        }
-
-        return implode("\n\n", $context_blocks);
-    }
-}
-
-class RedSeaConciergeAgent {
-    public static function generate_response($user_message, $rag_context, $history = [], $custom_options = [], &$trace = []) {
-        $start_time = microtime(true);
-
-        $extra_context = "";
-        if (!empty($rag_context)) {
-            $extra_context = "\n\n<grounded_knowledge_base>\n" . $rag_context . "\n</grounded_knowledge_base>";
-        }
-
-        $system_prompt = LLMProviderManager::build_system_prompt('', 'concierge', $custom_options) . $extra_context;
-
-        $provider = $custom_options['provider'] ?? get_option('rsd_ai_provider', 'gemini');
-        $model    = $custom_options['model'] ?? get_option('rsd_ai_model', 'gemini-flash-latest');
-
-        $gen_options = array_merge($custom_options, [
-            'provider'      => $provider,
-            'model'         => $model,
-            'system_prompt' => $system_prompt
-        ]);
-
-        $response = LLMProviderManager::generate($user_message, $history, $gen_options);
-
-        $execution_time = round((microtime(true) - $start_time) * 1000, 2);
-        $trace['concierge_agent'] = [
-            'status'         => 'success',
-            'provider'       => $provider,
-            'model'          => $model,
-            'execution_ms'   => $execution_time,
-            'context_length' => strlen($rag_context)
-        ];
-
-        return $response;
-    }
-}
-
-
-
-class RedSeaAgentFactory {
-    public static function create_custom_agent($agent_name, $agent_mission, $assigned_tools = ['rag_search', 'sales_calculator']) {
-        return LLMProviderManager::create_custom_agent($agent_name, $agent_mission, $assigned_tools);
-    }
-
-    public static function get_all_agents() {
-        return LLMProviderManager::get_all_agents();
-    }
-}
-
-/**
- * =========================================================================
- * RED SEA DIGITAL — AUTONOMOUS OUTBOUND MULTI-AGENT LEAD RADAR ENGINE
- * =========================================================================
- */
 
 
 class RedSeaAIEngine {

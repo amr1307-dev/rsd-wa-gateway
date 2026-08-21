@@ -20,8 +20,7 @@ class AjaxHandler {
 
     public function __construct() {
         // Public & Protected Chat Endpoints
-        add_action('wp_ajax_rsd_chat', [$this, 'handle_chat']);
-        add_action('wp_ajax_nopriv_rsd_chat', [$this, 'handle_chat']);
+        // rsd_chat is handled by RedSeaAIEngine::handle_ajax_chat for full multi-language & voice support
         
         add_action('wp_ajax_rsd_tts_stream', [$this, 'handle_tts_stream']);
         add_action('wp_ajax_nopriv_rsd_tts_stream', [$this, 'handle_tts_stream']);

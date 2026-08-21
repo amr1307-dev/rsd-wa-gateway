@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 
 use RedSea\Agents\ToolManager;
 use RedSea\Agents\QAAgent;
+use RedSea\Agents\RAGAgent;
+use RedSea\Agents\ConciergeAgent;
 use RedSea\RAG\KnowledgeBaseManager;
 
 /**
@@ -45,13 +47,13 @@ class ChiefOrchestrator {
             'classified_intent' => $intent
         ];
 
-        $rag_context = RedSeaRAGAgent::get_grounded_context($user_message);
+        $rag_context = RAGAgent::get_grounded_context($user_message);
         $trace['rag_agent'] = [
             'status'        => !empty($rag_context) ? 'grounded' : 'no_chunks',
             'chunks_found'  => !empty($rag_context) ? 1 : 0
         ];
 
-        $raw_response = RedSeaConciergeAgent::generate_response($user_message, $rag_context, $history, $custom_options, $trace);
+        $raw_response = ConciergeAgent::generate_response($user_message, $rag_context, $history, $custom_options, $trace);
         $final_response = QAAgent::audit_and_sanitize($raw_response, $trace);
 
         $total_ms = round((microtime(true) - $total_start) * 1000, 2);
