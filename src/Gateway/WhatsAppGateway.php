@@ -18,6 +18,25 @@ use RedSea\Security\RateLimiter;
 class WhatsAppGateway {
 
     /**
+     * Initialize WhatsApp REST routes
+     */
+    public static function init() {
+        add_action('rest_api_init', [self::class, 'register_rest_routes']);
+    }
+
+    /**
+     * Register 2-Way WhatsApp Webhook REST API Endpoint
+     */
+    public static function register_rest_routes() {
+        register_rest_route('rsd/v1', '/whatsapp-webhook', [
+            'methods'             => ['POST', 'GET'],
+            'callback'            => [self::class, 'handle_inbound_webhook'],
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
+
+    /**
      * Get Current Active Gateway Mode
      * @return string 'official_cloud' | 'local_bridge'
      */
