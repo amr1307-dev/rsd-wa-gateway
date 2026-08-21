@@ -44,6 +44,9 @@ class AjaxHandler {
         add_action('wp_ajax_rsd_radar_approve_lead', [$handler, 'handle_radar_approve_lead']);
         add_action('wp_ajax_rsd_radar_edit_pitch', [$handler, 'handle_radar_edit_pitch']);
         add_action('wp_ajax_rsd_radar_reject_lead', [$handler, 'handle_radar_reject_lead']);
+        add_action('wp_ajax_rsd_update_lead_status', [$handler, 'handle_radar_update_status']);
+        add_action('wp_ajax_rsd_radar_update_status', [$handler, 'handle_radar_update_status']);
+        add_action('wp_ajax_rsd_radar_regenerate_pitch', [$handler, 'handle_radar_regenerate_pitch']);
     }
 
     /**
