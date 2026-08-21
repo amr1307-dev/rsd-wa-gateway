@@ -674,39 +674,39 @@ class AdminManager {
 
                     <!-- TAB 1: OVERVIEW & TELEMETRY -->
                     <?php if ($active_tab === 'overview'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-overview.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-overview.php'; ?>
 
                     <!-- TAB 2: AGENTS FORGE -->
                     <?php elseif ($active_tab === 'agents'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-agents.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-agents.php'; ?>
 
                     <!-- TAB 3: BUSINESS IDENTITY -->
                     <?php elseif ($active_tab === 'company'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-identity.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-identity.php'; ?>
 
                     <!-- TAB 4: RAG KNOWLEDGE FILES -->
                     <?php elseif ($active_tab === 'rag'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-knowledge.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-knowledge.php'; ?>
 
                     <!-- TAB 5: SALES CONCIERGE -->
                     <?php elseif ($active_tab === 'concierge'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-sales.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-sales.php'; ?>
 
                     <!-- TAB 6: MODELS HUB -->
                     <?php elseif ($active_tab === 'models'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-models.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-models.php'; ?>
 
                     <!-- TAB 7: VOICE STUDIO -->
                     <?php elseif ($active_tab === 'voice'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-voice.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-voice.php'; ?>
 
                     <!-- TAB 8: WHATSAPP BRIDGE & CRM -->
                     <?php elseif ($active_tab === 'crm'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-crm.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-crm.php'; ?>
 
                     <!-- TAB 9: AUTONOMOUS LEAD RADAR -->
                     <?php elseif ($active_tab === 'radar'): ?>
-                        <?php include __DIR__ . '/templates/admin/tab-radar.php'; ?>
+                        <?php include dirname(dirname(__DIR__)) . '/templates/admin/tab-radar.php'; ?>
 
                     <?php endif; ?>
 
