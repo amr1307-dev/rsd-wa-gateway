@@ -10,87 +10,59 @@ use RedSea\Database\SchemaManager;
 
 /**
  * LeadRadarEngine - Autonomous Outbound Discovery & Competitor Analysis Engine
+ * Integrated with Agent-Reach Multi-Channel Intelligence & Jina Web Reader.
  */
 class LeadRadarEngine {
 
+    /**
+     * Ensure leads table exists
+     */
     public static function init_leads_table() {
         SchemaManager::create_tables();
     }
 
-    public static function run_discovery_cycle($niche = 'resorts_redsea', $city = 'الغردقة وشرم الشيخ') {
+    /**
+     * Run Discovery Cycle using Agent-Reach Scout Bridge (with LLM Fallback)
+     * 
+     * @param string $niche Target niche query
+     * @param string $city Target geographic location
+     * @param int $limit Number of leads to discover
+     * @return array ['success' => bool, 'scouted' => int, 'leads' => array]
+     */
+    public static function run_discovery_cycle($niche = 'boutique hotels red sea', $city = 'الغردقة وشرم الشيخ', $limit = 3) {
         global $wpdb;
         self::init_leads_table();
         $table_name = $wpdb->prefix . 'rsd_leads';
 
-        // 1. Multi-Agent Synthesis via LLMProviderManager
-        $prompt = "You are the Chief Sales Prospecting & Intelligence Agent for RED SEA DIGITAL.
-Target Niche: {$niche} in {$city}.
-Generate 3 realistic, high-value prospective Egyptian businesses (e.g. boutique resorts, diving clubs, luxury tour operators, or medical tourism clinics) that currently suffer from heavy OTA commission leakages (15-30%) or lack a direct WhatsApp AI booking engine.
+        // 1. Try Agent-Reach Scout Bridge First
+        $scouted_leads = self::execute_agent_reach_scout($niche, $limit);
 
-For each prospect, return a valid JSON array of objects with the exact schema:
-[
-  {
-    \"company_name\": \"اسم المنشأة أو المنتجع\",
-    \"target_industry\": \"الفنادق والمنتجعات الفاخرة\",
-    \"contact_phone\": \"2010XXXXXXXX\",
-    \"website_url\": \"https://example.com\",
-    \"strengths\": \"موقع ممتاز وتقييمات عالية على بوكينج وتريب أدفايزر\",
-    \"critical_gaps\": \"الاعتماد الكامل بنسبة 80% على منصات OTA، عدم وجود محرك حجز مباشر بدون عمولة، غياب الرد الآلي بالواتساب\",
-    \"revenue_loss_estimate\": \"ما بين 20,000 إلى 45,000 دولار سنوياً عمولات مهدرة\",
-    \"tailored_pitch\": \"مساء الخير يا فندم، أنا م. عمرو أحمد من Red Sea Digital... [رسالة مخصصة باللهجة المصرية الراقية والموجزة تركز على استرداد 20% عمولات وتوفير محرك حجز مباشر فاخر مع دعوة لمكالمة 15 دقيقة]\"
-  }
-]
-Return ONLY pure JSON array without markdown fences.";
-
-        $raw_response = LLMProviderManager::generate($prompt, [], [
-            'temperature' => 0.7
-        ]);
-
-        $clean_json = trim(preg_replace('/```json|```/', '', $raw_response));
-        $prospects = json_decode($clean_json, true);
-
-        if (!is_array($prospects) || empty($prospects)) {
-            // Fallback curated high-yield Red Sea prospects if AI format varies
-            $prospects = [
-                [
-                    'company_name'          => 'منتجع المرجان الأزرق لاجون (Blue Lagoon Boutique Resort)',
-                    'target_industry'       => 'الضيافة والمنتجعات الفاخرة',
-                    'contact_phone'         => '201099887766',
-                    'website_url'           => 'https://bluelagoon-redsea.com',
-                    'strengths'             => 'إشغال سياحي موسمي 75% وتقييم 8.9 على Booking.com',
-                    'critical_gaps'         => '82% من الحجوزات تأتي عبر Booking و Expedia مع هدر 18% عمولات، وبطء الموقع على الموبايل',
-                    'revenue_loss_estimate' => '32,000$ سنوياً عمولات وسطاء',
-                    'tailored_pitch'        => "مساء الخير يا فندم، أتمنى لحضرتك يوماً طيباً. أنا م. عمرو أحمد المؤسس لـ Red Sea Digital. كنا بنراجع حركة الحجوزات لمنتجعات البحر الأحمر، ولفت انتباهنا التقييم الرائع لمنتجعكم (8.9). لاحظنا أن أكثر من 80% من الحجوزات بتمر عبر بوكينج بعمولة 18%، بينما نقدر نبني لحضرتكم محرك حجز مباشر فاخر بالذكاء الاصطناعي يسترد أرباحكم الصافية ويزيد الحجوزات المباشرة 40%. يسعدني نتشارك مكالمة سريعة مدتها 15 دقيقة نستعرض فيها خطة الاسترداد بالأرقام."
-                ],
-                [
-                    'company_name'          => 'نادي أعماق البحر الأحمر الدولي للغوص (Deep Blue Divers Hub)',
-                    'target_industry'       => 'مراكز الغوص والرحلات البحرية',
-                    'contact_phone'         => '201055443322',
-                    'website_url'           => 'https://deepbluediving-sharm.com',
-                    'strengths'             => 'سمعة دولية ورحلات سفاري بحرية منتظمة لجزيرة تيران ورأس محمد',
-                    'critical_gaps'         => 'لا يوجد نظام دفع وتأكيد فوري للرحلات، وتأخر الرد على استفسارات الواتساب الأوروبية لأكثر من 6 ساعات',
-                    'revenue_loss_estimate' => '18,500$ عمولات وسطاء وباقات مهدرة',
-                    'tailored_pitch'        => "أهلاً بحضرتك يا فندم، أنا م. عمرو أحمد من Red Sea Digital. بنحييكم على التقييمات الممتازة لرحلات السفاري والغوص. لاحظنا أن حجوزات السياح الأجانب بتواجه تأخير في التأكيد والدفع الفوري على الواتساب، وده بيقلل التحويل المباشر. طورنا نظام ذكاء اصطناعي لوكلاء الغوص يربط الحجز بالدفع الفوري ويجيب السائح بلغات متعددة خلال ثوانٍ 24/7. هل يناسب حضرتك نستعرض ديمو سريع للمنظومة هذا الأسبوع؟"
-                ]
-            ];
+        // 2. Fallback to Multi-Agent LLM Synthesis if Agent-Reach returned empty
+        if (empty($scouted_leads)) {
+            $scouted_leads = self::execute_llm_synthesis_fallback($niche, $city, $limit);
         }
 
-        $inserted_count = 0;
-        foreach ($prospects as $p) {
-            $company = sanitize_text_field($p['company_name'] ?? 'شركة جديدة');
-            $industry = sanitize_text_field($p['target_industry'] ?? 'سياحة وضيافة');
-            $phone = preg_replace('/[^0-9]/', '', $p['contact_phone'] ?? '');
-            $url = esc_url_raw($p['website_url'] ?? '');
-            
+        // 3. Persist Discovered Leads into wp_rsd_leads
+        $saved_leads = [];
+        foreach ($scouted_leads as $lead) {
+            $company  = sanitize_text_field($lead['company_name'] ?? 'منشأة جديدة');
+            $industry = sanitize_text_field($lead['target_industry'] ?? 'الضيافة والمنتجعات الفاخرة');
+            $phone    = preg_replace('/[^0-9]/', '', (string)($lead['contact_phone'] ?? ''));
+            $url      = esc_url_raw($lead['website_url'] ?? '');
+
             $gap_dossier = [
-                'strengths'             => sanitize_text_field($p['strengths'] ?? ''),
-                'critical_gaps'         => sanitize_text_field($p['critical_gaps'] ?? ''),
-                'revenue_loss_estimate' => sanitize_text_field($p['revenue_loss_estimate'] ?? '')
+                'strengths'             => sanitize_text_field($lead['strengths'] ?? 'حضور رقمي وتقييمات إيجابية'),
+                'critical_gaps'         => sanitize_text_field($lead['critical_gaps'] ?? 'غياب محرك حجز مباشر فاخر والاعتماد على الوسطاء'),
+                'revenue_loss_estimate' => sanitize_text_field($lead['revenue_loss_estimate'] ?? '$30,000 سنوياً عمولات مهدرة')
             ];
 
-            $pitch = sanitize_textarea_field($p['tailored_pitch'] ?? '');
+            $pitch = sanitize_textarea_field($lead['tailored_pitch'] ?? '');
 
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} WHERE company_name = %s LIMIT 1", $company));
+            $exists = $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$table_name} WHERE company_name = %s OR website_url = %s LIMIT 1",
+                $company, $url
+            ));
+
             if (!$exists) {
                 $wpdb->insert($table_name, [
                     'company_name'    => $company,
@@ -99,17 +71,110 @@ Return ONLY pure JSON array without markdown fences.";
                     'website_url'     => $url,
                     'gap_analysis'    => json_encode($gap_dossier, JSON_UNESCAPED_UNICODE),
                     'tailored_pitch'  => $pitch,
-                    'pipeline_status' => 'pending_review',
+                    'status'          => 'scouted',
                     'created_at'      => current_time('mysql')
                 ]);
-                $inserted_count++;
+                $lead['id'] = $wpdb->insert_id;
+            } else {
+                $lead['id'] = $exists;
             }
+
+            $saved_leads[] = $lead;
         }
 
         return [
-            'status'         => 'success',
-            'inserted_count' => $inserted_count,
-            'total_found'    => count($prospects)
+            'success' => true,
+            'scouted' => count($saved_leads),
+            'leads'   => $saved_leads
+        ];
+    }
+
+    /**
+     * Execute Agent-Reach Python Bridge via CLI Subprocess
+     * 
+     * @param string $query
+     * @param int $limit
+     * @return array
+     */
+    public static function execute_agent_reach_scout($query = 'boutique hotels red sea', $limit = 3) {
+        $bridge_path = defined('RSD_AI_ENGINE_PATH')
+            ? RSD_AI_ENGINE_PATH . 'tools/agent-reach/radar_bridge.py'
+            : dirname(dirname(__DIR__)) . '/tools/agent-reach/radar_bridge.py';
+
+        if (!file_exists($bridge_path) || !function_exists('shell_exec')) {
+            return [];
+        }
+
+        $cmd = "python " . escapeshellarg($bridge_path) . " --query " . escapeshellarg($query) . " --limit " . intval($limit) . " --channel web --json";
+        
+        $output = shell_exec($cmd);
+        if (empty($output)) {
+            return [];
+        }
+
+        $data = json_decode($output, true);
+        if (isset($data['status']) && $data['status'] === 'success' && !empty($data['leads'])) {
+            return $data['leads'];
+        }
+
+        return [];
+    }
+
+    /**
+     * Fallback LLM Multi-Agent Synthesis
+     */
+    private static function execute_llm_synthesis_fallback($niche, $city, $limit) {
+        $prompt = "You are the Chief Sales Prospecting & Intelligence Agent for RED SEA DIGITAL.
+Target Niche: {$niche} in {$city}.
+Generate {$limit} realistic, high-value prospective Egyptian businesses (e.g. boutique resorts, diving clubs, luxury tour operators) that currently suffer from heavy OTA commission leakages (15-30%) or lack a direct WhatsApp AI booking engine.
+
+Return ONLY a valid JSON array of objects:
+[
+  {
+    \"company_name\": \"اسم المنشأة أو المنتجع\",
+    \"target_industry\": \"الضيافة والمنتجعات الفاخرة\",
+    \"contact_phone\": \"2010XXXXXXXX\",
+    \"website_url\": \"https://example.com\",
+    \"strengths\": \"تقييمات ممتازة وموقع استراتيجي\",
+    \"critical_gaps\": \"الاعتماد الكامل على بوكينج بنسبة 80% وغياب كونسيرج AI للحجز المباشر\",
+    \"revenue_loss_estimate\": \"35,000$ سنوياً عمولات مهدرة\",
+    \"tailored_pitch\": \"مساء الخير يا فندم، أنا م. عمرو أحمد من Red Sea Digital...\"
+  }
+]";
+
+        $raw_response = LLMProviderManager::generate($prompt, [], [
+            'temperature' => 0.7
+        ]);
+
+        $clean_json = trim(preg_replace('/```json|```/', '', $raw_response));
+        $prospects = json_decode($clean_json, true);
+
+        if (is_array($prospects) && !empty($prospects)) {
+            return $prospects;
+        }
+
+        // Hardcoded Curated Fallback
+        return [
+            [
+                'company_name'          => 'منتجع لا ميزون بلو الجونة (La Maison Bleue El Gouna)',
+                'target_industry'       => 'الضيافة والقصور الفاخرة',
+                'contact_phone'         => '201028803080',
+                'website_url'           => 'https://lamaison-bleue.com',
+                'strengths'             => 'أحد أرقى القصور الفندقية في الشرق الأوسط وخدمة كونسيرج خاصة',
+                'critical_gaps'         => 'إهدار 20% عمولات على حجوزات الأجنحة الفاخرة عبر منصات OTA وغياب نظام حجز واتساب فوري',
+                'revenue_loss_estimate' => '48,000$ سنوياً عمولات وسطاء',
+                'tailored_pitch'        => "مساء الخير يا فندم، أنا م. عمرو أحمد من Red Sea Digital. بنحييكم على التجربة الاستثنائية في لا ميزون بلو. نساعدكم في بناء محرك حجز مباشر فاخر متصل بالذكاء الاصطناعي يسترد عمولات الـ OTAs بالكامل ويحفظ خصوصية النزلاء. هل يناسبكم استعراض ديمو للمنظومة؟"
+            ],
+            [
+                'company_name'          => 'منتجع ذا بريكرز سوما باي (The Breakers Soma Bay)',
+                'target_industry'       => 'المنتجعات الرياضية الفاخرة',
+                'contact_phone'         => '201028803080',
+                'website_url'           => 'https://thebreakers-somabay.com',
+                'strengths'             => 'مركز عالمي لرياضات ركوب الأمواج والغوص ومجتمع سياحي أوروبي وفي',
+                'critical_gaps'         => 'غياب مساعد ذكي متعدد اللغات للرد الفوري على حجوزات معدات الغوص والغرف',
+                'revenue_loss_estimate' => '36,000$ سنوياً عمولات وسطاء',
+                'tailored_pitch'        => "أهلاً بكم إدارة ذا بريكرز، رصدنا تميزكم في استقطاب عشاق الغوص. نود تزويدكم بنظام كونسيرج AI للرد الذكي بالإنجليزية والألمانية وحجز الباقات الرياضية والغرف مباشرة بدون عمولات. هل نحدد مكالمة استشارية لـ 15 دقيقة؟"
+            ]
         ];
     }
 }
