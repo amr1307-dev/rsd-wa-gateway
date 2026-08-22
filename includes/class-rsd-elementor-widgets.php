@@ -15,7 +15,8 @@ function rsd_is_arabic() {
     if (function_exists('pll_current_language') && pll_current_language() === 'ar') return true;
     if (isset($_GET['lang']) && $_GET['lang'] === 'ar') return true;
     $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-    if (strpos($uri, '/ar/') !== false || strpos($uri, 'الرئيسية') !== false) return true;
+    if (strpos($uri, '/ar') !== false || strpos($uri, 'ar-') !== false || strpos($uri, 'الرئيسية') !== false) return true;
+    if (function_exists('get_locale') && strpos(get_locale(), 'ar') !== false) return true;
     return false;
 }
 
