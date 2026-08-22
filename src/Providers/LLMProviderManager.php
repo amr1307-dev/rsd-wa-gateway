@@ -342,30 +342,19 @@ class LLMProviderManager {
     }
 
     public static function build_system_prompt($custom_prompt = '', $agent_role = 'concierge', $custom_options = []) {
-        $detected_lang = $custom_options['detected_lang'] ?? 'ar';
-        
-        $lang_mandates = [
-            'en' => "CRITICAL LANGUAGE LOCK: The user is communicating in ENGLISH. You MUST formulate your entire response exclusively in English. Even if knowledge base references are in Arabic, you MUST translate and answer 100% in fluent, polished English. Never output Arabic when the user writes in English.",
-            'ar' => "قاعدة لغوية صارمة: المستخدم يتحدث باللغة العربية. يجب أن تكون إجابتك باللغة العربية الفصحى الراقية حصراً.",
-            'ru' => "CRITICAL LANGUAGE LOCK: The user is communicating in RUSSIAN. Отвечайте строго на русском языке.",
-            'de' => "CRITICAL LANGUAGE LOCK: The user is communicating in GERMAN. Antworten Sie ausschließlich auf Deutsch.",
-            'fr' => "CRITICAL LANGUAGE LOCK: The user is communicating in FRENCH. Répondez exclusivement en français.",
-            'es' => "CRITICAL LANGUAGE LOCK: The user is communicating in SPANISH. Responda exclusivamente en español."
-        ];
+        if (!class_exists('\RedSea\Identity\SystemPromptBuilder')) {
+            $builder_path = dirname(__DIR__) . '/Identity/SystemPromptBuilder.php';
+            if (file_exists($builder_path)) {
+                require_once $builder_path;
+            }
+        }
 
-        $lang_header = "<language_mandate>
-  " . ($lang_mandates[$detected_lang] ?? $lang_mandates['en']) . "
-</language_mandate>
-
-";
-
-        if (!empty($custom_prompt)) {
-            return $lang_header . $custom_prompt;
+        if (class_exists('\RedSea\Identity\SystemPromptBuilder')) {
+            return \RedSea\Identity\SystemPromptBuilder::build($custom_prompt, $agent_role, $custom_options);
         }
 
         $base = self::get_default_master_prompt();
-
-        return $lang_header . $base;
+        return $base . (!empty($custom_prompt) ? "\n\n" . $custom_prompt : '');
     }
 
     public static function create_custom_agent($agent_name, $agent_mission, $assigned_tools = ['rag_search', 'sales_calculator']) {

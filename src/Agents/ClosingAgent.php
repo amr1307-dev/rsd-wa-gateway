@@ -88,20 +88,32 @@ class ClosingAgent {
             }
         }
 
-        // 2. Objection Handling System Prompt
-        $objection_prompt = "You are the Senior Executive Closer & Direct Booking Strategist for RED SEA DIGITAL on WhatsApp.
-Your mission is to handle hospitality client inquiries and objections consultatively, calmly, and persuasively in 2-3 sentences.
+        // 2. Multi-Domain Objection Handling & Consultation System Prompt
+        if (!class_exists('\RedSea\Identity\SystemPromptBuilder')) {
+            $builder_path = dirname(__DIR__) . '/Identity/SystemPromptBuilder.php';
+            if (file_exists($builder_path)) require_once $builder_path;
+        }
 
-OBJECTION HANDLING MATRIX:
-1. 'Too expensive / غالي': Emphasize that this is not a cost, but an investment recovering $35,000–$95,000/yr in OTA commissions (15-25% saved on every direct booking). It pays for itself within 60 days.
-2. 'Skeptical / مش متأكد': Reference their high Google Maps ratings and demand, offer a zero-risk 15-minute live screen demo showing the WhatsApp concierge closing bookings on a mobile phone.
-3. 'Happy with current agency / شغالين مع شركة': Clarify that we DO NOT replace their marketing agency, but empower it by providing the 0% commission direct booking engine & WhatsApp concierge that converts their ad traffic (+35% conversion).
-4. 'Send more info / ابعت تفاصيل': Send a high-level summary of the Executive Digital Audit Dossier and invite them to a 15-min discovery call to align room rates.
+        $base_prompt = class_exists('\RedSea\Identity\SystemPromptBuilder')
+            ? \RedSea\Identity\SystemPromptBuilder::build('', 'closer')
+            : LLMProviderManager::build_system_prompt('', 'closer');
 
-Keep the tone quiet luxury, highly respectful, authoritative, and concise. Never use generic corporate fluff.";
+        $objection_matrix = "
+<consultative_closing_matrix>
+  1. استفسارات المتاجر الإلكترونية (E-Commerce): اشرح حلول بناء المتاجر فائقة السرعة، ربط بوابات الدفع الإلكتروني (فيزا/انستاباي/فوري)، واسترجاع السلات المتروكة بالواتساب.
+  2. استفسارات الفنادق والضيافة: اشرح محرك الحجز المباشر وتوفير عمولات الـ OTAs (15-25%) مع كونسيرج الواتساب.
+  3. استفسارات الشركات والـ Lead Gen: اشرح صفحات الهبوط الموجهة للإعلانات ولوحات الـ CRM لإدارة العملاء.
+  4. اعتراض 'السعر مرتفع': وضح أنه استثمار ذكي يسترد تكلفته سريعاً من زيادة المبيعات واسترداد العمولات.
+  5. اعتراض 'مش متأكد': اعرض استعراض ديمو حي ومكالمة سريعة لمدة 15 دقيقة لمشاهدة المنظومة تعمل على الموبايل.
+  6. اعتراض 'شغالين مع وكالة': وضح أننا نكامل حلول الوكالة بتوفير منصة البيع/الحجز المؤتمتة التي ترفع تحويل حملاتهم (+35%).
+
+  قاعدة صارمة: لا ترفض أي نشاط إطلاقاً، وتحدث بأسلوب مستشار مبيعات خبير وودود في 2 إلى 3 جمل مركزة.
+</consultative_closing_matrix>";
+
+        $system_prompt = $base_prompt . "\n\n" . $objection_matrix;
 
         $raw_reply = LLMProviderManager::generate($clean_text, [], [
-            'system_prompt' => $objection_prompt
+            'system_prompt' => $system_prompt
         ]);
 
         $clean_reply = strip_tags($raw_reply);
