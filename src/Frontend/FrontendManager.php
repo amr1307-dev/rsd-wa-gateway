@@ -67,6 +67,20 @@ class FrontendManager {
             }
         };
 
+        window.closeRsdChatWidget = function(e) {
+            if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
+            var win = document.getElementById('rsdModalWindow');
+            if (!win) return;
+            win.classList.remove('active');
+            win.style.setProperty('display', 'none', 'important');
+            win.style.setProperty('opacity', '0', 'important');
+            win.style.setProperty('visibility', 'hidden', 'important');
+            win.style.setProperty('pointer-events', 'none', 'important');
+        };
+
         window.toggleRsdChatWidget = function(e) {
             if (e) {
                 if (typeof e.preventDefault === 'function') e.preventDefault();
@@ -83,13 +97,10 @@ class FrontendManager {
                 win.style.setProperty('visibility', 'visible', 'important');
                 win.style.setProperty('pointer-events', 'all', 'important');
                 win.style.setProperty('z-index', '999999999', 'important');
-                var inp = document.getElementById('rsdInputField');
+                var inp = document.getElementById('rsdChatInput') || document.getElementById('rsdInputField');
                 if (inp) setTimeout(function() { inp.focus(); }, 120);
             } else {
-                win.classList.remove('active');
-                win.style.setProperty('display', 'none', 'important');
-                win.style.setProperty('opacity', '0', 'important');
-                win.style.setProperty('pointer-events', 'none', 'important');
+                window.closeRsdChatWidget(e);
             }
         };
         </script>
@@ -142,7 +153,10 @@ class FrontendManager {
             .entry-title, h1.entry-title, header.entry-header, .page-header, .site-main > h1:first-child,
             header.site-header:not(#rsdUniversalHeader), header.hello-header:not(#rsdUniversalHeader),
             .site-header:not(#rsdUniversalHeader), #site-header:not(#rsdUniversalHeader),
-            .elementor-location-header:not(#rsdUniversalHeader) {
+            .elementor-location-header:not(#rsdUniversalHeader),
+            footer.site-footer:not(#rsd-master-footer), footer.hello-footer:not(#rsd-master-footer),
+            .site-footer:not(#rsd-master-footer), #site-footer:not(#rsd-master-footer),
+            .elementor-location-footer:not(#rsd-master-footer) {
                 display: none !important;
             }
 
@@ -476,7 +490,7 @@ class FrontendManager {
         $cr_text = $is_ar ? 'جميع الحقوق محفوظة. تم التطوير بواسطة استوديو Red Sea Digital.' : 'All rights reserved. Engineered by Red Sea Digital Architecture Studio.';
         ?>
         <footer id="rsd-master-footer" class="rsd-master-footer-wrap <?php echo $is_ar ? 'rsd-rtl' : 'rsd-ltr'; ?>">
-            <div class="rsd-footer-container">
+            <div class="rsd-footer-container rsd-footer-inner">
                 <div class="rsd-footer-col rsd-footer-brand-col">
                     <div class="rsd-footer-logo-wrap">
                         <img src="https://redseadigital.pro/wp-content/uploads/2026/08/red_sea_digital_logo_ultra_cropped.webp" alt="Red Sea Digital Logo" class="rsd-footer-logo" />

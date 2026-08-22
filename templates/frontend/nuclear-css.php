@@ -5838,4 +5838,394 @@ $is_ar = (strpos($_SERVER['REQUEST_URI'], '/ar') !== false);
         .rsd-stagger-3 { transition-delay: 0.18s !important; }
         .rsd-stagger-4 { transition-delay: 0.24s !important; }
 
-    </style>
+    
+            /* ==========================================================================
+               COMPREHENSIVE RESPONSIVE SUITE: ROI CALCULATOR, FOOTER & WIDGETS
+               ========================================================================== */
+            /* Suppression of generic theme footers */
+            footer.site-footer:not(#rsd-master-footer),
+            footer.hello-footer:not(#rsd-master-footer),
+            .site-footer:not(#rsd-master-footer),
+            #site-footer:not(#rsd-master-footer),
+            .elementor-location-footer:not(#rsd-master-footer) {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Master Footer 4-Column Responsive Grid */
+            .rsd-master-footer-wrap,
+            #rsd-master-footer {
+                background: #090D1A !important;
+                color: #F8FAFC !important;
+                padding: 80px 24px 30px 24px !important;
+                border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                position: relative !important;
+                z-index: 10 !important;
+                display: block !important;
+            }
+            .rsd-footer-container,
+            .rsd-footer-inner {
+                max-width: 1240px !important;
+                margin: 0 auto !important;
+                display: grid !important;
+                grid-template-columns: 2fr 1fr 1.3fr 1fr !important;
+                gap: 40px !important;
+                box-sizing: border-box !important;
+            }
+            @media (max-width: 992px) {
+                .rsd-footer-container,
+                .rsd-footer-inner {
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 32px !important;
+                }
+            }
+            @media (max-width: 640px) {
+                .rsd-footer-container,
+                .rsd-footer-inner {
+                    grid-template-columns: 1fr !important;
+                    gap: 28px !important;
+                }
+            }
+            .rsd-footer-logo-wrap img,
+            .rsd-footer-logo {
+                height: 48px !important;
+                width: auto !important;
+                max-width: 200px !important;
+                object-fit: contain !important;
+                margin-bottom: 14px !important;
+            }
+            .rsd-footer-desc {
+                color: #94A3B8 !important;
+                font-size: 0.92rem !important;
+                line-height: 1.65 !important;
+                margin: 0 0 16px 0 !important;
+            }
+            .rsd-footer-heading {
+                font-size: 0.8rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.15em !important;
+                color: #38BDF8 !important;
+                margin: 0 0 18px 0 !important;
+                text-transform: uppercase !important;
+            }
+            .rsd-footer-links {
+                list-style: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .rsd-footer-links li {
+                margin-bottom: 10px !important;
+            }
+            .rsd-footer-links a {
+                color: #CBD5E1 !important;
+                text-decoration: none !important;
+                font-size: 0.9rem !important;
+                transition: color 0.2s ease !important;
+            }
+            .rsd-footer-links a:hover {
+                color: #38BDF8 !important;
+            }
+            .rsd-footer-info {
+                color: #CBD5E1 !important;
+                font-size: 0.88rem !important;
+                line-height: 1.5 !important;
+                margin: 0 0 12px 0 !important;
+            }
+            .rsd-footer-email, .rsd-footer-wa {
+                color: #38BDF8 !important;
+                text-decoration: none !important;
+                font-weight: 600 !important;
+            }
+            .rsd-footer-bottom {
+                max-width: 1240px !important;
+                margin: 50px auto 0 auto !important;
+                padding-top: 24px !important;
+                border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+                text-align: center !important;
+                color: #64748B !important;
+                font-size: 0.85rem !important;
+            }
+
+            /* ROI Calculator Styling */
+            .rsd-roi-section {
+                background: #030712 !important;
+                padding: 90px 20px !important;
+                position: relative !important;
+            }
+            .rsd-roi-container {
+                max-width: 1140px !important;
+                margin: 0 auto !important;
+            }
+            .rsd-roi-calculator-wrap,
+            .rsd-roi-grid {
+                display: grid !important;
+                grid-template-columns: 1.15fr 1fr !important;
+                gap: 28px !important;
+                align-items: stretch !important;
+            }
+            @media (max-width: 860px) {
+                .rsd-roi-calculator-wrap,
+                .rsd-roi-grid {
+                    grid-template-columns: 1fr !important;
+                }
+            }
+            .rsd-roi-box,
+            .rsd-roi-card {
+                background: rgba(15, 23, 42, 0.75) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 20px !important;
+                padding: 30px !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+                backdrop-filter: blur(14px) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+            }
+            .rsd-roi-box-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                margin-bottom: 22px !important;
+            }
+            .rsd-roi-box-title {
+                font-size: 1.15rem !important;
+                font-weight: 800 !important;
+                color: #FFFFFF !important;
+            }
+            .rsd-roi-box-badge {
+                font-size: 0.75rem !important;
+                font-weight: 700 !important;
+                padding: 4px 10px !important;
+                background: rgba(56, 189, 248, 0.15) !important;
+                color: #38BDF8 !important;
+                border: 1px solid rgba(56, 189, 248, 0.3) !important;
+                border-radius: 9999px !important;
+            }
+            .rsd-roi-field {
+                margin-bottom: 20px !important;
+            }
+            .rsd-field-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                margin-bottom: 8px !important;
+                color: #CBD5E1 !important;
+                font-size: 0.9rem !important;
+                font-weight: 600 !important;
+            }
+            .rsd-val-highlight {
+                color: #38BDF8 !important;
+                font-weight: 800 !important;
+                background: rgba(56, 189, 248, 0.1) !important;
+                padding: 2px 8px !important;
+                border-radius: 6px !important;
+                font-family: monospace !important;
+                font-size: 0.95rem !important;
+            }
+            .rsd-slider,
+            .rsd-range-input {
+                width: 100% !important;
+                height: 6px !important;
+                background: #1E293B !important;
+                border-radius: 4px !important;
+                outline: none !important;
+                -webkit-appearance: none !important;
+                cursor: pointer !important;
+            }
+            .rsd-slider::-webkit-slider-thumb,
+            .rsd-range-input::-webkit-slider-thumb {
+                -webkit-appearance: none !important;
+                width: 20px !important;
+                height: 20px !important;
+                border-radius: 50% !important;
+                background: #FFFFFF !important;
+                border: 3px solid #2563EB !important;
+                cursor: pointer !important;
+                box-shadow: 0 0 10px rgba(37, 99, 235, 0.8) !important;
+            }
+            .rsd-output-group {
+                margin-bottom: 20px !important;
+            }
+            .rsd-output-label {
+                font-size: 0.78rem !important;
+                font-weight: 700 !important;
+                color: #94A3B8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.08em !important;
+                margin-bottom: 4px !important;
+            }
+            .rsd-output-value {
+                font-size: clamp(1.9rem, 3vw, 2.5rem) !important;
+                font-weight: 900 !important;
+                color: #38BDF8 !important;
+                font-family: monospace !important;
+                line-height: 1.1 !important;
+            }
+            .rsd-output-value-green {
+                font-size: 1.4rem !important;
+                font-weight: 800 !important;
+                color: #10B981 !important;
+            }
+            .rsd-output-sub {
+                font-size: 0.85rem !important;
+                color: #64748B !important;
+                margin-top: 4px !important;
+            }
+            .rsd-output-btn {
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+                color: #FFFFFF !important;
+                border: none !important;
+                padding: 14px 24px !important;
+                border-radius: 12px !important;
+                font-weight: 700 !important;
+                font-size: 0.95rem !important;
+                cursor: pointer !important;
+                box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3) !important;
+                transition: transform 0.2s ease !important;
+                width: 100% !important;
+                margin-top: 10px !important;
+            }
+            .rsd-output-btn:hover {
+                transform: translateY(-2px) !important;
+            }
+
+            /* Matrix Comparison Styling */
+            .rsd-matrix-sec {
+                background: #030712 !important;
+                padding: 90px 20px !important;
+            }
+            .rsd-unified-matrix-card {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 24px !important;
+                max-width: 1100px !important;
+                margin: 0 auto !important;
+            }
+            @media (max-width: 800px) {
+                .rsd-unified-matrix-card { grid-template-columns: 1fr !important; }
+            }
+            .rsd-matrix-col {
+                background: rgba(15, 23, 42, 0.7) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 20px !important;
+                padding: 32px !important;
+                backdrop-filter: blur(12px) !important;
+            }
+            .rsd-matrix-col.col-new {
+                border-color: rgba(37, 99, 235, 0.4) !important;
+                background: rgba(15, 23, 42, 0.9) !important;
+                box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15) !important;
+            }
+            .rsd-col-badge {
+                display: inline-block !important;
+                font-size: 0.75rem !important;
+                font-weight: 700 !important;
+                padding: 4px 12px !important;
+                border-radius: 9999px !important;
+                margin-bottom: 12px !important;
+            }
+            .badge-old { background: rgba(239, 68, 68, 0.15) !important; color: #F87171 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; }
+            .badge-new { background: rgba(16, 185, 129, 0.15) !important; color: #34D399 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
+            .rsd-col-title {
+                color: #FFFFFF !important;
+                font-size: 1.25rem !important;
+                font-weight: 800 !important;
+                margin: 0 0 20px 0 !important;
+            }
+            .rsd-matrix-list {
+                list-style: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .rsd-matrix-item {
+                color: #CBD5E1 !important;
+                font-size: 0.92rem !important;
+                line-height: 1.6 !important;
+                margin-bottom: 14px !important;
+                padding-left: 24px !important;
+                position: relative !important;
+            }
+            [dir="rtl"] .rsd-matrix-item {
+                padding-left: 0 !important;
+                padding-right: 24px !important;
+            }
+            .item-cross::before {
+                content: "✕" !important;
+                position: absolute !important;
+                left: 0 !important;
+                color: #EF4444 !important;
+                font-weight: 800 !important;
+            }
+            [dir="rtl"] .item-cross::before {
+                left: auto !important;
+                right: 0 !important;
+            }
+            .item-check::before {
+                content: "✓" !important;
+                position: absolute !important;
+                left: 0 !important;
+                color: #10B981 !important;
+                font-weight: 800 !important;
+            }
+            [dir="rtl"] .item-check::before {
+                left: auto !important;
+                right: 0 !important;
+            }
+
+            /* Final Dark CTA Section */
+            .rsd-saas-dark-sec {
+                background: #030712 !important;
+                padding: 80px 20px !important;
+                text-align: center !important;
+            }
+            .rsd-saas-dark-container {
+                max-width: 800px !important;
+                margin: 0 auto !important;
+            }
+            .rsd-guarantee-pill {
+                display: inline-block !important;
+                background: rgba(16, 185, 129, 0.1) !important;
+                border: 1px solid rgba(16, 185, 129, 0.3) !important;
+                color: #34D399 !important;
+                padding: 8px 18px !important;
+                border-radius: 9999px !important;
+                font-size: 0.85rem !important;
+                font-weight: 700 !important;
+            }
+            .rsd-dark-h2 {
+                color: #FFFFFF !important;
+                font-size: clamp(1.8rem, 3.5vw, 2.5rem) !important;
+                font-weight: 800 !important;
+                margin: 20px 0 12px 0 !important;
+            }
+            .rsd-dark-subtext {
+                color: #94A3B8 !important;
+                font-size: 1rem !important;
+                line-height: 1.6 !important;
+                margin: 0 auto 30px auto !important;
+            }
+            .rsd-saas-btn-primary {
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+                color: #FFFFFF !important;
+                border: none !important;
+                padding: 16px 36px !important;
+                border-radius: 50px !important;
+                font-size: 1.05rem !important;
+                font-weight: 700 !important;
+                cursor: pointer !important;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+                transition: all 0.25s ease !important;
+            }
+            .rsd-saas-btn-primary:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5) !important;
+            }
+
+        </style>

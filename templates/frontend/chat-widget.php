@@ -345,7 +345,7 @@ if (!defined('ABSPATH')) {
                         </div>
                     </div>
                 </div>
-                <button class="rsd-header-close" onclick="var el=document.getElementById(&apos;rsd-booking-calendar&apos;);if(el){el.scrollIntoView({behavior:&apos;smooth&apos;});}else{window.toggleRsdChatWidget(event);}">✕</button>
+                <button class="rsd-header-close" onclick="window.closeRsdChatWidget(event);">✕</button>
             </div>
 
             <!-- Messages Stream -->
@@ -377,14 +377,41 @@ if (!defined('ABSPATH')) {
         </div>
 
         <script>
+        
+        window.closeRsdChatWidget = function(e) {
+            if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
+            var win = document.getElementById("rsdModalWindow");
+            if (!win) return;
+            win.classList.remove("active");
+            win.style.setProperty('display', 'none', 'important');
+            win.style.setProperty('opacity', '0', 'important');
+            win.style.setProperty('visibility', 'hidden', 'important');
+            win.style.setProperty('pointer-events', 'none', 'important');
+        };
+
         window.toggleRsdChatWidget = function(e) {
-            if (e) e.preventDefault();
+            if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
             var modal = document.getElementById("rsdModalWindow");
             if (!modal) return;
-            modal.classList.toggle("active");
-            if (modal.classList.contains("active")) {
+            
+            var isOpen = modal.classList.contains("active") || (modal.style.display === 'flex');
+            if (isOpen) {
+                window.closeRsdChatWidget(e);
+            } else {
+                modal.classList.add("active");
+                modal.style.setProperty('display', 'flex', 'important');
+                modal.style.setProperty('opacity', '1', 'important');
+                modal.style.setProperty('visibility', 'visible', 'important');
+                modal.style.setProperty('pointer-events', 'all', 'important');
+                modal.style.setProperty('z-index', '999999999', 'important');
                 var input = document.getElementById("rsdChatInput");
-                if (input) input.focus();
+                if (input) setTimeout(function() { input.focus(); }, 120);
             }
         };
 
