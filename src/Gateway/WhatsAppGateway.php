@@ -308,20 +308,8 @@ class WhatsAppGateway {
         $reply_text = '';
 
         if ($ai_enabled === '1') {
-            $system_prompt = "You are the Senior Luxury Direct Booking Consultant for RED SEA DIGITAL on WhatsApp. 
-Keep replies concise (2-3 sentences), highly professional, polite, and persuasive. 
-Guide the client on eliminating OTA commissions (15-30%) and building direct booking engines. 
-Provide clear answers and invite them to schedule a 15-min strategy call.";
-
-            $raw_reply = LLMProviderManager::generate($clean_text, [], [
-                'system_prompt' => $system_prompt
-            ]);
-
-            $clean_reply = strip_tags($raw_reply);
-            $clean_reply = preg_replace('/<[^>]*>/', '', $clean_reply);
-            $clean_reply = html_entity_decode($clean_reply, ENT_QUOTES, 'UTF-8');
-            $reply_text  = trim($clean_reply);
-
+            // Master SOP Phase 5: Consultative Closing & Objection Handling Router
+            $reply_text = \RedSea\Agents\ClosingAgent::handle_consultation($clean_phone, $clean_name, $clean_text);
             self::send_message($clean_phone, $reply_text);
         }
 

@@ -48,7 +48,8 @@ app.get('/', (req, res) => {
 
 // Initialize WhatsApp Socket Instance
 async function initSession(instance = 'rsd_live', phoneNumber = null) {
-    const authPath = path.resolve(`./sessions/${instance}`);
+    const authPath = path.join(__dirname, 'sessions', instance);
+    fs.mkdirSync(authPath, { recursive: true });
 
     // If already connected and not requesting re-pairing
     if (sessions.has(instance) && sessions.get(instance)?.user && !phoneNumber) {
@@ -267,13 +268,73 @@ app.all(['/instance/logout/:instance', '/instance/delete/:instance'], authMiddle
     qrCodes.delete(instance);
     pairingCodes.delete(instance);
 
-    const authPath = path.resolve(`./sessions/${instance}`);
+    const authPath = path.join(__dirname, 'sessions', instance);
+    fs.mkdirSync(authPath, { recursive: true });
     if (fs.existsSync(authPath)) {
         try { fs.rmSync(authPath, { recursive: true, force: true }); } catch (e) {}
     }
 
     console.log(`[RSD WA Gateway] Instance [${instance}] Force-Reset & Logged Out.`);
     res.json({ status: 'logged_out', instance });
+});
+
+
+// Visual QR Code Page for instant phone scanning
+app.get('/qr', async (req, res) => {
+    const instance = req.query.instance || 'rsd_live';
+    if (!sessions.has(instance)) {
+        await initSession(instance);
+    }
+
+    const sock = sessions.get(instance);
+    if (sock && sock.user) {
+        return res.send(`
+            <!DOCTYPE html>
+            <html dir="rtl">
+            <head><meta charset="utf-8"><title>WhatsApp Connected</title></head>
+            <body style="font-family:sans-serif;text-align:center;padding:50px;background:#F0FDF4;">
+                <h1 style="color:#166534;">✅ تم ربط الواتساب بنجاح!</h1>
+                <p style="font-size:1.2rem;color:#15803D;">الحساب متصل الآن كـ: <strong>${sock.user.id}</strong></p>
+                <p style="color:#64748B;">المنظومة جاهزة لإرسال واستقبال الرسائل وإدارة الحجوزات الذكية.</p>
+            </body>
+            </html>
+        `);
+    }
+
+    const base64QR = qrCodes.get(instance);
+    if (base64QR) {
+        return res.send(`
+            <!DOCTYPE html>
+            <html dir="rtl">
+            <head>
+                <meta charset="utf-8">
+                <meta http-equiv="refresh" content="5">
+                <title>امسح رمز الواتساب (QR Code)</title>
+            </head>
+            <body style="font-family:sans-serif;text-align:center;padding:30px;background:#0F172A;color:#F8FAFC;">
+                <div style="max-width:420px;margin:0 auto;background:#1E293B;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                    <h2 style="margin:0 0 10px 0;color:#38BDF8;">📲 ربط الواتساب السريع (QR Code)</h2>
+                    <p style="color:#94A3B8;font-size:0.9rem;margin-bottom:20px;">افتح تطبيق الواتساب ➔ الأجهزة المرتبطة ➔ امسح هذا الرمز بكاميرا الهاتف:</p>
+                    <div style="background:#FFFFFF;padding:16px;border-radius:12px;display:inline-block;">
+                        <img src="${base64QR}" alt="WhatsApp QR Code" style="width:260px;height:260px;display:block;" />
+                    </div>
+                    <p style="color:#64748B;font-size:0.8rem;margin-top:15px;">يتم تحديث الرمز تلقائياً كل 5 ثوانٍ...</p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
+    res.send(`
+        <!DOCTYPE html>
+        <html dir="rtl">
+        <head><meta charset="utf-8"><meta http-equiv="refresh" content="2"><title>جاري توليد الرمز...</title></head>
+        <body style="font-family:sans-serif;text-align:center;padding:50px;background:#0F172A;color:#F8FAFC;">
+            <h2>⏳ جاري توليد رمز الـ QR Code...</h2>
+            <p>يرجى الانتظار ثانية واحدة...</p>
+        </body>
+        </html>
+    `);
 });
 
 app.listen(PORT, () => {

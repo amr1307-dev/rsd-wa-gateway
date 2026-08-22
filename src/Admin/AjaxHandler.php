@@ -48,6 +48,7 @@ class AjaxHandler {
         add_action('wp_ajax_rsd_radar_update_status', [$handler, 'handle_radar_update_status']);
         add_action('wp_ajax_rsd_radar_regenerate_pitch', [$handler, 'handle_radar_regenerate_pitch']);
         add_action('wp_ajax_rsd_radar_purge_leads', [$handler, 'handle_radar_purge_leads']);
+        add_action('wp_ajax_rsd_generate_lead_pdf', [$handler, 'handle_generate_lead_pdf']);
     }
 
     /**
