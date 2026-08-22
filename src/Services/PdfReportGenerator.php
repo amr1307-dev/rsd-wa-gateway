@@ -10,6 +10,36 @@ if (!defined('ABSPATH')) {
  * Generates 4-page bespoke, luxury hospitality intelligence reports in Obsidian Slate & Gold.
  */
 class PdfReportGenerator {
+    public static function init() {
+        add_action('rest_api_init', [self::class, 'register_routes']);
+    }
+
+    public static function register_routes() {
+        register_rest_route('rsd/v1', '/report/(?P<id>\d+)', [
+            'methods'             => 'GET',
+            'callback'            => [self::class, 'serve_report_html'],
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
+    public static function serve_report_html($request) {
+        global $wpdb;
+        $lead_id = (int)$request['id'];
+        $table_name = $wpdb->prefix . 'rsd_leads';
+
+        $lead = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE id = %d", $lead_id), ARRAY_A);
+        if (!$lead) {
+            return new \WP_REST_Response('التقرير غير موجود', 404, ['Content-Type' => 'text/html; charset=utf-8']);
+        }
+
+        $dossier = json_decode($lead['gap_analysis'] ?? '{}', true) ?: [];
+        $html = self::render_executive_template($lead, $dossier);
+
+        header('Content-Type: text/html; charset=utf-8');
+        echo $html;
+        exit;
+    }
+
 
     /**
      * Generate HTML/PDF Dossier for a specific Lead ID
@@ -38,7 +68,7 @@ class PdfReportGenerator {
 
         $filename = 'RSD-Audit-' . sanitize_file_name($lead['company_name']) . '-' . $lead_id . '.html';
         $file_path = $reports_dir . '/' . $filename;
-        $file_url  = $upload_dir['baseurl'] . '/rsd-reports/' . $filename;
+        $file_url  = rest_url('rsd/v1/report/' . $lead_id);
 
         file_put_contents($file_path, $html_content);
 

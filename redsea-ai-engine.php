@@ -91,6 +91,7 @@ final class RedSeaAIEngineBootstrap {
 
         // Notification, Email & Webhook Dispatch Services
         \RedSea\Services\NotificationService::init();
+        \RedSea\Services\PdfReportGenerator::init();
     }
 }
 
