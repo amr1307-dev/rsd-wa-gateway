@@ -7064,4 +7064,110 @@ $is_ar = (strpos($_SERVER['REQUEST_URI'], '/ar') !== false);
                 }
             }
 
+        
+            /* ==========================================================================
+               FLAWLESS MOBILE RESPONSIVENESS FOR ROI CALCULATOR & SECTORS (360PX - 768PX)
+               ========================================================================== */
+            .rsd-roi-wrapper {
+                display: grid !important;
+                grid-template-columns: 1.15fr 1fr !important;
+                gap: 28px !important;
+                width: 100% !important;
+                max-width: 1100px !important;
+                margin: 50px auto 0 auto !important;
+                box-sizing: border-box !important;
+            }
+            .rsd-roi-light-card {
+                background: #FFFFFF !important;
+                border: 1px solid #E7E5E4 !important;
+                border-radius: 20px !important;
+                padding: 32px 28px !important;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+            }
+            .rsd-roi-result-card {
+                background: #F5F3EF !important;
+                border-color: #E2DDD5 !important;
+            }
+            .rsd-sector-num-badge {
+                font-family: monospace !important;
+                font-size: 1.25rem !important;
+                font-weight: 800 !important;
+                color: #1E3A8A !important;
+                margin-bottom: 12px !important;
+            }
+            .rsd-verified-tag {
+                font-size: 0.76rem !important;
+                font-weight: 700 !important;
+                color: #047857 !important;
+                background: #ECFDF5 !important;
+                border: 1px solid #A7F3D0 !important;
+                padding: 3px 10px !important;
+                border-radius: 9999px !important;
+                display: inline-block !important;
+                margin-bottom: 14px !important;
+                width: fit-content !important;
+            }
+
+            @media (max-width: 860px) {
+                .rsd-roi-wrapper {
+                    grid-template-columns: 1fr !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 20px !important;
+                    margin-top: 36px !important;
+                    padding: 0 !important;
+                }
+                .rsd-roi-light-card {
+                    padding: 24px 20px !important;
+                    border-radius: 16px !important;
+                }
+                .rsd-slider-label {
+                    font-size: 0.88rem !important;
+                    gap: 8px !important;
+                }
+                .rsd-stat-highlight {
+                    font-size: 0.92rem !important;
+                    padding: 2px 8px !important;
+                }
+                .rsd-result-value {
+                    font-size: clamp(1.8rem, 6vw, 2.3rem) !important;
+                }
+                .rsd-result-note {
+                    font-size: 0.88rem !important;
+                    line-height: 1.4 !important;
+                }
+                .rsd-roi-submit-btn {
+                    padding: 14px 20px !important;
+                    font-size: 0.95rem !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .rsd-editorial-sec {
+                    padding: 44px 14px !important;
+                }
+                .rsd-roi-light-card {
+                    padding: 20px 15px !important;
+                }
+                .rsd-slider-label {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    gap: 4px !important;
+                }
+                [dir="rtl"] .rsd-slider-label {
+                    align-items: flex-start !important;
+                }
+                .rsd-stat-highlight {
+                    align-self: flex-start !important;
+                }
+                .rsd-card-heading {
+                    font-size: 1.05rem !important;
+                }
+            }
+
         </style>

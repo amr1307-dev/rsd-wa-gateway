@@ -1,7 +1,7 @@
 <?php
 /**
  * RED SEA DIGITAL — Luxury Coastal Editorial Elementor Widgets Suite
- * Fully Bilingual (AR & EN) using Clean Anti-AI Light Luxury Design Tokens.
+ * 100% Clean Anti-AI Typography (Zero Emojis, Zero Cliché Badges, Pristine Responsive Design)
  */
 
 if (!defined('ABSPATH')) exit;
@@ -20,10 +20,10 @@ function rsd_is_arabic() {
     return false;
 }
 
-// 1. HERO WIDGET (Warm Coastal Editorial Light Canvas)
+// 1. HERO WIDGET (Rich Multi-Color Gradient Glow, Clean Typography, Zero Badges, Shiny CTA)
 class RSD_Elementor_Hero_Widget extends Widget_Base {
     public function get_name() { return 'rsd_hero'; }
-    public function get_title() { return esc_html__('RSD — Editorial Hero', 'redsea-ai-engine'); }
+    public function get_title() { return esc_html__('RSD — Luxury Gradient Hero', 'redsea-ai-engine'); }
     public function get_icon() { return 'eicon-banner'; }
     public function get_categories() { return ['redsea-digital-suite']; }
 
@@ -36,27 +36,30 @@ class RSD_Elementor_Hero_Widget extends Widget_Base {
         $is_ar = rsd_is_arabic();
         $img_url = plugins_url('assets/hero-v1.webp', dirname(__FILE__));
         
-        $badge = $is_ar ? '✦ أنظمة المبيعات والحجز المباشر ✦' : '✦ DIRECT SALES & BOOKING ENGINES ✦';
-        $h1 = $is_ar ? 'امتلك نظام مبيعات وحجز مباشر..<br><span class="rsd-editorial-highlight">واستلم أرباحك كاملة بدون عمولات</span>' : 'Build Direct Sales & Booking Engines.<br><span class="rsd-editorial-highlight">Keep 100% of Your Revenue.</span>';
-        $sub = $is_ar ? 'تخلص من عمولات الوسطاء ومنصات الحجز المرهقة. ربط مباشر بحسابك البنكي، واستقبال للمدفوعات، ورد آلي على العملاء عبر الواتساب على مدار 24 ساعة.' : 'Zero middleman commissions. Direct guest payments to your bank account with automated 24/7 WhatsApp AI response.';
-        $btn_roi = $is_ar ? 'حاسبة توفير الأرباح ↓' : 'Calculate Retained Revenue ↓';
-        $btn_chat = $is_ar ? 'تحدث مع المستشار التقني 💬' : 'Consult With Our Engineer 💬';
+        $h1 = $is_ar 
+            ? 'امتلك نظام مبيعات وحجز مباشر..<br><span class="rsd-saas-gradient-text">واستلم أرباحك كاملة بدون عمولات</span>' 
+            : 'Build Direct Sales & Booking Engines.<br><span class="rsd-saas-gradient-text">Keep 100% of Your Revenue.</span>';
+            
+        $sub = $is_ar 
+            ? 'تخلص من عمولات الوسطاء ومنصات الحجز المرهقة. ربط مباشر بحسابك البنكي، واستقبال للمدفوعات، ورد آلي على العملاء عبر الواتساب على مدار 24 ساعة.' 
+            : 'Zero middleman commissions. Direct guest payments and automated 24/7 AI response on WhatsApp.';
+            
+        $btn_primary = $is_ar ? 'تحدث مع المستشار التقني ←' : 'Consult With Us →';
+        $btn_secondary = $is_ar ? 'شاهد معرض الأعمال' : 'View Live Showcase';
+        $showcase_url = $is_ar ? 'https://redseadigital.pro/ar-work/' : 'https://redseadigital.pro/work/';
         ?>
-        <section class="rsd-editorial-hero">
-            <div class="rsd-editorial-container">
-                
-                <h1 class="rsd-editorial-h1"><?php echo wp_kses_post($h1); ?></h1>
-                <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
-                <div class="rsd-editorial-cta-wrap">
-                    <button onclick="var el=document.getElementById('rsd-roi-section');if(el){el.scrollIntoView({behavior:'smooth'});}else{window.toggleRsdChatWidget(event);}" class="rsd-btn-primary">
-                        <?php echo esc_html($btn_roi); ?>
-                    </button>
-                    <button onclick="window.toggleRsdChatWidget(event)" class="rsd-btn-secondary">
-                        <?php echo esc_html($btn_chat); ?>
-                    </button>
+        <section class="rsd-saas-hero">
+            <div class="rsd-saas-hero-container">
+                <h1 class="rsd-saas-h1"><?php echo wp_kses_post($h1); ?></h1>
+                <p class="rsd-saas-subtext"><?php echo esc_html($sub); ?></p>
+                <div class="rsd-hero-showcase-wrapper">
+                    <img src="<?php echo esc_url($img_url); ?>" alt="Direct Booking Engine" class="rsd-hero-master-img" loading="eager" width="1020" height="640" />
                 </div>
-                <div class="rsd-editorial-hero-media">
-                    <img src="<?php echo esc_url($img_url); ?>" alt="Direct Booking Engine" class="rsd-editorial-mockup" loading="eager" width="1020" height="640" />
+                <div class="rsd-saas-cta-group">
+                    <button onclick="window.toggleRsdChatWidget(event)" class="shiny-cta">
+                        <span><?php echo esc_html($btn_primary); ?></span>
+                    </button>
+                    <a href="<?php echo esc_url($showcase_url); ?>" class="rsd-btn-showcase"><?php echo esc_html($btn_secondary); ?></a>
                 </div>
             </div>
         </section>
@@ -64,7 +67,7 @@ class RSD_Elementor_Hero_Widget extends Widget_Base {
     }
 }
 
-// 2. TRUST BAR WIDGET (Clean Ecosystem Marquee)
+// 2. TRUST BAR WIDGET (Clean Ecosystem Horizontal Marquee - Zero Emojis)
 class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
     public function get_name() { return 'rsd_trust_bar'; }
     public function get_title() { return esc_html__('RSD — Ecosystem Integrations', 'redsea-ai-engine'); }
@@ -78,25 +81,25 @@ class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'تكاملات رسمية مع بوابات الدفع العالمية وأنظمة الإدارة السحابية' : 'GLOBAL PAYMENT GATEWAYS & CLOUD PMS INTEGRATIONS';
+        $badge = $is_ar ? 'تكاملات مع بوابات الدفع العالمية وأنظمة الإدارة الفندقية' : 'GLOBAL PAYMENT GATEWAYS & CLOUD PMS INTEGRATIONS';
         ?>
         <section class="rsd-editorial-trust-sec">
             <div class="rsd-trust-header-label"><?php echo esc_html($badge); ?></div>
             <div class="rsd-integrations-marquee-wrapper">
                 <div class="rsd-integrations-marquee-track">
-                    <div class="rsd-editorial-chip"><span class="chip-icon"></span> Apple Pay</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">💳</span> Visa / Mastercard</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">💬</span> WhatsApp Cloud API</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">🏨</span> 2-Way PMS Channel Sync</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">🔒</span> Stripe 3D-Secure 2.0</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">⚡</span> Sub-Second Checkout</div>
-                    <!-- Seamless duplicate -->
-                    <div class="rsd-editorial-chip"><span class="chip-icon"></span> Apple Pay</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">💳</span> Visa / Mastercard</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">💬</span> WhatsApp Cloud API</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">🏨</span> 2-Way PMS Channel Sync</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">🔒</span> Stripe 3D-Secure 2.0</div>
-                    <div class="rsd-editorial-chip"><span class="chip-icon">⚡</span> Sub-Second Checkout</div>
+                    <div class="rsd-editorial-chip">Apple Pay</div>
+                    <div class="rsd-editorial-chip">Visa & Mastercard</div>
+                    <div class="rsd-editorial-chip">WhatsApp Cloud API</div>
+                    <div class="rsd-editorial-chip">2-Way PMS Channel Sync</div>
+                    <div class="rsd-editorial-chip">Stripe 3D-Secure 2.0</div>
+                    <div class="rsd-editorial-chip">Sub-Second Checkout</div>
+                    <!-- Duplicate for infinite drift -->
+                    <div class="rsd-editorial-chip">Apple Pay</div>
+                    <div class="rsd-editorial-chip">Visa & Mastercard</div>
+                    <div class="rsd-editorial-chip">WhatsApp Cloud API</div>
+                    <div class="rsd-editorial-chip">2-Way PMS Channel Sync</div>
+                    <div class="rsd-editorial-chip">Stripe 3D-Secure 2.0</div>
+                    <div class="rsd-editorial-chip">Sub-Second Checkout</div>
                 </div>
             </div>
         </section>
@@ -104,7 +107,7 @@ class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
     }
 }
 
-// 3. SECTORS WE SERVE (4 Cards Grid)
+// 3. SECTORS & FINANCIAL ROI WIDGET (100% Mobile Responsive + Zero AI Emojis)
 class RSD_Elementor_ROI_Calculator_Widget extends Widget_Base {
     public function get_name() { return 'rsd_roi_calc'; }
     public function get_title() { return esc_html__('RSD — Sectors & Financial ROI', 'redsea-ai-engine'); }
@@ -118,63 +121,70 @@ class RSD_Elementor_ROI_Calculator_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'القطاعات والحلول المخصصة' : 'SECTORS & BESPOKE SOLUTIONS';
         $title = $is_ar ? 'أنظمة مهندسة خصيصاً لتنمية أعمالك المباشرة' : 'Architected Specifically for Your Direct Business Growth';
         $sub = $is_ar ? 'حلول عملية متكاملة تلبي طبيعة كل نشاط لزيادة المبيعات والتحصيل الفوري بدون وسيط.' : 'Tailored high-converting infrastructure built to maximize direct revenue across high-value sectors.';
         ?>
         <section class="rsd-editorial-sec" id="rsd-sectors-section">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
                 
-                <!-- 4 Cards Grid -->
+                <!-- 4 Sectors Cards Grid -->
                 <div class="rsd-sectors-grid">
                     <!-- Card 1 -->
                     <div class="rsd-sector-card">
-                        <div class="rsd-sector-icon">🛍️</div>
-                        <h3 class="rsd-sector-title"><?php echo $is_ar ? 'المتاجر الإلكترونية الفاخرة' : 'High-Converting E-Commerce'; ?></h3>
+                        <div class="rsd-sector-num-badge">01</div>
+                        <h3 class="rsd-sector-title"><?php echo $is_ar ? 'المتاجر الإلكترونية' : 'High-Converting E-Commerce'; ?></h3>
                         <p class="rsd-sector-desc"><?php echo $is_ar ? 'بيع مباشر سريع، دفع فوري بـ Apple Pay والبطاقات، ومتابعة آلية لحالة الشحن وتأكيد الطلبات عبر الواتساب.' : 'Sub-second checkout with Apple Pay, multi-currency processing, and automated WhatsApp shipment notifications.'; ?></p>
                     </div>
                     <!-- Card 2 -->
                     <div class="rsd-sector-card">
-                        <div class="rsd-sector-icon">🏨</div>
+                        <div class="rsd-sector-num-badge">02</div>
                         <h3 class="rsd-sector-title"><?php echo $is_ar ? 'الفنادق والأنشطة السياحية' : 'Hotels & Tourism Operators'; ?></h3>
                         <p class="rsd-sector-desc"><?php echo $is_ar ? 'محرك حجز غرف ورحلات فوري متصل بالـ PMS، يحميك من عمولات منصات الحجز التي تصل إلى 20%.' : 'Zero-commission direct room & excursion booking engine with 2-way PMS sync eliminating double bookings.'; ?></p>
                     </div>
                     <!-- Card 3 -->
                     <div class="rsd-sector-card">
-                        <div class="rsd-sector-icon">💼</div>
+                        <div class="rsd-sector-num-badge">03</div>
                         <h3 class="rsd-sector-title"><?php echo $is_ar ? 'الشركات والمكاتب الاستشارية' : 'Consultancies & Corporate Firms'; ?></h3>
                         <p class="rsd-sector-desc"><?php echo $is_ar ? 'استقبال طلبات العملاء، حجز الاستشارات المدفوعة، وتوليد عروض الأسعار وفواتير العقود بصورة تلقائية.' : 'Automated inbound qualification, paid client appointments, and instant contractual quote generation.'; ?></p>
                     </div>
                     <!-- Card 4 -->
                     <div class="rsd-sector-card">
-                        <div class="rsd-sector-icon">🩺</div>
+                        <div class="rsd-sector-num-badge">04</div>
                         <h3 class="rsd-sector-title"><?php echo $is_ar ? 'المراكز التدريبية والعيادات' : 'Clinics & Training Academies'; ?></h3>
                         <p class="rsd-sector-desc"><?php echo $is_ar ? 'تنظيم المواعيد والجلسات، تأكيد الحجوزات المسبقة، وإرسال تنبيهات المواعيد للعملاء عبر الواتساب لتقليل الإلغاء.' : 'Online session scheduling, deposit collection, and automated WhatsApp appointment reminders.'; ?></p>
                     </div>
                 </div>
 
-                <!-- ROI Calculator Box (Clean Light Cards) -->
-                <div class="rsd-roi-wrapper" id="rsd-roi-section" style="margin-top: 60px;">
+                <!-- ROI Calculator Box (100% Mobile Responsive Light Cards) -->
+                <div class="rsd-roi-wrapper" id="rsd-roi-section">
                     <div class="rsd-roi-light-card">
                         <div class="rsd-roi-card-header">
                             <span class="rsd-card-heading"><?php echo $is_ar ? 'حاسبة توفير العمولات' : 'Direct Revenue Retention Simulator'; ?></span>
                             <span class="rsd-pill-clean"><?php echo $is_ar ? 'حساب فوري' : 'Live Calculator'; ?></span>
                         </div>
                         <div class="rsd-slider-group">
-                            <div class="rsd-slider-label"><span><?php echo $is_ar ? 'عدد الوحدات / الغرف / العمليات اليومية' : 'Rooms / Daily Transactions'; ?></span><strong id="valRooms" class="rsd-stat-highlight">60</strong></div>
+                            <div class="rsd-slider-label">
+                                <span><?php echo $is_ar ? 'عدد الوحدات / الغرف / العمليات اليومية' : 'Rooms / Daily Transactions'; ?></span>
+                                <strong id="valRooms" class="rsd-stat-highlight">60</strong>
+                            </div>
                             <input type="range" id="rangeRooms" min="5" max="300" value="60" oninput="calcRoi()" class="rsd-clean-slider" />
                         </div>
                         <div class="rsd-slider-group">
-                            <div class="rsd-slider-label"><span><?php echo $is_ar ? 'متوسط قيمة العملية / الليلة (USD)' : 'Average Order / Rate (USD)'; ?></span><strong id="valAdr" class="rsd-stat-highlight">$120</strong></div>
+                            <div class="rsd-slider-label">
+                                <span><?php echo $is_ar ? 'متوسط قيمة العملية / الليلة (USD)' : 'Average Order / Rate (USD)'; ?></span>
+                                <strong id="valAdr" class="rsd-stat-highlight">$120</strong>
+                            </div>
                             <input type="range" id="rangeAdr" min="30" max="1000" step="10" value="120" oninput="calcRoi()" class="rsd-clean-slider" />
                         </div>
                         <div class="rsd-slider-group">
-                            <div class="rsd-slider-label"><span><?php echo $is_ar ? 'نسبة عمولة الوسيط الحالية' : 'Current Middleman Commission %'; ?></span><strong id="valComm" class="rsd-stat-highlight">18%</strong></div>
+                            <div class="rsd-slider-label">
+                                <span><?php echo $is_ar ? 'نسبة عمولة الوسيط الحالية' : 'Current Middleman Commission %'; ?></span>
+                                <strong id="valComm" class="rsd-stat-highlight">18%</strong>
+                            </div>
                             <input type="range" id="rangeComm" min="10" max="30" value="18" oninput="calcRoi()" class="rsd-clean-slider" />
                         </div>
                     </div>
@@ -189,8 +199,8 @@ class RSD_Elementor_ROI_Calculator_Widget extends Widget_Base {
                             <div class="rsd-result-value" id="outAnnual">$132,451 USD</div>
                             <div class="rsd-result-note" id="outMonthly"><?php echo $is_ar ? '+ 11,038 دولار شهرياً مستردة في حسابك' : '+ $11,038 USD / mo retained'; ?></div>
                         </div>
-                        <button onclick="window.toggleRsdChatWidget(event)" class="rsd-btn-primary" style="width: 100%; margin-top: 20px;">
-                            <?php echo $is_ar ? 'احصل على تحليل مالي مخصص لمشروعك →' : 'Request A Custom Architecture Audit →'; ?>
+                        <button onclick="window.toggleRsdChatWidget(event)" class="rsd-btn-primary rsd-roi-submit-btn">
+                            <?php echo $is_ar ? 'احصل على تحليل مالي مخصص لمشروعك ←' : 'Request A Custom Architecture Audit →'; ?>
                         </button>
                     </div>
                 </div>
@@ -238,14 +248,12 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'خطوات العمل الواضحة' : 'HOW WE WORK';
         $title = $is_ar ? '3 خطوات بسيطة لامتلاك نظامك المستقل' : '3 Simple Steps to Full Direct Revenue Ownership';
         $sub = $is_ar ? 'منهجية هندسية واضحة تنقلك من الاعتماد على الوسطاء إلى الاستقلال المالي الكامل خلال 7 إلى 14 يوماً.' : 'A battle-tested 3-stage protocol delivering your turnkey infrastructure in 7 to 14 days.';
         ?>
         <section class="rsd-editorial-sec rsd-steps-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
@@ -259,7 +267,7 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
                     <div class="rsd-step-card">
                         <div class="rsd-step-number">02</div>
                         <h3 class="rsd-step-title"><?php echo $is_ar ? 'التصميم والربط التقني لبوابات الدفع والواتساب' : 'Bespoke Engineering & Payment Integration'; ?></h3>
-                        <p class="rsd-step-desc"><?php echo $is_ar ? 'نبني واجهة سريعة وخاصة بهويتك، نربط بوابات الدفع المباشرة بحسابك، ونفعل مساعد الواتساب الذكي للرد الفوري.' : 'Custom fast-loading UI connected to your bank/Stripe with 24/7 automated WhatsApp AI concierge.'; ?></p>
+                        <p class="rsd-step-desc"><?php echo $is_ar ? 'نبني واجهة سريعة وخاصة بهويتك، نربط بوابات الدفع المباشرة بحسابك، ونفعل مساعد الواتساب للرد الفوري.' : 'Custom fast-loading UI connected to your bank/Stripe with 24/7 automated WhatsApp concierge.'; ?></p>
                     </div>
                     <div class="rsd-step-card">
                         <div class="rsd-step-number">03</div>
@@ -273,7 +281,7 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
     }
 }
 
-// 5. TESTIMONIALS WIDGET (Warm Editorial Cards)
+// 5. TESTIMONIALS WIDGET (Warm Editorial Cards - Zero Emojis/Stars)
 class RSD_Elementor_Testimonials_Widget extends Widget_Base {
     public function get_name() { return 'rsd_testimonials'; }
     public function get_title() { return esc_html__('RSD — Client Trust', 'redsea-ai-engine'); }
@@ -287,21 +295,19 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'تجارب العملاء والنتائج الواقعية' : 'CLIENT EXPERIENCES & TRUST';
         $title = $is_ar ? 'ماذا يقول شركاؤنا عن التحول المباشر؟' : 'What Our Partners Say About Direct Ownership';
         $sub = $is_ar ? 'نتائج موثقة من منشآت سياحية ومتاجر إلكترونية استعادت كامل أرباحها وبيانات عملائها.' : 'Documented outcomes from hospitality and e-commerce leaders who reclaimed 100% of their revenue.';
         ?>
         <section class="rsd-editorial-sec rsd-trust-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
 
                 <div class="rsd-testimonials-editorial-grid">
                     <div class="rsd-t-editorial-card">
-                        <div class="rsd-t-stars">★★★★★</div>
+                        <div class="rsd-verified-tag"><?php echo $is_ar ? 'شريك موثق' : 'Verified Partner'; ?></div>
                         <p class="rsd-t-text"><?php echo $is_ar ? '"الانتقال لنظام الحجز المباشر من Red Sea Digital وفّر علينا أكثر من 22% من العمولات التي كنا ندفعها شهرياً للمنصات."' : '"Transitioning to Red Sea Digital direct booking engine saved us over 22% in monthly OTA commissions."'; ?></p>
                         <div class="rsd-t-user-info">
                             <div class="rsd-t-avatar-box">KM</div>
@@ -313,7 +319,7 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
                     </div>
 
                     <div class="rsd-t-editorial-card">
-                        <div class="rsd-t-stars">★★★★★</div>
+                        <div class="rsd-verified-tag"><?php echo $is_ar ? 'شريك موثق' : 'Verified Partner'; ?></div>
                         <p class="rsd-t-text"><?php echo $is_ar ? '"مساعد الواتساب الذكي يستقبل استفسارات العملاء ويؤكد الدفع حتى في أوقات متأخرة من الليل دون أي تدخل بشري."' : '"The WhatsApp AI concierge captures inquiries instantly and confirms checkout even at midnight."'; ?></p>
                         <div class="rsd-t-user-info">
                             <div class="rsd-t-avatar-box">OS</div>
@@ -325,7 +331,7 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
                     </div>
 
                     <div class="rsd-t-editorial-card">
-                        <div class="rsd-t-stars">★★★★★</div>
+                        <div class="rsd-verified-tag"><?php echo $is_ar ? 'شريك موثق' : 'Verified Partner'; ?></div>
                         <p class="rsd-t-text"><?php echo $is_ar ? '"الربط المباشر مع نظام إدارة الغرف (PMS) منع حدوث أي تعارض في المواعيد وسرّع من تجربة النزلاء."' : '"2-Way PMS synchronization eliminated double bookings and saved dozens of manual admin hours."'; ?></p>
                         <div class="rsd-t-user-info">
                             <div class="rsd-t-avatar-box">TA</div>
@@ -356,13 +362,11 @@ class RSD_Elementor_Matrix_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'المقارنة الواقعية' : 'THE REAL DIFFERENCE';
         $title = $is_ar ? 'الفارق الحقيقي بين النظام المباشر والمنصات الوسيطة' : 'The Real Difference in Revenue Ownership';
         ?>
         <section class="rsd-editorial-sec rsd-matrix-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                 </div>
 
@@ -411,13 +415,11 @@ class RSD_Elementor_Cal_Booking_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $badge = $is_ar ? 'الأسئلة الشائعة والإجابات التقنية' : 'FREQUENTLY ASKED QUESTIONS';
         $title = $is_ar ? 'كل ما تحتاج معرفته عن استقلالية نظامك' : 'Everything You Need to Know About Direct Architecture';
         ?>
         <section class="rsd-editorial-sec rsd-faq-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                 </div>
 
@@ -472,7 +474,7 @@ class RSD_Elementor_Cal_Booking_Widget extends Widget_Base {
     }
 }
 
-// 8. FINAL CTA WIDGET (Warm Clean CTA & Guarantee)
+// 8. FINAL CTA WIDGET (Warm Clean CTA & Guarantee - Zero Emojis)
 class RSD_Elementor_Final_CTA_Widget extends Widget_Base {
     public function get_name() { return 'rsd_final_cta'; }
     public function get_title() { return esc_html__('RSD — Final Editorial CTA', 'redsea-ai-engine'); }
@@ -486,10 +488,10 @@ class RSD_Elementor_Final_CTA_Widget extends Widget_Base {
 
     protected function render() {
         $is_ar = rsd_is_arabic();
-        $guarantee = $is_ar ? '🛡️ ضمان استرداد كامل خلال 30 يوماً في حال عدم مطابقة سرعة وأداء النظام لتطلعاتك.' : '🛡️ 30-Day Performance Guarantee: 100% full refund if speed & architecture do not meet your exact requirements.';
+        $guarantee = $is_ar ? 'ضمان استرداد كامل خلال 30 يوماً في حال عدم مطابقة سرعة وأداء النظام لتطلعاتك.' : '30-Day Performance Guarantee: 100% full refund if speed & architecture do not meet your exact requirements.';
         $title = $is_ar ? 'ابدأ في امتلاك مبيعاتك وأرباحك المباشرة اليوم' : 'Start Reclaiming Your Direct Revenue Today';
         $sub = $is_ar ? 'تواصل مع فريقنا الهندسي لمناقشة متطلبات نشاطك واستعراض دراسة الجدوى المناسبة لك.' : 'Consult with our engineering team to review your custom direct sales and booking architecture.';
-        $btn = $is_ar ? 'احجز استشارتك المجانية الآن 🚀' : 'Book Your Free Consultation 🚀';
+        $btn = $is_ar ? 'احجز استشارتك المجانية الآن ←' : 'Book Your Free Consultation →';
         ?>
         <section class="rsd-editorial-cta-sec">
             <div class="rsd-editorial-container" style="text-align: center;">
