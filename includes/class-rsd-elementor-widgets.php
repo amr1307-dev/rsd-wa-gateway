@@ -44,7 +44,7 @@ class RSD_Elementor_Hero_Widget extends Widget_Base {
         ?>
         <section class="rsd-editorial-hero">
             <div class="rsd-editorial-container">
-                <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                
                 <h1 class="rsd-editorial-h1"><?php echo wp_kses_post($h1); ?></h1>
                 <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 <div class="rsd-editorial-cta-wrap">
@@ -125,7 +125,7 @@ class RSD_Elementor_ROI_Calculator_Widget extends Widget_Base {
         <section class="rsd-editorial-sec" id="rsd-sectors-section">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
@@ -245,7 +245,7 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
         <section class="rsd-editorial-sec rsd-steps-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
@@ -294,7 +294,7 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
         <section class="rsd-editorial-sec rsd-trust-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                     <p class="rsd-editorial-sub"><?php echo esc_html($sub); ?></p>
                 </div>
@@ -362,7 +362,7 @@ class RSD_Elementor_Matrix_Widget extends Widget_Base {
         <section class="rsd-editorial-sec rsd-matrix-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                 </div>
 
@@ -417,7 +417,7 @@ class RSD_Elementor_Cal_Booking_Widget extends Widget_Base {
         <section class="rsd-editorial-sec rsd-faq-editorial-sec">
             <div class="rsd-editorial-container">
                 <div class="rsd-section-heading-wrap">
-                    <div class="rsd-editorial-badge"><span><?php echo esc_html($badge); ?></span></div>
+                    
                     <h2 class="rsd-editorial-h2"><?php echo esc_html($title); ?></h2>
                 </div>
 
