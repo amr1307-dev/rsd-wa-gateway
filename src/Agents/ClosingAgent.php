@@ -140,10 +140,14 @@ Keep the tone quiet luxury, highly respectful, authoritative, and concise. Never
 
         // Send Notification via NotificationService
         if (class_exists('\RedSea\Services\NotificationService')) {
-            NotificationService::send_admin_alert(
-                "🚨 تصعيد صفقة جديد (Deal Desk Triggered)",
-                "العميل: {$name} ({$phone})\nالسبب: {$escalation['reason']}\nالرسالة: {$msg}"
-            );
+            try {
+                NotificationService::send_booking_alert([
+                    'customer_name'   => $name,
+                    'customer_phone'  => $phone,
+                    'service_type'    => '🚨 تصعيد صفقة جديد (Deal Desk: ' . $escalation['category'] . ')',
+                    'booking_details' => "السبب: {$escalation['reason']}\nالرسالة: {$msg}"
+                ]);
+            } catch (\Throwable $t) {}
         }
     }
 }
