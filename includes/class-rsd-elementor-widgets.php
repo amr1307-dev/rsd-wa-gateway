@@ -29,23 +29,22 @@ class RSD_Elementor_Hero_Widget extends Widget_Base {
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
-        $img_url = !empty($settings['image']['url']) ? $settings['image']['url'] : plugins_url('assets/hero-v1.webp', dirname(__FILE__));
+        $img_url = plugins_url('assets/hero-v1.webp', dirname(__FILE__));
         ?>
         <section class="rsd-saas-hero">
             <div class="rsd-hero-ambient-glow"></div>
             <div class="rsd-saas-hero-container">
-                <div class="rsd-saas-pill"><span><?php echo esc_html($settings['badge_text']); ?></span></div>
-                <h1 class="rsd-saas-h1"><?php echo wp_kses_post($settings['title']); ?></h1>
-                <p class="rsd-saas-subtext"><?php echo esc_html($settings['subtitle']); ?></p>
+                <div class="rsd-saas-pill"><span>✦ DIRECT BOOKING ENGINE SUITE ✦</span></div>
+                <h1 class="rsd-saas-h1">Build Direct Booking Engines.<br><span class="rsd-saas-gradient-text">Own 100% of Your Revenue.</span></h1>
+                <p class="rsd-saas-subtext">Zero middleman commissions. Direct guest payments and automated 24/7 AI response on WhatsApp.</p>
                 <div class="rsd-hero-showcase-wrapper">
                     <img src="<?php echo esc_url($img_url); ?>" alt="Direct Booking Engine" class="rsd-hero-master-img" loading="eager" width="1000" height="650" />
                 </div>
                 <div class="rsd-saas-cta-group">
                     <button onclick="window.toggleRsdChatWidget(event)" class="shiny-cta">
-                        <span><?php echo esc_html($settings['primary_btn']); ?></span>
+                        <span>Consult With Us →</span>
                     </button>
-                    <a href="https://redseadigital.pro/work/" class="rsd-btn-showcase"><?php echo esc_html($settings['secondary_btn']); ?></a>
+                    <a href="https://redseadigital.pro/work/" class="rsd-btn-showcase">View Live Showcase ✦</a>
                 </div>
             </div>
         </section>
@@ -67,11 +66,10 @@ class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-marquee-section">
             <div class="rsd-marquee-header">
-                <span class="rsd-marquee-badge"><?php echo esc_html($settings['badge_text']); ?></span>
+                <span class="rsd-marquee-badge">✦ GLOBAL HOSPITALITY & FINTECH ECOSYSTEM INTEGRATIONS</span>
             </div>
             <div class="rsd-marquee-wrapper">
                 <div class="rsd-marquee-track">
@@ -104,22 +102,18 @@ class RSD_Elementor_ROI_Calculator_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'Calculator Settings', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('pill', ['label' => 'Pill', 'type' => Controls_Manager::TEXT, 'default' => '✦ POWERFUL REVENUE ACCELERATOR ✦']);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'Integrated System Serving Your Business']);
-        $this->add_control('subtitle', ['label' => 'Subtitle', 'type' => Controls_Manager::TEXTAREA, 'default' => 'Simulate the exact revenue retained by shifting 40% of your reservations to direct booking.']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-roi-section" id="rsd-roi-engine">
             <div class="rsd-roi-ambient-glow"></div>
             <div class="rsd-roi-container">
                 <div style="text-align:center;max-width:720px;margin:0 auto 44px auto;">
-                    <div class="rsd-roi-pill"><?php echo esc_html($settings['pill']); ?></div>
-                    <h2 class="rsd-roi-title"><?php echo esc_html($settings['title']); ?></h2>
-                    <p class="rsd-roi-subtitle"><?php echo esc_html($settings['subtitle']); ?></p>
+                    <div class="rsd-roi-pill">✦ POWERFUL REVENUE ACCELERATOR ✦</div>
+                    <h2 class="rsd-roi-title">Integrated System Serving Your Business</h2>
+                    <p class="rsd-roi-subtitle">Simulate the exact revenue retained by shifting 40% of your reservations to direct booking.</p>
                 </div>
                 
                 <!-- 2-Column Calculator -->
@@ -227,21 +221,17 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'Roadmap Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('pill', ['label' => 'Pill', 'type' => Controls_Manager::TEXT, 'default' => '✦ 4-STEP ARCHITECTURAL PROTOCOL ✦']);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'Turnkey Roadmap to Full Direct Revenue']);
-        $this->add_control('subtitle', ['label' => 'Subtitle', 'type' => Controls_Manager::TEXTAREA, 'default' => 'A battle-tested engineering protocol delivering your direct booking infrastructure turnkey in 7 to 14 days.']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-protocol-sec">
             <div class="rsd-protocol-container">
                 <div style="text-align:center;max-width:680px;margin:0 auto 40px auto;">
-                    <div class="rsd-roi-pill"><?php echo esc_html($settings['pill']); ?></div>
-                    <h2 class="rsd-roi-title"><?php echo esc_html($settings['title']); ?></h2>
-                    <p class="rsd-roi-subtitle"><?php echo esc_html($settings['subtitle']); ?></p>
+                    <div class="rsd-roi-pill">✦ 4-STEP ARCHITECTURAL PROTOCOL ✦</div>
+                    <h2 class="rsd-roi-title">Turnkey Roadmap to Full Direct Revenue</h2>
+                    <p class="rsd-roi-subtitle">A battle-tested engineering protocol delivering your direct booking infrastructure turnkey in 7 to 14 days.</p>
                 </div>
                 <div class="rsd-protocol-grid">
                     <div class="rsd-protocol-card">
@@ -280,21 +270,17 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'Testimonials Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('badge', ['label' => 'Badge', 'type' => Controls_Manager::TEXT, 'default' => '✦ TESTIMONIALS & TRUST ✦']);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'What Our Users Say']);
-        $this->add_control('subtitle', ['label' => 'Subtitle', 'type' => Controls_Manager::TEXT, 'default' => 'Real results from luxury boutique hotels and resorts.']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-saas-sec rsd-trust-sec" style="background:#F8FAFC;padding:90px 20px;">
             <div class="rsd-saas-container">
                 <div style="text-align:center;max-width:700px;margin:0 auto 44px auto;">
-                    <div class="rsd-roi-pill" style="background:#EFF6FF;color:#2563EB;border-color:rgba(37,99,235,0.25);"><?php echo esc_html($settings['badge']); ?></div>
-                    <h2 class="rsd-saas-title" style="color:#0F172A;font-size:clamp(2rem, 3.5vw, 2.7rem);font-weight:800;"><?php echo esc_html($settings['title']); ?></h2>
-                    <p style="color:#64748B;font-size:1.05rem;margin-top:10px;"><?php echo esc_html($settings['subtitle']); ?></p>
+                    <div class="rsd-roi-pill" style="background:#EFF6FF;color:#2563EB;border-color:rgba(37,99,235,0.25);">✦ TESTIMONIALS & TRUST ✦</div>
+                    <h2 class="rsd-saas-title" style="color:#0F172A;font-size:clamp(2rem, 3.5vw, 2.7rem);font-weight:800;">What Our Users Say</h2>
+                    <p style="color:#64748B;font-size:1.05rem;margin-top:10px;">Real results from luxury boutique hotels and resorts.</p>
                 </div>
                 
                 <div class="rsd-testimonials-grid">
@@ -373,16 +359,14 @@ class RSD_Elementor_Matrix_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'Matrix Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'The Real Difference In Revenue Ownership']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-saas-sec rsd-matrix-sec">
             <div class="rsd-saas-container">
-                <h2 class="rsd-saas-title" style="text-align:center;margin-bottom:44px;color:#0F172A;font-size:clamp(1.9rem, 3.5vw, 2.6rem);font-weight:800;"><?php echo esc_html($settings['title']); ?></h2>
+                <h2 class="rsd-saas-title" style="text-align:center;margin-bottom:44px;color:#0F172A;font-size:clamp(1.9rem, 3.5vw, 2.6rem);font-weight:800;">The Real Difference In Revenue Ownership</h2>
                 <div class="rsd-unified-matrix-card">
                     <div class="rsd-matrix-col col-old">
                         <div class="rsd-col-header">
@@ -413,30 +397,26 @@ class RSD_Elementor_Matrix_Widget extends Widget_Base {
     }
 }
 
-// 7. FAQS ACCORDION WIDGET (Dark Glass FAQs)
-class RSD_Elementor_FAQ_Widget extends Widget_Base {
-    public function get_name() { return 'rsd_faqs'; }
+// 7. CAL BOOKING WIDGET (Render Direct Architecture FAQs matching reference design)
+class RSD_Elementor_Cal_Booking_Widget extends Widget_Base {
+    public function get_name() { return 'rsd_cal_booking'; }
     public function get_title() { return esc_html__('RSD — Direct Architecture FAQs', 'redsea-ai-engine'); }
     public function get_icon() { return 'eicon-accordion'; }
     public function get_categories() { return ['redsea-digital-suite']; }
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'FAQ Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('pill', ['label' => 'Pill', 'type' => Controls_Manager::TEXT, 'default' => '✦ DIRECT ARCHITECTURE FAQS ✦']);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'Direct Architecture FAQs']);
-        $this->add_control('subtitle', ['label' => 'Subtitle', 'type' => Controls_Manager::TEXTAREA, 'default' => 'Find answers to common questions about direct booking engine integration.']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-faq-sec">
             <div class="rsd-faq-container">
                 <div style="text-align:center;max-width:680px;margin:0 auto 36px auto;">
-                    <div class="rsd-roi-pill"><?php echo esc_html($settings['pill']); ?></div>
-                    <h2 class="rsd-roi-title"><?php echo esc_html($settings['title']); ?></h2>
-                    <p class="rsd-roi-subtitle"><?php echo esc_html($settings['subtitle']); ?></p>
+                    <div class="rsd-roi-pill">✦ DIRECT ARCHITECTURE FAQS ✦</div>
+                    <h2 class="rsd-roi-title">Direct Architecture FAQs</h2>
+                    <p class="rsd-roi-subtitle">Find answers to common questions about direct booking engine integration.</p>
                 </div>
                 
                 <div class="rsd-faq-list">
@@ -495,23 +475,18 @@ class RSD_Elementor_Final_CTA_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'CTA Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('guarantee', ['label' => 'Guarantee', 'type' => Controls_Manager::TEXT, 'default' => '🛡️ 30-Day Money-Back Guarantee: If you are not satisfied with speed & performance, receive a 100% full refund.']);
-        $this->add_control('title', ['label' => 'Title', 'type' => Controls_Manager::TEXT, 'default' => 'Start Reclaiming Your Direct Revenue Today']);
-        $this->add_control('subtitle', ['label' => 'Subtitle', 'type' => Controls_Manager::TEXTAREA, 'default' => 'Consult with our team to review your direct booking architecture.']);
-        $this->add_control('btn_text', ['label' => 'Button', 'type' => Controls_Manager::TEXT, 'default' => 'Book Free Consultation 🚀']);
         $this->end_controls_section();
     }
 
     protected function render() {
-        $settings = $this->get_settings_for_display();
         ?>
         <section class="rsd-saas-dark-sec rsd-saas-cta-sec">
             <div class="rsd-saas-dark-container" style="text-align:center;">
-                <div class="rsd-guarantee-pill"><?php echo esc_html($settings['guarantee']); ?></div>
-                <h2 class="rsd-dark-h2" style="margin-top:24px;"><?php echo esc_html($settings['title']); ?></h2>
-                <p class="rsd-dark-subtext" style="margin-bottom:32px;"><?php echo esc_html($settings['subtitle']); ?></p>
+                <div class="rsd-guarantee-pill">🛡️ 30-Day Money-Back Guarantee: If you are not satisfied with speed & performance, receive a 100% full refund.</div>
+                <h2 class="rsd-dark-h2" style="margin-top:24px;">Start Reclaiming Your Direct Revenue Today</h2>
+                <p class="rsd-dark-subtext" style="margin-bottom:32px;">Consult with our team to review your direct booking architecture.</p>
                 <button onclick="window.toggleRsdChatWidget(event)" class="rsd-saas-btn-primary" style="font-size:1.15rem; padding:18px 44px;">
-                    <?php echo esc_html($settings['btn_text']); ?>
+                    Book Free Consultation 🚀
                 </button>
             </div>
         </section>
