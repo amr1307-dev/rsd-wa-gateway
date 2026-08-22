@@ -594,4 +594,30 @@ class AjaxHandler {
 
         wp_send_json_success(['message' => 'تم استبعاد الفرصة بنجاح']);
     }
+
+    /**
+     * AJAX: Generate Master SOP Executive Audit Dossier Document
+     */
+    public function handle_generate_lead_pdf() {
+        check_ajax_referer('rsd_admin_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized']);
+        }
+
+        $lead_id = intval($_POST['lead_id'] ?? 0);
+        if (!$lead_id) {
+            wp_send_json_error(['message' => 'معرف الفرصة مطلوب']);
+        }
+
+        if (!class_exists('\RedSea\Services\PdfReportGenerator')) {
+            require_once dirname(__DIR__) . '/Services/PdfReportGenerator.php';
+        }
+
+        $result = \RedSea\Services\PdfReportGenerator::generate_report($lead_id);
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
+        }
+    }
 }
