@@ -11,7 +11,7 @@ use RedSea\Services\NotificationService;
 
 /**
  * ClosingAgent - Master SOP Objection Handler & Human Deal Desk Escalation Router
- * Manages consultative closing, 4-tier objection handling trees, and instant human handoff triggers.
+ * Enforces calm, realistic human consultation, zero emojis, and zero marketing fluff.
  */
 class ClosingAgent {
 
@@ -78,13 +78,13 @@ class ClosingAgent {
             self::execute_human_handoff($clean_phone, $clean_name, $clean_text, $escalation);
 
             if ($escalation['category'] === 'deal_closing_payment') {
-                return "أهلاً بك أستاذ {$clean_name}! يسعدنا جداً البدء معكم. يقوم الآن مهندس الحلول الرقمية (عمرو أحمد) بتجهيز بيانات الفاتورة والتعاقد الرسمي وسيتواصل معكم مباشرة على هذا الرقم خلال دقائق.";
+                return "أهلاً بك أستاذ {$clean_name}. يسعدنا البدء معكم. مهندس الحلول الرقمية عمرو أحمد يجهز حالياً تفاصيل الفاتورة والتعاقد وسيتواصل معك مباشرة على هذا الرقم خلال دقائق.";
             } elseif ($escalation['category'] === 'custom_pricing') {
-                return "مرحباً أستاذ {$clean_name}، نقدر استفساركم تماماً. بما أن الباقات يتم تخصيصها بدقة حسب سعة المنشأة وعدد الغرف، سيتواصل معكم مستشار الحلول الأول مباشرة لمراجعة أفضل عرض استثماري مخصص لكم.";
+                return "أهلاً بك أستاذ {$clean_name}. تفاصيل الباقات والتسعير المخصص يتم تحديدها بدقة حسب حجم المشروع، وسيتواصل معك مستشار الحلول لمراجعة الخطة المناسبة لك.";
             } elseif ($escalation['category'] === 'legal_contract') {
-                return "أهلاً بك! نولي الجوانب القانونية وحماية البيانات أعلى درجات العناية. يقوم فريق إدارة العقود بمراجعة استفساركم وتزويدكم بمسودة الاتفاقية ونموذج عدم الإفصاح (NDA) فوراً.";
+                return "أهلاً بك. بالنسبة للعقود ونماذج عدم الإفصاح (NDA)، سنزودك بمسودة الاتفاقية وشروط التعاقد للاطلاع عليها ومراجعتها.";
             } else {
-                return "شكراً لتواصلك معنا. تم تحويل محادثتكم مباشرة إلى إدارة العمليات وسيتابع معكم أحد مسؤولينا التنفيذيين فورياً.";
+                return "شكراً لتواصلك. تم تحويل استفسارك للإدارة المختصة وسيتابع معك أحد مسؤولينا مباشرة.";
             }
         }
 
@@ -100,14 +100,18 @@ class ClosingAgent {
 
         $objection_matrix = "
 <consultative_closing_matrix>
-  1. استفسارات المتاجر الإلكترونية (E-Commerce): اشرح حلول بناء المتاجر فائقة السرعة، ربط بوابات الدفع الإلكتروني (فيزا/انستاباي/فوري)، واسترجاع السلات المتروكة بالواتساب.
-  2. استفسارات الفنادق والضيافة: اشرح محرك الحجز المباشر وتوفير عمولات الـ OTAs (15-25%) مع كونسيرج الواتساب.
-  3. استفسارات الشركات والـ Lead Gen: اشرح صفحات الهبوط الموجهة للإعلانات ولوحات الـ CRM لإدارة العملاء.
-  4. اعتراض 'السعر مرتفع': وضح أنه استثمار ذكي يسترد تكلفته سريعاً من زيادة المبيعات واسترداد العمولات.
-  5. اعتراض 'مش متأكد': اعرض استعراض ديمو حي ومكالمة سريعة لمدة 15 دقيقة لمشاهدة المنظومة تعمل على الموبايل.
-  6. اعتراض 'شغالين مع وكالة': وضح أننا نكامل حلول الوكالة بتوفير منصة البيع/الحجز المؤتمتة التي ترفع تحويل حملاتهم (+35%).
+  قواعد صياغة الرد:
+  - ممنوع استخدام الإيموجيز نهائياً.
+  - ممنوع العبارات التسويقية المبتذلة والوعود المبالغ فيها.
+  - الرد في جملتين إلى ثلاث جمل واضحة وواقعية.
 
-  قاعدة صارمة: لا ترفض أي نشاط إطلاقاً، وتحدث بأسلوب مستشار مبيعات خبير وودود في 2 إلى 3 جمل مركزة.
+  التعامل مع الاستفسارات والاعتراضات:
+  1. استفسارات المتاجر الإلكترونية: وضح أننا نبني متاجر سريعة مع ربط بوابات الدفع (فيزا، انستاباي، فوري) ونظام متابعة الطلبات بالواتساب.
+  2. استفسارات الفنادق والضيافة: وضح ميزات محرك الحجز المباشر بدون عمولات وتكامل كونسيرج الواتساب.
+  3. استفسارات الشركات وصفحات الهبوط: وضح تصميم صفحات الهبوط الإعلانية ولوحة إدارة العملاء.
+  4. اعتراض 'السعر مرتفع': وضح بهدوء أن التكلفة لمرة واحدة بدون اشتراكات متكررة وتغطي بناء وتجهيز المنظومة كاملة.
+  5. اعتراض 'مش متأكد': اعرض استعراض نموذج عملي حي (Demo) للاطلاع على طريقة عمل المنظومة على الموبايل.
+  6. اعتراض 'شغالين مع وكالة تسويق': وضح أن حلولنا برمجية تكمل عمل وكالة التسويق لتسهيل استقبال الطلبات وتأكيدها.
 </consultative_closing_matrix>";
 
         $system_prompt = $base_prompt . "\n\n" . $objection_matrix;
@@ -118,6 +122,8 @@ class ClosingAgent {
 
         $clean_reply = strip_tags($raw_reply);
         $clean_reply = preg_replace('/<[^>]*>/', '', $clean_reply);
+        // Strip any accidental emojis
+        $clean_reply = preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{1F700}-\x{1F77F}\x{1F780}-\x{1F7FF}\x{1F800}-\x{1F8FF}\x{1F900}-\x{1F9FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', '', $clean_reply);
         $clean_reply = html_entity_decode($clean_reply, ENT_QUOTES, 'UTF-8');
         return trim($clean_reply);
     }
@@ -129,7 +135,6 @@ class ClosingAgent {
         global $wpdb;
         $table_name = $wpdb->prefix . 'rsd_leads';
 
-        // Update pipeline status in database
         $lead_id = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$table_name} WHERE contact_phone LIKE %s LIMIT 1",
             '%' . substr($phone, -8) . '%'
@@ -142,21 +147,19 @@ class ClosingAgent {
             ], ['id' => $lead_id]);
         }
 
-        // Save Booking / CRM Record
         LeadManager::save_booking(
             $name,
             $phone,
-            '🚨 تصعيد بشري فوري (Deal Desk): ' . $escalation['category'],
-            "سبب التصعيد: {$escalation['reason']}\nنص رسالة العميل: {$msg}"
+            'تصعيد بشري: ' . $escalation['category'],
+            "السبب: {$escalation['reason']}\nالرسالة: {$msg}"
         );
 
-        // Send Notification via NotificationService
         if (class_exists('\RedSea\Services\NotificationService')) {
             try {
                 NotificationService::send_booking_alert([
                     'customer_name'   => $name,
                     'customer_phone'  => $phone,
-                    'service_type'    => '🚨 تصعيد صفقة جديد (Deal Desk: ' . $escalation['category'] . ')',
+                    'service_type'    => 'تصعيد صفقة: ' . $escalation['category'],
                     'booking_details' => "السبب: {$escalation['reason']}\nالرسالة: {$msg}"
                 ]);
             } catch (\Throwable $t) {}

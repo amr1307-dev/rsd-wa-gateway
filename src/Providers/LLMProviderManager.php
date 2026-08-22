@@ -106,35 +106,19 @@ class LLMProviderManager {
     }
 
     public static function get_default_master_prompt() {
-        $company_name = get_option('rsd_company_name', 'RED SEA DIGITAL');
-        $whatsapp     = get_option('rsd_whatsapp_phone', '201028803080');
+        if (!class_exists('\RedSea\Identity\SystemPromptBuilder')) {
+            $builder_path = dirname(__DIR__) . '/Identity/SystemPromptBuilder.php';
+            if (file_exists($builder_path)) require_once $builder_path;
+        }
 
-        return "<system_identity>
-  أنت مستشار استراتيجي وخبير مبيعات ذكي لشركة {$company_name}.
-  أسلوبك: بشري، ذكي، سريع البديهة، مركز على الفوائد الملموسة للعميل، وتجيب بدقة متناهية على السؤال المطروح دون تكرار أو قوالب جامدة.
-  واتساب الشركة: {$whatsapp}
-</system_identity>
+        if (class_exists('\RedSea\Identity\SystemPromptBuilder')) {
+            return \RedSea\Identity\SystemPromptBuilder::build();
+        }
 
-<autonomous_booking_mandate>
-  1. أنت مفوض بالكامل لإجراء وحجز مواعيد الاستشارات الاستراتيجية للعميل مباشرة بدلاً منه داخل المحادثة.
-  2. عندما يطلب العميل حجز استشارة أو استفساراً عن باقاتنا، اطلب منه بلباقة (الاسم ورقم الواتساب ونوع النشاط أو الموعد المفضل).
-  3. بمجرد أن يزودك العميل برقم هاتفه، قم بتأكيد الحجز فوراً وبثقة واحترافية عالية:
-     - بالعربية: '🎉 تم تأكيد وتثبيت حجز استشارتك بنجاح يا [اسم العميل]! تم تسجيل طلبك وإرسال إشعار التأكيد إلى رقم الواتساب: [الرقم]. سيتواصل معك مستشارنا التقني في الموعد المحدد.'
-     - بالإنجليزية: '🎉 Your consultation is confirmed, [Customer Name]! Your reservation is logged and confirmation sent to WhatsApp: [Phone Number]. Our senior architect will connect with you at the scheduled time.'
-</autonomous_booking_mandate>
+        $company_name = get_option('rsd_company_name', 'Red Sea Digital');
+        $whatsapp     = get_option('rsd_whatsapp_phone', '01028803080');
 
-<conversational_behavior_rules>
-  1. عدم تكرار الترحيب: إذا كانت هناك محادثة سابقة أو قام العميل بطرح سؤال متابعة، لا تقل 'أهلاً بك' أو تعيد تقديم الشركة، بل أجب عن سؤاله مباشرة وفوراً.
-  2. الإجابة المخصصة حسب الموضوع (Specific Domain Deep-Dive):
-     - إذا سأل عن (أتمتة المبيعات والواتساب): اشرح فوائد بوت الواتساب التفاعلي، استرجاع السلات المتروكة، وتأكيد الحجوزات فورياً.
-     - إذا سأل عن (حجز استشارة أو باقة): اطلب منه الاسم ورقم الواتساب ونوع نشاطه لترتيب الموعد فوراً.
-     - إذا سأل عن (فنادق أو غوص أو تجارة): اشرح الحل التقني وحساب الوفر المالي (توفير 15-30% عمولات) الخاص بنشاطه.
-  3. الهيكل والتنسيق:
-     - إجابات مركزة وموجزة (40 إلى 70 كلمة).
-     - نقاط تعداد عريضة (2 إلى 3 نقاط) خاصة بالموضوع المطلوب حصراً.
-     - سؤال ذكي في النهاية لدفع المحادثة للأمام (مثال: 'هل ترغب في ربط البوت بمتجر إلكتروني أم موقع حجوزات؟').
-  4. عدم إخراج أي أكواد أو وسوم برمجية أو أقواس JSON إطلاقاً.
-</conversational_behavior_rules>";
+        return "أنت مهندس واستشاري حلول رقمية في {$company_name}. الواتساب الرسمي: {$whatsapp}. تحدث بأسلوب مهندس برمجيات واقعي وهادئ، بدون إيموجيز نهائياً، وبدون وعود تسويقية مبتذلة.";
     }
 
     public static function generate($user_message, $history = [], $custom_options = []) {
@@ -161,11 +145,7 @@ class LLMProviderManager {
             }
         }
 
-        return get_option('rsd_fallback_message', '<p style=\'margin:0 0 10px 0;line-height:1.65;\'>أهلاً بك في <strong>RED SEA DIGITAL</strong>! يسعدنا مساعدتك في تطوير نشاطك ومضاعفة مبيعاتك المباشرة.</p>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>حجز مباشر 24/7</strong>: استقبال استفسارات العملاء وحجز الرحلات والغرف تلقائياً بعدة لغات دون توقف.</div>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>استرداد العمولات</strong>: توفير 15% إلى 30% من أرباحك الصافية وتجنب عمولات الوسطاء والمنصات.</div>
-<div style="margin:6px 0;padding-right:14px;position:relative;"><span style="color:#2563EB;position:absolute;right:0;font-weight:bold;">•</span> <strong>أتمتة المبيعات والواتساب</strong>: جمع بيانات العملاء ومتابعة الحجوزات والسلات تلقائياً.</div>
-<p style=\'margin:10px 0 0 0;line-height:1.65;\'>يسعدنا ترتيب استشارة سريعة لمشروعك، تواصل معنا مباشرة عبر الواتساب: <strong>01028803080</strong></p>');
+        return get_option('rsd_fallback_message', 'أهلاً بك في Red Sea Digital. نحن وكالة تطوير برمجيات وحلول رقمية نقوم ببناء المتاجر الإلكترونية، ربط بوابات الدفع الإلكتروني، محركات الحجز المباشر، وتكامل رسائل الواتساب. يمكنك إخبارنا بتفاصيل مشروعك أو التواصل معنا مباشرة عبر الواتساب: 01028803080.');
     }
 
     public static function get_provider_config($provider, $custom_options = []) {
