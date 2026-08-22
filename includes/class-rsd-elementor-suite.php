@@ -39,6 +39,7 @@ class RSD_Elementor_Suite {
         if (class_exists('RSD_Elementor_Roadmap_Widget')) $widgets_manager->register(new RSD_Elementor_Roadmap_Widget());
         if (class_exists('RSD_Elementor_Testimonials_Widget')) $widgets_manager->register(new RSD_Elementor_Testimonials_Widget());
         if (class_exists('RSD_Elementor_Matrix_Widget')) $widgets_manager->register(new RSD_Elementor_Matrix_Widget());
+        if (class_exists('RSD_Elementor_FAQ_Widget')) $widgets_manager->register(new RSD_Elementor_FAQ_Widget());
         if (class_exists('RSD_Elementor_Cal_Booking_Widget')) $widgets_manager->register(new RSD_Elementor_Cal_Booking_Widget());
         if (class_exists('RSD_Elementor_Final_CTA_Widget')) $widgets_manager->register(new RSD_Elementor_Final_CTA_Widget());
     }
