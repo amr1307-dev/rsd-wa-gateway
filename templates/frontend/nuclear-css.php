@@ -6973,4 +6973,95 @@ $is_ar = (strpos($_SERVER['REQUEST_URI'], '/ar') !== false);
                 .rsd-editorial-cta-wrap { flex-direction: column !important; gap: 12px !important; }
             }
 
+        
+            /* ==========================================================================
+               VIBRANT MULTI-COLOR GRADIENT HERO WITH SHINY CTA BUTTONS
+               ========================================================================== */
+            .rsd-saas-hero {
+                position: relative !important;
+                background: radial-gradient(circle at 50% -20%, #FFE4D6 0%, #FED7AA 15%, #FEE2E2 35%, #F5F3FF 60%, #FFFFFF 95%) !important;
+                padding: 130px 20px 75px 20px !important;
+                text-align: center !important;
+                overflow: hidden !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .rsd-saas-hero-container {
+                max-width: 1140px !important;
+                margin: 0 auto !important;
+                position: relative !important;
+                z-index: 2 !important;
+            }
+            .rsd-saas-h1 {
+                font-size: clamp(2.3rem, 4.6vw, 4.1rem) !important;
+                font-weight: 800 !important;
+                line-height: 1.18 !important;
+                color: #0F172A !important;
+                letter-spacing: -0.025em !important;
+                margin: 0 0 18px 0 !important;
+            }
+            .rsd-saas-gradient-text {
+                background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+                display: inline-block !important;
+            }
+            .rsd-saas-subtext {
+                font-size: clamp(1.02rem, 1.5vw, 1.22rem) !important;
+                color: #475569 !important;
+                line-height: 1.65 !important;
+                max-width: 780px !important;
+                margin: 0 auto 34px auto !important;
+                font-weight: 500 !important;
+            }
+            .rsd-hero-showcase-wrapper {
+                width: 100% !important;
+                max-width: 1040px !important;
+                margin: 0 auto 36px auto !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            .rsd-hero-master-img {
+                width: 100% !important;
+                max-width: 1040px !important;
+                height: auto !important;
+                border-radius: 18px !important;
+                filter: drop-shadow(0 25px 50px rgba(15, 23, 42, 0.12)) !important;
+            }
+            .rsd-saas-cta-group {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 16px !important;
+                flex-wrap: wrap !important;
+            }
+
+            @media (max-width: 768px) {
+                .rsd-saas-hero {
+                    padding: 100px 16px 45px 16px !important;
+                }
+                .rsd-saas-h1 {
+                    font-size: clamp(1.75rem, 6.2vw, 2.2rem) !important;
+                    line-height: 1.25 !important;
+                }
+                .rsd-saas-subtext {
+                    font-size: 0.92rem !important;
+                    margin-bottom: 20px !important;
+                }
+                .rsd-hero-showcase-wrapper {
+                    margin-bottom: 24px !important;
+                }
+                .rsd-saas-cta-group {
+                    flex-direction: column !important;
+                    width: 100% !important;
+                    max-width: 320px !important;
+                    margin: 0 auto !important;
+                }
+                .shiny-cta, .rsd-btn-showcase {
+                    width: 100% !important;
+                    text-align: center !important;
+                    justify-content: center !important;
+                }
+            }
+
         </style>
