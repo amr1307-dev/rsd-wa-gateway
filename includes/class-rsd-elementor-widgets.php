@@ -52,7 +52,7 @@ class RSD_Elementor_Hero_Widget extends Widget_Base {
     }
 }
 
-// 2. TRUST BAR WIDGET (Dark Sleek Marquee)
+// 2. TRUST BAR WIDGET (Dark Sleek Single-Row Horizontal Marquee)
 class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
     public function get_name() { return 'rsd_trust_bar'; }
     public function get_title() { return esc_html__('RSD — Integrations Marquee', 'redsea-ai-engine'); }
@@ -61,7 +61,6 @@ class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
 
     protected function register_controls() {
         $this->start_controls_section('content_section', ['label' => 'Trust Bar Content', 'tab' => Controls_Manager::TAB_CONTENT]);
-        $this->add_control('badge_text', ['label' => 'Badge', 'type' => Controls_Manager::TEXT, 'default' => '✦ GLOBAL HOSPITALITY & FINTECH ECOSYSTEM INTEGRATIONS']);
         $this->end_controls_section();
     }
 
@@ -71,15 +70,15 @@ class RSD_Elementor_Trust_Bar_Widget extends Widget_Base {
             <div class="rsd-marquee-header">
                 <span class="rsd-marquee-badge">✦ GLOBAL HOSPITALITY & FINTECH ECOSYSTEM INTEGRATIONS</span>
             </div>
-            <div class="rsd-marquee-wrapper">
-                <div class="rsd-marquee-track">
+            <div class="rsd-integrations-marquee-wrapper">
+                <div class="rsd-integrations-marquee-track">
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon"></span> Apple Pay</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">💳</span> Visa / Mastercard</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">💬</span> WhatsApp Cloud API</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">🏨</span> 2-Way PMS Channel Sync</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">🔒</span> Stripe 3D-Secure 2.0</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">⚡</span> Sub-Second Checkout</div>
-                    <!-- Duplicate for infinite drift -->
+                    <!-- Cloned for seamless loop -->
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon"></span> Apple Pay</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">💳</span> Visa / Mastercard</div>
                     <div class="rsd-marquee-item"><span class="rsd-marquee-icon">💬</span> WhatsApp Cloud API</div>
@@ -261,7 +260,7 @@ class RSD_Elementor_Roadmap_Widget extends Widget_Base {
     }
 }
 
-// 5. TESTIMONIALS WIDGET (Clean Light Background)
+// 5. TESTIMONIALS WIDGET (Distinctive 3-Column Infinite Vertical Marquee)
 class RSD_Elementor_Testimonials_Widget extends Widget_Base {
     public function get_name() { return 'rsd_testimonials'; }
     public function get_title() { return esc_html__('RSD — Testimonials Grid', 'redsea-ai-engine'); }
@@ -283,63 +282,120 @@ class RSD_Elementor_Testimonials_Widget extends Widget_Base {
                     <p style="color:#64748B;font-size:1.05rem;margin-top:10px;">Real results from luxury boutique hotels and resorts.</p>
                 </div>
                 
-                <div class="rsd-testimonials-grid">
-                    <!-- Col 1 -->
-                    <div style="display:flex;flex-direction:column;gap:20px;">
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"Transitioning to Red Sea Digital direct booking engine completely freed us from 22% OTA commissions."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">KM</div>
-                                <div><h4 class="rsd-t-name">Capt. Karim Mansour</h4><span class="rsd-t-role">Managing Director — Red Sea Diving</span></div>
+                <div class="rsd-marquee-mask-wrap">
+                    <!-- Column 1 (Scrolling Upwards) -->
+                    <div class="rsd-marquee-col col-1">
+                        <div class="rsd-vertical-marquee-track track-1">
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Transitioning to Red Sea Digital direct booking engine completely freed us from 22% OTA commissions."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">KM</div>
+                                    <div><h4 class="rsd-t-name">Capt. Karim Mansour</h4><span class="rsd-t-role">Managing Director — Red Sea Diving</span></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"The WhatsApp AI concierge captures inquiries instantly even at midnight. Conversions jumped significantly."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">OS</div>
-                                <div><h4 class="rsd-t-name">Omar Soliman</h4><span class="rsd-t-role">Operations Lead — Desert Oasis</span></div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"The WhatsApp AI concierge captures inquiries instantly even at midnight. Conversions jumped significantly."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">OS</div>
+                                    <div><h4 class="rsd-t-name">Omar Soliman</h4><span class="rsd-t-role">Operations Lead — Desert Oasis</span></div>
+                                </div>
+                            </div>
+                            <!-- Duplicate for continuous vertical loop -->
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Transitioning to Red Sea Digital direct booking engine completely freed us from 22% OTA commissions."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">KM</div>
+                                    <div><h4 class="rsd-t-name">Capt. Karim Mansour</h4><span class="rsd-t-role">Managing Director — Red Sea Diving</span></div>
+                                </div>
+                            </div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"The WhatsApp AI concierge captures inquiries instantly even at midnight. Conversions jumped significantly."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">OS</div>
+                                    <div><h4 class="rsd-t-name">Omar Soliman</h4><span class="rsd-t-role">Operations Lead — Desert Oasis</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Col 2 -->
-                    <div style="display:flex;flex-direction:column;gap:20px;">
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"Real-time two-way PMS channel sync saved hundreds of manual hours and eliminated double bookings."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">TA</div>
-                                <div><h4 class="rsd-t-name">Tarek Al-Sayed</h4><span class="rsd-t-role">General Manager — Coral View Luxury</span></div>
+                    <!-- Column 2 (Scrolling Upwards Offset) -->
+                    <div class="rsd-marquee-col col-2">
+                        <div class="rsd-vertical-marquee-track track-2">
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Real-time two-way PMS channel sync saved hundreds of manual hours and eliminated double bookings."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">TA</div>
+                                    <div><h4 class="rsd-t-name">Tarek Al-Sayed</h4><span class="rsd-t-role">General Manager — Coral View Luxury</span></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"Fast loading times, flawless mobile checkout with Apple Pay. Guests love booking directly with us."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">MK</div>
-                                <div><h4 class="rsd-t-name">Mona Khalil</h4><span class="rsd-t-role">Commercial Director — Blue Bay</span></div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Fast loading times, flawless mobile checkout with Apple Pay. Guests love booking directly with us."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">MK</div>
+                                    <div><h4 class="rsd-t-name">Mona Khalil</h4><span class="rsd-t-role">Commercial Director — Blue Bay</span></div>
+                                </div>
+                            </div>
+                            <!-- Duplicate for continuous vertical loop -->
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Real-time two-way PMS channel sync saved hundreds of manual hours and eliminated double bookings."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">TA</div>
+                                    <div><h4 class="rsd-t-name">Tarek Al-Sayed</h4><span class="rsd-t-role">General Manager — Coral View Luxury</span></div>
+                                </div>
+                            </div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Fast loading times, flawless mobile checkout with Apple Pay. Guests love booking directly with us."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">MK</div>
+                                    <div><h4 class="rsd-t-name">Mona Khalil</h4><span class="rsd-t-role">Commercial Director — Blue Bay</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Col 3 -->
-                    <div style="display:flex;flex-direction:column;gap:20px;">
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"Multilingual voice and chat responses gave our European guests a 5-star concierge experience."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">ER</div>
-                                <div><h4 class="rsd-t-name">Elena Rostova</h4><span class="rsd-t-role">Guest Experience Lead — Riviera Boutique</span></div>
+                    <!-- Column 3 (Scrolling Upwards Offset) -->
+                    <div class="rsd-marquee-col col-3">
+                        <div class="rsd-vertical-marquee-track track-3">
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Multilingual voice and chat responses gave our European guests a 5-star concierge experience."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">ER</div>
+                                    <div><h4 class="rsd-t-name">Elena Rostova</h4><span class="rsd-t-role">Guest Experience Lead — Riviera Boutique</span></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="rsd-t-card">
-                            <div class="rsd-t-stars">★★★★★</div>
-                            <p class="rsd-t-quote">"We recouped our investment within the first 60 days purely from retained OTA commission fees."</p>
-                            <div class="rsd-t-author">
-                                <div class="rsd-t-avatar-box">AH</div>
-                                <div><h4 class="rsd-t-name">Ahmed Hegazy</h4><span class="rsd-t-role">Owner — Sinai Luxury Eco-Lodge</span></div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"We recouped our investment within the first 60 days purely from retained OTA commission fees."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">AH</div>
+                                    <div><h4 class="rsd-t-name">Ahmed Hegazy</h4><span class="rsd-t-role">Owner — Sinai Luxury Eco-Lodge</span></div>
+                                </div>
+                            </div>
+                            <!-- Duplicate for continuous vertical loop -->
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"Multilingual voice and chat responses gave our European guests a 5-star concierge experience."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">ER</div>
+                                    <div><h4 class="rsd-t-name">Elena Rostova</h4><span class="rsd-t-role">Guest Experience Lead — Riviera Boutique</span></div>
+                                </div>
+                            </div>
+                            <div class="rsd-t-card">
+                                <div class="rsd-t-stars">★★★★★</div>
+                                <p class="rsd-t-quote">"We recouped our investment within the first 60 days purely from retained OTA commission fees."</p>
+                                <div class="rsd-t-author">
+                                    <div class="rsd-t-avatar-box">AH</div>
+                                    <div><h4 class="rsd-t-name">Ahmed Hegazy</h4><span class="rsd-t-role">Owner — Sinai Luxury Eco-Lodge</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>

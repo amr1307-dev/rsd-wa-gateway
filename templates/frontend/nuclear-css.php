@@ -6228,4 +6228,117 @@ $is_ar = (strpos($_SERVER['REQUEST_URI'], '/ar') !== false);
                 box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5) !important;
             }
 
+        
+            /* ==========================================================================
+               HORIZONTAL INTEGRATIONS MARQUEE & VERTICAL TESTIMONIALS FIX
+               ========================================================================== */
+            .rsd-marquee-section {
+                background: #030712 !important;
+                padding: 40px 0 !important;
+                overflow: hidden !important;
+                position: relative !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .rsd-marquee-header {
+                text-align: center !important;
+                margin-bottom: 24px !important;
+            }
+            .rsd-marquee-badge {
+                font-size: 0.76rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.14em !important;
+                color: #94A3B8 !important;
+                text-transform: uppercase !important;
+            }
+            .rsd-integrations-marquee-wrapper {
+                width: 100% !important;
+                overflow: hidden !important;
+                display: flex !important;
+                white-space: nowrap !important;
+                position: relative !important;
+                -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent) !important;
+                mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent) !important;
+            }
+            .rsd-integrations-marquee-track {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 20px !important;
+                width: max-content !important;
+                animation: rsd-marquee-horiz-infinite 30s linear infinite !important;
+                will-change: transform !important;
+            }
+            .rsd-integrations-marquee-wrapper:hover .rsd-integrations-marquee-track {
+                animation-play-state: paused !important;
+            }
+            @keyframes rsd-marquee-horiz-infinite {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+            .rsd-marquee-item {
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                padding: 10px 20px !important;
+                background: rgba(15, 23, 42, 0.8) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 9999px !important;
+                color: #F8FAFC !important;
+                font-size: 0.92rem !important;
+                font-weight: 600 !important;
+                white-space: nowrap !important;
+                flex-shrink: 0 !important;
+            }
+            .rsd-marquee-icon {
+                font-size: 1.1rem !important;
+            }
+
+            /* DISTINCTIVE 3-COLUMN INFINITE VERTICAL MARQUEE TESTIMONIALS */
+            .rsd-marquee-mask-wrap {
+                position: relative !important;
+                display: flex !important;
+                justify-content: center !important;
+                gap: 24px !important;
+                max-height: 600px !important;
+                overflow: hidden !important;
+                -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent) !important;
+                mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent) !important;
+                padding: 10px 0 !important;
+                box-sizing: border-box !important;
+            }
+            .rsd-marquee-col {
+                flex: 1 !important;
+                max-width: 360px !important;
+                width: 100% !important;
+            }
+            @media (max-width: 768px) {
+                .rsd-marquee-col.col-2, .rsd-marquee-col.col-3 { display: none !important; }
+            }
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .rsd-marquee-col.col-3 { display: none !important; }
+            }
+            .rsd-vertical-marquee-track {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 20px !important;
+                will-change: transform !important;
+            }
+            .rsd-vertical-marquee-track.track-1 {
+                animation: rsd-marquee-vert 22s linear infinite !important;
+            }
+            .rsd-vertical-marquee-track.track-2 {
+                animation: rsd-marquee-vert 28s linear infinite !important;
+            }
+            .rsd-vertical-marquee-track.track-3 {
+                animation: rsd-marquee-vert 24s linear infinite !important;
+            }
+            .rsd-marquee-mask-wrap:hover .rsd-vertical-marquee-track {
+                animation-play-state: paused !important;
+            }
+            @keyframes rsd-marquee-vert {
+                0% { transform: translateY(0); }
+                100% { transform: translateY(-50%); }
+            }
+
         </style>
